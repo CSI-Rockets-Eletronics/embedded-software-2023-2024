@@ -1,0 +1,8 @@
+{
+  "folders": [
+    { "path": "fs_main" },
+    { "path": "fs_scientific" },
+    { "name": "embedded-software-2023-2024", "path": "." }
+  ],
+  "settings": {}
+}
