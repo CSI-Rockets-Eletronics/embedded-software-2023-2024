@@ -4,5 +4,8 @@
     { "path": "fs_scientific" },
     { "name": "embedded-software-2023-2024", "path": "." }
   ],
-  "settings": {}
+  "settings": {},
+  "extensions": {
+    "recommendations": ["vsciot-vscode.vscode-arduino"]
+  }
 }
