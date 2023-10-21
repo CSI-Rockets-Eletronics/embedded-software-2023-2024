@@ -46,23 +46,23 @@ void loop() {
     mpu.read_mag();   // get data from the magnetometer
 
     // print all data in serial monitor
-    Serial.print("AX: ");
+    Serial.print(",AX:");
     Serial.print(mpu.ax);
-    Serial.print(" AY: ");
+    Serial.print(",AY:");
     Serial.print(mpu.ay);
-    Serial.print(" AZ: ");
+    Serial.print(",AZ:");
     Serial.print(mpu.az);
-    Serial.print("    GX: ");
+    Serial.print(",GX:");
     Serial.print(mpu.gx);
-    Serial.print(" GY: ");
+    Serial.print(",GY:");
     Serial.print(mpu.gy);
-    Serial.print(" GZ: ");
+    Serial.print(",GZ:");
     Serial.print(mpu.gz);
-    Serial.print("    MX: ");
+    Serial.print(",MX:");
     Serial.print(mpu.mx);
-    Serial.print(" MY: ");
+    Serial.print(",MY:");
     Serial.print(mpu.my);
-    Serial.print(" MZ: ");
-    Serial.println(mpu.mz);
+    Serial.print(",MZ:");
+    Serial.print(mpu.mz);
     delay(100);
 }
