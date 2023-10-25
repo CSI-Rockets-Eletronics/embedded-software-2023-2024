@@ -1,25 +1,52 @@
 import serial
+import numpy as np
+import matplotlib.pyplot as plt
 
-class SensorData:
-    acc = list()
-    gyro = list()
-    mag = list()
 
-def parseLine(line: str) -> SensorData:
-    cleaned = line.strip().split(",")
-    print(cleaned)
-    parsed = SensorData()
-    parsed.acc = []
-    parsed.acc[0] = int(cleaned[0].replace("AX: ", ""))
-    parsed.acc[1] = int(cleaned[0].replace("AY: ", ""))
-    parsed.acc[2] = int(cleaned[0].replace("AZ: ", ""))
-    parsed.gyro[0] = int(cleaned[0].replace("GX: ", ""))
-    parsed.gyro[1] = int(cleaned[0].replace("GY: ", ""))
-    parsed.gyro[2] = int(cleaned[0].replace("GZ: ", ""))
-    parsed.mag[0] = int(cleaned[0].replace("MX: ", ""))
-    parsed.mag[1] = int(cleaned[0].replace("MY: ", ""))
-    parsed.mag[2] = int(cleaned[0].replace("MZ: ", ""))
-    return parsed
+
+AX=[]
+AY=[]
+AZ=[]
+GX=[]
+GY=[]
+GZ=[]
+MX=[]
+MY=[]
+MZ=[]
+
+t = [0]
+ax = [0]
+ay = [0]
+az = [0]
+gx = [0]
+gy = [0]
+gz = [0]
+mx = [0]
+my = [0]
+mz = [0]
+
+plt.ion()
+plt.legend()
+
+def parse_data(data):
+    result = {}
+    for s in data.split(","):
+        if not s:
+            continue
+        key, value = s.split(":")
+        result[key] = int(value)
+    return result
+
+def tolists(data):
+    AX.append(parse_data(data)["AX"])
+    AY.append(parse_data(data)["AY"])
+    AZ.append(parse_data(data)["AZ"])
+    GX.append(parse_data(data)["GX"])
+    GY.append(parse_data(data)["GY"])
+    GZ.append(parse_data(data)["GZ"])
+    MX.append(parse_data(data)["MX"])
+    MY.append(parse_data(data)["MY"])
+    MZ.append(parse_data(data)["MZ"])
 
 def readserial(comport, baudrate):
     ser = serial.Serial(
@@ -28,7 +55,30 @@ def readserial(comport, baudrate):
 
     while True:
         data = ser.readline().decode()
-        data = parseLine(data)        
+        tolists(data)
+        t.append(t[-1] + 1)
+        ax.append(AX[-1])
+        ay.append(AY[-1])
+        az.append(AZ[-1])
+        gx.append(GX[-1])
+        gy.append(GY[-1])
+        gz.append(GZ[-1])
+        mx.append(MX[-1])
+        my.append(MY[-1])
+        mz.append(MZ[-1])
+        plt.cla()
+        """ plt.plot(t, ax, label="ax")
+        plt.plot(t, ay, label="ay")
+        plt.plot(t, az, label="az") """
+        plt.plot(t, gx, label="gx")
+        plt.plot(t, gy, label="gy")
+        plt.plot(t, gz, label="gz")
+        """ plt.plot(t, mx, label="mx")
+        plt.plot(t, my, label="my")
+        plt.plot(t, mz, label="mz") """
+        plt.pause(0.1)
         
 
+
 readserial("COM6", 115200)
+
