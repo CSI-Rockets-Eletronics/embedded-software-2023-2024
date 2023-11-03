@@ -31,6 +31,10 @@ Buffer queuedRecord = "";
 // empty if there is no new message since the last retrieval
 StaticJsonDoc latestMessage;
 
+// for fetching new messages
+
+int64_t lastMessageTs = 0;
+
 // mutexes for the buffers
 
 SemaphoreHandle_t queuedRecordMutex;
@@ -60,6 +64,14 @@ bool setLatestMessage(const Buffer src) {
         Serial.println(err.f_str());
         return false;
     }
+
+    if (!doc.containsKey("ts")) {
+        Serial.println("Message response missing ts");
+        return false;
+    }
+
+    // no mutex needed; lastMessageTs is only accessed by this task
+    lastMessageTs = doc["ts"];
 
     if (xSemaphoreTake(latestMessageMutex, portMAX_DELAY)) {
         latestMessage = doc;
@@ -204,8 +216,8 @@ void sendQueuedRecord(WiFiClient& client) {
 }
 
 void pollLatestMessage(WiFiClient& client) {
-    String path =
-        "/messages/next?environmentKey=" + ENVIRONMENT_KEY + "&path=" + PATH;
+    String path = "/messages/next?environmentKey=" + ENVIRONMENT_KEY +
+                  "&path=" + PATH + "&afterTs=" + lastMessageTs;
 
     if (client.connect(HOST.c_str(), PORT)) {
         Serial.println("Polling latest message");
