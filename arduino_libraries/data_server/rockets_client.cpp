@@ -28,8 +28,8 @@ String PATH;
 
 // length 0 if no record is queued
 Buffer queuedRecord = "";
-// length 0 if there is no new message since the last retrieval
-Buffer latestMessage = "";
+// empty if there is no new message since the last retrieval
+StaticJsonDoc latestMessage;
 
 // mutexes for the buffers
 
@@ -52,8 +52,17 @@ bool getQueuedRecord(Buffer dest) {
 
 // returns true if successful
 bool setLatestMessage(const Buffer src) {
+    StaticJsonDoc doc;
+    auto err = deserializeJson(doc, src);
+
+    if (err != DeserializationError::Ok) {
+        Serial.print("Message response deserialization failed: ");
+        Serial.println(err.f_str());
+        return false;
+    }
+
     if (xSemaphoreTake(latestMessageMutex, portMAX_DELAY)) {
-        strncpy(latestMessage, src, sizeof(Buffer));
+        latestMessage = doc;
         xSemaphoreGive(latestMessageMutex);
         return true;
     } else {
@@ -290,32 +299,17 @@ bool queueRecord(const StaticJsonDoc& recordData) {
     }
 }
 
+// Returns an empty object if unsuccessful or there is no new message.
 StaticJsonDoc getLatestMessage() {
+    StaticJsonDoc doc;
+
     if (xSemaphoreTake(latestMessageMutex, portMAX_DELAY)) {
-        if (strlen(latestMessage) == 0) {
-            xSemaphoreGive(latestMessageMutex);
-            // return empty json object
-            StaticJsonDoc doc;
-            return doc;
-        }
-
-        StaticJsonDoc doc;
-        auto err = deserializeJson(doc, latestMessage);
-        latestMessage[0] = '\0';
+        doc = latestMessage;
+        latestMessage = StaticJsonDoc();
         xSemaphoreGive(latestMessageMutex);
-
-        if (err != DeserializationError::Ok) {
-            Serial.print("Message response deserialization failed: ");
-            Serial.println(err.f_str());
-            // return empty json object
-            StaticJsonDoc doc;
-            return doc;
-        }
-
         return doc;
     } else {
         // return empty json object
-        StaticJsonDoc doc;
         return doc;
     }
 }
