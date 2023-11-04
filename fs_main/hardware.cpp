@@ -88,12 +88,12 @@ void tick() { serial.tick(); }
 namespace relay {
 
 // hardware mappings
-const int RELAY1_PIN = 16;  // banana plug
-const int RELAY2_PIN = 17;  // banana plug
-const int RELAY3_PIN = 18;  // banana plug
-const int RELAY4_PIN = 19;  // screw terminal
-const int RELAY5_PIN = 20;  // screw terminal (flashes during boot)
-const int RELAY6_PIN = 21;  // screw terminal
+const int RELAY1_PIN = 5;
+const int RELAY2_PIN = 6;
+const int RELAY3_PIN = 7;
+const int RELAY4_PIN = 15;
+const int RELAY5_PIN = 16;
+const int RELAY6_PIN = 17;
 
 const int FILL_PIN = RELAY1_PIN;
 const int VENT_PIN = RELAY2_PIN;
