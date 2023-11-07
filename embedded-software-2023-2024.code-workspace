@@ -3,7 +3,7 @@
     // { "path": "fs_main" },
     // { "path": "fs_scientific" },
     // { "path": "flight_computer" },
-    // { "path": "arduino_libraries/data_server" },
+    // { "path": "arduino_libraries/rockets_client" },
     { "name": "embedded-software-2023-2024", "path": "." }
   ],
   "settings": {
