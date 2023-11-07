@@ -290,9 +290,6 @@ TickTwo primaryUpdateTicker(primaryUpdate, 1000000 / PRIMARY_FREQ_HZ, 0,
 void init() {
     usbSerial::init();
 
-    // for ox tank and combustion chamber ADC
-    Wire.setPins(22, 21);  // SDA and SCL are flipped on the board
-
     oxTank::adc.init(OX_TANK_ADC_ADDR, Wire, OX_TANK_ADC_GAIN);
     combustionChamber::adc.init(CC_ADC_ADDR, Wire, CC_ADC_GAIN);
 
