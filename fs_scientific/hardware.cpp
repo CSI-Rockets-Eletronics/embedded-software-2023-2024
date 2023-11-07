@@ -188,8 +188,9 @@ void init() {
 // to main board
 namespace mainSerial {
 
-const int RX_PIN = 26;
-const int TX_PIN = 27;
+// remember to connect TX to RX and RX to TX
+const int RX_PIN = 47;
+const int TX_PIN = 48;
 
 const int SENTENCE_INTERVAL = 50;
 

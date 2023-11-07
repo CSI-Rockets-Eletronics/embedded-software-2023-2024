@@ -31,7 +31,7 @@ long getMPSI() { return mpsi; }
 
 namespace sciSerial {
 
-const int BAUD = 115200;
+// remember to connect TX to RX and RX to TX
 const int RX_PIN = 48;
 const int TX_PIN = 47;
 
