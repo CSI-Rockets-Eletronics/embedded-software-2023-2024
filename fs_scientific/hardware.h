@@ -8,7 +8,7 @@ namespace hardware {
 // to raspberry pi or computer (for debugging)
 namespace usbSerial {
 
-const bool PRINT_DEBUG_TO_SERIAL = false;
+const bool PRINT_DEBUG_TO_SERIAL = true;
 
 template <typename T>
 void debugPrint(T value) {
