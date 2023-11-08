@@ -1,11 +1,7 @@
-// share (via copying) across both boards
-
 #ifndef SENTENCE_SERIAL_H_
 #define SENTENCE_SERIAL_H_
 
 #include <Arduino.h>
-
-#include "hardware.h"
 
 class SentenceSerial {
    private:
@@ -50,7 +46,7 @@ class SentenceSerial {
             } else if (sawStart) {
                 bool success = curSentence.concat(c);
                 if (!success) {
-                    hardware::usbSerial::debugPrintln(
+                    Serial.println(
                         "Reading character from scientific serial failed"
                         " (sentence too long?)");
                 }

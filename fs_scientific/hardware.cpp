@@ -8,7 +8,7 @@
 
 #include "fsDataDriver.h"
 #include "monitor.h"
-#include "sentenceSerial.h"
+#include "sentence_serial.h"
 #include "utils.h"
 
 namespace hardware {

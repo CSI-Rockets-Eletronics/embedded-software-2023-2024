@@ -4,7 +4,7 @@
 #include <ESP32Servo.h>
 #include <TickTwo.h>
 
-#include "sentenceSerial.h"
+#include "sentence_serial.h"
 
 namespace hardware {
 
