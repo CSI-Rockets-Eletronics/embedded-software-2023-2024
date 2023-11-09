@@ -5,7 +5,9 @@ import json
 import select
 
 if len(sys.argv) < 4:
-    print("Usage: python write_records.py [url] [environmentKey] [path]", file=sys.stderr)
+    print(
+        "Usage: python write_records.py [url] [environmentKey] [path]", file=sys.stderr
+    )
     sys.exit(1)
 
 url = sys.argv[1]
@@ -56,9 +58,7 @@ while True:
         result = requests.post(
             f"{url}/records/batch",
             data=body_compressed,
-            headers={
-                "content-type": "application/json-gzip"
-            },
+            headers={"content-type": "application/json-gzip"},
         )
     except:
         print(

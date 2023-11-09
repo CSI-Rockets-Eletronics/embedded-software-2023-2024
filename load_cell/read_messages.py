@@ -1,11 +1,12 @@
 import sys
 import requests
-import json
 
 FETCH_INTERVAL_MS = 1000
 
 if len(sys.argv) < 4:
-    print("Usage: python read_messages.py [url] [environmentKey] [path]", file=sys.stderr)
+    print(
+        "Usage: python read_messages.py [url] [environmentKey] [path]", file=sys.stderr
+    )
     sys.exit(1)
 
 url = sys.argv[1]
