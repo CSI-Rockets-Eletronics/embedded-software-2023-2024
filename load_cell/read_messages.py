@@ -44,6 +44,9 @@ while True:
         )
         continue
 
+    if result.text == "NONE":
+        continue
+
     body = result.json()
     if "ts" not in body:
         print("Messages response is missing ts field", file=sys.stderr)
