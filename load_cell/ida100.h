@@ -32,11 +32,9 @@ class IDA100 {
    public:
     IDA100(PVOID devIndex) {
         // unbind device from ftdi driver
-        // not needed on Raspberry Pi OS Lite, as the ftdi driver is not loaded
-
-        // system(
-        //     "echo -n 1-1.4:1.0"
-        //     " | sudo tee /sys/bus/usb/drivers/ftdi_sio/unbind");
+        system(
+            "echo -n 1-1.4:1.0"
+            " | sudo tee /sys/bus/usb/drivers/ftdi_sio/unbind");
 
         // read serial number of device at devIndex
         char serialNumber[64];
