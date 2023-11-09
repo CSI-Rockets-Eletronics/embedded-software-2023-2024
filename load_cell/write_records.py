@@ -57,8 +57,7 @@ while True:
             f"{url}/records/batch",
             data=body_compressed,
             headers={
-                "content-type": "application/json",
-                "content-encoding": "gzip",
+                "content-type": "application/json-gzip"
             },
         )
     except:
