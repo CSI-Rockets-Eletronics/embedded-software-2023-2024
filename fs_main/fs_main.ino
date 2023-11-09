@@ -109,8 +109,7 @@ void setup() {
     // init order matters
     hardware::init();
     state::init();
-    rockets_client::init("csiwiki.me.columbia.edu", 3001, "/rocketsdata2", "0",
-                         "FiringStation");
+    rockets_client::init("fs-pi.local", 3000, "", "0", "FiringStation");
 
     syncWithNetworkTicker.start();
 }
