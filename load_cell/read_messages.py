@@ -1,7 +1,8 @@
 import sys
 import requests
+import time
 
-FETCH_INTERVAL_MS = 1000
+FETCH_INTERVAL_SEC = 1
 
 if len(sys.argv) < 4:
     print(
@@ -16,6 +17,8 @@ path = sys.argv[3]
 last_ts = None
 
 while True:
+    time.sleep(FETCH_INTERVAL_SEC)
+
     params = {
         "environmentKey": environmentKey,
         "path": path,
