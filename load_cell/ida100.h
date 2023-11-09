@@ -32,8 +32,9 @@ class IDA100 {
    public:
     IDA100(PVOID devIndex) {
         // unbind device from ftdi driver
+        // (run ls /sys/bus/usb/drivers/ftdi_sio to get the device identifier)
         system(
-            "echo -n 1-1.4:1.0"
+            "echo -n 1-1.3:1.0"
             " | sudo tee /sys/bus/usb/drivers/ftdi_sio/unbind");
 
         // read serial number of device at devIndex
