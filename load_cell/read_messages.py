@@ -18,8 +18,9 @@ while True:
     params = {
         "environmentKey": environmentKey,
         "path": path,
-        "afterTs": last_ts,
     }
+    if last_ts is not None:
+        params["afterTs"] = last_ts
 
     try:
         result = requests.get(
