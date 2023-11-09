@@ -4,6 +4,8 @@ import gzip
 import json
 import select
 
+MAX_RECORDS_PER_BATCH = 50
+
 if len(sys.argv) < 4:
     print(
         "Usage: python write_records.py [url] [environmentKey] [path]", file=sys.stderr
@@ -25,6 +27,10 @@ while True:
 
     while has_input():
         input_line = input()
+
+        if len(records) >= MAX_RECORDS_PER_BATCH:
+            continue
+
         split = input_line.split(" ", 2)
         if len(split) != 3 or split[0] != "rec:":
             continue
