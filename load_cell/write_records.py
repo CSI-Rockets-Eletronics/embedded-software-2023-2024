@@ -4,7 +4,7 @@ import gzip
 import json
 import select
 
-MAX_RECORDS_PER_BATCH = 50
+MAX_RECORDS_PER_BATCH = 10
 
 if len(sys.argv) < 4:
     print(
