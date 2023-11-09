@@ -23,7 +23,6 @@ def has_input():
 
 while True:
     records = []
-    seen_timestamps = set()
 
     while has_input():
         input_line = input()
@@ -38,9 +37,6 @@ while True:
 
         ts = int(ts)
         data = json.loads(data)
-
-        if ts in seen_timestamps:
-            continue
 
         records.append(
             {
