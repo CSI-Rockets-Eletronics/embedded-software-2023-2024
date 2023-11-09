@@ -12,10 +12,13 @@ url = sys.argv[1]
 environmentKey = sys.argv[2]
 path = sys.argv[3]
 
+last_ts = None
+
 while True:
     params = {
         "environmentKey": environmentKey,
         "path": path,
+        "afterTs": last_ts,
     }
 
     try:
@@ -41,9 +44,14 @@ while True:
         continue
 
     body = result.json()
+    if "ts" not in body:
+        print("Messages response is missing ts field", file=sys.stderr)
+        continue
     if "data" not in body:
         print("Messages response is missing data field", file=sys.stderr)
         continue
+
+    last_ts = body["ts"]
 
     if body["data"] is not None:
         print(body["data"], flush=True)
