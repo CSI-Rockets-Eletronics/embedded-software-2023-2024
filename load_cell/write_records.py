@@ -52,7 +52,7 @@ while True:
         "records": records,
     }
 
-    body_compressed = gzip.compress(json.dumps(body).encode("utf-8"))
+    # body_compressed = gzip.compress(json.dumps(body).encode("utf-8"))
 
     try:
         result = requests.post(
@@ -78,6 +78,7 @@ while True:
         )
     else:
         print(
-            f"Sent {len(records)} records to server (length={len(body_compressed)})",
+            # f"Sent {len(records)} records to server (compressed length={len(body_compressed)})",
+            f"Sent {len(records)} records to server",
             file=sys.stderr,
         )
