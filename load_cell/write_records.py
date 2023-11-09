@@ -57,8 +57,12 @@ while True:
     try:
         result = requests.post(
             f"{url}/records/batch",
-            data=body_compressed,
-            headers={"content-type": "application/json-gzip"},
+            # no compression
+            json=body,
+            headers={"content-type": "application/json"},
+            # compression (not needed for localhost, as we'd just be wasting CPU)
+            # data=body_compressed,
+            # headers={"content-type": "application/json-gzip"},
         )
     except:
         print(
