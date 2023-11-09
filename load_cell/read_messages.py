@@ -5,23 +5,23 @@ import json
 FETCH_INTERVAL_MS = 1000
 
 if len(sys.argv) < 4:
-    print("Usage: python read_messages.py [url] [stationId] [target]", file=sys.stderr)
+    print("Usage: python read_messages.py [url] [environmentKey] [path]", file=sys.stderr)
     sys.exit(1)
 
 url = sys.argv[1]
-stationId = sys.argv[2]
-target = sys.argv[3]
+environmentKey = sys.argv[2]
+path = sys.argv[3]
 
 while True:
-    body = {
-        "stationId": stationId,
-        "target": target,
+    params = {
+        "environmentKey": environmentKey,
+        "path": path,
     }
 
     try:
-        result = requests.post(
-            f"{url}/message/next",
-            json=body,
+        result = requests.get(
+            f"{url}/messages/next",
+            params=params,
             headers={
                 "content-type": "application/json",
             },

@@ -5,12 +5,12 @@ import json
 import select
 
 if len(sys.argv) < 4:
-    print("Usage: python write_records.py [url] [stationId] [source]", file=sys.stderr)
+    print("Usage: python write_records.py [url] [environmentKey] [path]", file=sys.stderr)
     sys.exit(1)
 
 url = sys.argv[1]
-stationId = sys.argv[2]
-source = sys.argv[3]
+environmentKey = sys.argv[2]
+path = sys.argv[3]
 
 
 def has_input():
@@ -26,17 +26,17 @@ while True:
         split = input_line.split(" ", 2)
         if len(split) != 3 or split[0] != "rec:":
             continue
-        _, timestamp, data = split
+        _, ts, data = split
 
-        timestamp = int(timestamp)
+        ts = int(ts)
         data = json.loads(data)
 
-        if timestamp in seen_timestamps:
+        if ts in seen_timestamps:
             continue
 
         records.append(
             {
-                "timestamp": timestamp,
+                "ts": ts,
                 "data": data,
             }
         )
@@ -45,8 +45,8 @@ while True:
         continue
 
     body = {
-        "stationId": stationId,
-        "source": source,
+        "environmentKey": environmentKey,
+        "path": path,
         "records": records,
     }
 
@@ -54,7 +54,7 @@ while True:
 
     try:
         result = requests.post(
-            f"{url}/record/batch",
+            f"{url}/records/batch",
             data=body_compressed,
             headers={
                 "content-type": "application/json",
