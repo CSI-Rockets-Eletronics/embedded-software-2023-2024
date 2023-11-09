@@ -6,8 +6,8 @@ namespace rockets_client {
 
 // wifi options (should be used by every client)
 
-const char* WIFI_SSID = "Columbia University";
-// const char* WIFI_PASSWORD = "Blueberries";
+const char* WIFI_SSID = "Darknet";
+const char* WIFI_PASSWORD = "Blueberries";
 
 // task parameters
 
@@ -276,7 +276,7 @@ void initWifi() {
     Serial.println(WIFI_SSID);
 
     WiFi.setAutoReconnect(true);
-    WiFi.begin(WIFI_SSID);
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
     // block until connected
     while (WiFi.status() != WL_CONNECTED) {
