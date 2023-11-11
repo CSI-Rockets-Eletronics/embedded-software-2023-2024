@@ -7,7 +7,7 @@
 
 const PVOID DEV_INDEX = 0;
 
-const double TICKS_PER_POUND = 10.0 / 2000.0;
+const double TICKS_PER_POUND = 10.0 / 2000.0 * 100000.0 * 3.5;
 
 IDA100 ida100(DEV_INDEX, TICKS_PER_POUND);
 
