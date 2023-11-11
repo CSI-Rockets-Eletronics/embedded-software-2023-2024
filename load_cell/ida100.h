@@ -12,7 +12,7 @@ class IDA100 {
    private:
     const int CALIBRATE_SAMPLES = 50;
 
-    const int ticksPerPound;
+    const double ticksPerPound;
 
     FT_HANDLE ftHandle;
     int calibZero;
