@@ -5,9 +5,11 @@
 
 #include "ida100.h"
 
-PVOID DEV_INDEX = 0;
+const PVOID DEV_INDEX = 0;
 
-IDA100 ida100(DEV_INDEX);
+const double TICKS_PER_POUND = 10.0 / 2000.0;
+
+IDA100 ida100(DEV_INDEX, TICKS_PER_POUND);
 
 void sigintHandler(int sig) {
     std::cout << "Caught SIGINT, closing device" << std::endl;

@@ -10,8 +10,9 @@
 
 class IDA100 {
    private:
-    const double TICKS_PER_LBS = 346.55;
     const int CALIBRATE_SAMPLES = 50;
+
+    const int ticksPerPound;
 
     FT_HANDLE ftHandle;
     int calibZero;
@@ -30,7 +31,8 @@ class IDA100 {
     };
 
    public:
-    IDA100(PVOID devIndex) {
+    IDA100(PVOID devIndex, double ticksPerPound)
+        : ticksPerPound(ticksPerPound) {
         // read serial number of device at devIndex
         char serialNumber[64];
         safe_FT("FT_ListDevices",
@@ -113,7 +115,7 @@ class IDA100 {
         calibZero = samples[CALIBRATE_SAMPLES / 2];
     }
 
-    double readLbs() { return readCalibratedData() / TICKS_PER_LBS; }
+    double readLbs() { return readCalibratedData() / ticksPerPound; }
 };
 
 #endif  // IDA100_H
