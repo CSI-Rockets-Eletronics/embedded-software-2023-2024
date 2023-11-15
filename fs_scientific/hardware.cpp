@@ -114,7 +114,7 @@ class MovingMedianADC {
 
     float readVolts() {
         float volts =
-            adc.computeVolts(singleEnded ? adc.readADC_SingleEnded(1)
+            adc.computeVolts(singleEnded ? adc.readADC_SingleEnded(0)
                                          : adc.readADC_Differential_0_1());
         if (flipVolts) {
             volts = -volts;
