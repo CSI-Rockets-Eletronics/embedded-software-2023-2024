@@ -198,8 +198,7 @@ void sendQueuedRecord(WiFiClient& client) {
             int status = parseResBody(res, resBody);
 
             if (status == 200) {
-                Serial.print("sendQueuedRecord success: ");
-                Serial.println(resBody);
+                Serial.println("sendQueuedRecord success");
             } else {
                 Serial.print("sendQueuedRecord failed, status: ");
                 Serial.println(status);
