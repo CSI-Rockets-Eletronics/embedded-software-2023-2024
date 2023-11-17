@@ -8,6 +8,19 @@
 
 namespace rockets_client {
 
+struct ServerConfig {
+    String host;
+    int port;
+    String pathPrefix;
+};
+
+struct ServerConfigPresets {
+    ServerConfig FS_PI;
+    ServerConfig MECHE;
+};
+
+extern ServerConfigPresets serverConfigPresets;
+
 typedef StaticJsonDocument<1024> StaticJsonDoc;
 typedef char Buffer[2048];  // give it some extra space
 
@@ -20,8 +33,7 @@ bool queueRecord(const StaticJsonDoc& recordData);
 // call.
 StaticJsonDoc getLatestMessage();
 
-void init(String host, int port, String pathPrefix, String environmentKey,
-          String path);
+void init(ServerConfig serverConfig, String environmentKey, String path);
 
 }  // namespace rockets_client
 

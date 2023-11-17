@@ -9,6 +9,23 @@ namespace rockets_client {
 const char* WIFI_SSID = "Darknet";
 const char* WIFI_PASSWORD = "Blueberries";
 
+// server presets
+
+ServerConfigPresets serverConfigPresets = {
+    .FS_PI =
+        {
+            .host = "fs-pi.local",
+            .port = 3000,
+            .pathPrefix = "",
+        },
+    .MECHE =
+        {
+            .host = "csiwiki.me.columbia.edu",
+            .port = 3001,
+            .pathPrefix = "/rocketsdata2",
+        },
+};
+
 // task parameters
 
 const int CORE_ID = 0;
@@ -325,11 +342,10 @@ StaticJsonDoc getLatestMessage() {
     }
 }
 
-void init(String host, int port, String pathPrefix, String environmentKey,
-          String path) {
-    HOST = host;
-    PORT = port;
-    PATH_PREFIX = pathPrefix;
+void init(ServerConfig serverConfig, String environmentKey, String path) {
+    HOST = serverConfig.host;
+    PORT = serverConfig.port;
+    PATH_PREFIX = serverConfig.pathPrefix;
 
     ENVIRONMENT_KEY = environmentKey;
     PATH = path;

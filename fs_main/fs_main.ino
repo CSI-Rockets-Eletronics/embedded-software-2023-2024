@@ -109,7 +109,8 @@ void setup() {
     // init order matters
     hardware::init();
     state::init();
-    rockets_client::init("fs-pi.local", 3000, "", "0", "FiringStation");
+    rockets_client::init(rockets_client::serverConfigPresets.FS_PI, "0",
+                         "FiringStation");
 
     syncWithNetworkTicker.start();
 }
