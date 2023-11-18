@@ -198,6 +198,43 @@ int parseResBody(const Buffer res, Buffer dest) {
     return status;
 }
 
+// Returns true if successful.
+bool syncTs(WiFiClient& client) {
+    bool success = false;
+
+    String path = "/ts";
+
+    if (client.connect(HOST.c_str(), PORT)) {
+        Serial.println("Syncing ts");
+
+        postReq("GET", client, path, NULL);
+
+        Buffer res;
+        if (readRes(client, res)) {
+            Buffer resBody;
+            int status = parseResBody(res, resBody);
+
+            if (status == 200) {
+                Serial.println("syncTs success");
+
+                lastMessageTs = strtoll(resBody, NULL, 10);
+                success = true;
+            } else {
+                Serial.print("syncTs failed, status: ");
+                Serial.println(status);
+                Serial.println(resBody);
+            }
+        } else {
+            Serial.println("syncTs failed, network timeout");
+        }
+    } else {
+        Serial.println("syncTs connect failed");
+    }
+
+    client.stop();
+    return success;
+}
+
 void sendQueuedRecord(WiFiClient& client) {
     Buffer record;
     if (!getQueuedRecord(record)) {
@@ -268,6 +305,10 @@ void pollLatestMessage(WiFiClient& client) {
 
 void runTask(void* pvParameters) {
     WiFiClient client;
+
+    while (!syncTs(client)) {
+        delay(5);
+    }
 
     while (true) {
         printHeartbeat();
