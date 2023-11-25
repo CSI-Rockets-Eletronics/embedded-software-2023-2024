@@ -39,7 +39,7 @@ int PORT;
 String PATH_PREFIX;
 
 String ENVIRONMENT_KEY;
-String PATH;
+String DEVICE;
 
 // buffers for queued record and latest message
 
@@ -270,7 +270,7 @@ void sendQueuedRecord(WiFiClient& client) {
 
 void pollLatestMessage(WiFiClient& client) {
     String path = "/messages/next?environmentKey=" + ENVIRONMENT_KEY +
-                  "&path=" + PATH + "&afterTs=" + lastMessageTs;
+                  "&device=" + DEVICE + "&afterTs=" + lastMessageTs;
 
     if (client.connect(HOST.c_str(), PORT)) {
         Serial.println("Polling latest message");
@@ -353,7 +353,7 @@ bool queueRecord(const StaticJsonDoc& recordData) {
     StaticJsonDoc record;
 
     record["environmentKey"] = ENVIRONMENT_KEY;
-    record["path"] = PATH;
+    record["device"] = DEVICE;
     record["ts"] = esp_timer_get_time();
 
     JsonObject data = record.createNestedObject("data");
@@ -383,13 +383,13 @@ StaticJsonDoc getLatestMessage() {
     }
 }
 
-void init(ServerConfig serverConfig, String environmentKey, String path) {
+void init(ServerConfig serverConfig, String environmentKey, String device) {
     HOST = serverConfig.host;
     PORT = serverConfig.port;
     PATH_PREFIX = serverConfig.pathPrefix;
 
     ENVIRONMENT_KEY = environmentKey;
-    PATH = path;
+    DEVICE = device;
 
     initWifi();
     initTask();
