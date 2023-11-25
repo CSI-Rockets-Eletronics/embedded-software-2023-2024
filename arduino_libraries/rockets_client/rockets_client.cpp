@@ -48,6 +48,11 @@ Buffer queuedRecord = "";
 // empty if there is no new message since the last retrieval
 StaticJsonDoc latestMessage;
 
+// for uploading records
+
+// add this to esp_timer_get_time() to get the absolute timestamp
+int64_t absoluteTsOffset = 0;
+
 // for fetching new messages
 
 int64_t lastMessageTs = 0;
@@ -216,8 +221,11 @@ bool syncTs(WiFiClient& client) {
 
             if (status == 200) {
                 Serial.println("syncTs success");
+                int64_t syncedTs = strtoll(resBody, NULL, 10);
 
-                lastMessageTs = strtoll(resBody, NULL, 10);
+                absoluteTsOffset = lastMessageTs - esp_timer_get_time();
+                lastMessageTs = syncedTs;
+
                 success = true;
             } else {
                 Serial.print("syncTs failed, status: ");
@@ -354,7 +362,7 @@ bool queueRecord(const StaticJsonDoc& recordData) {
 
     record["environmentKey"] = ENVIRONMENT_KEY;
     record["device"] = DEVICE;
-    record["ts"] = esp_timer_get_time();
+    record["ts"] = esp_timer_get_time() + absoluteTsOffset;
 
     JsonObject data = record.createNestedObject("data");
     data.set(recordData.as<JsonObjectConst>());
