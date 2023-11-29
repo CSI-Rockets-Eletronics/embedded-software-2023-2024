@@ -223,7 +223,7 @@ bool syncTs(WiFiClient& client) {
                 Serial.println("syncTs success");
                 int64_t syncedTs = strtoll(resBody, NULL, 10);
 
-                absoluteTsOffset = lastMessageTs - esp_timer_get_time();
+                absoluteTsOffset = syncedTs - esp_timer_get_time();
                 lastMessageTs = syncedTs;
 
                 success = true;
