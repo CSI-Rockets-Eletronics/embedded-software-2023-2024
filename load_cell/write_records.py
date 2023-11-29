@@ -8,13 +8,14 @@ MAX_RECORDS_PER_BATCH = 10
 
 if len(sys.argv) < 4:
     print(
-        "Usage: python write_records.py [url] [environmentKey] [path]", file=sys.stderr
+        "Usage: python write_records.py [url] [environmentKey] [device]",
+        file=sys.stderr,
     )
     sys.exit(1)
 
 url = sys.argv[1]
 environmentKey = sys.argv[2]
-path = sys.argv[3]
+device = sys.argv[3]
 
 
 def has_input():
@@ -50,7 +51,7 @@ while True:
 
     body = {
         "environmentKey": environmentKey,
-        "path": path,
+        "device": device,
         "records": records,
     }
 

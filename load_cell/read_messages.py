@@ -6,13 +6,14 @@ FETCH_INTERVAL_SEC = 1
 
 if len(sys.argv) < 4:
     print(
-        "Usage: python read_messages.py [url] [environmentKey] [path]", file=sys.stderr
+        "Usage: python read_messages.py [url] [environmentKey] [device]",
+        file=sys.stderr,
     )
     sys.exit(1)
 
 url = sys.argv[1]
 environmentKey = sys.argv[2]
-path = sys.argv[3]
+device = sys.argv[3]
 
 last_ts = None
 
@@ -21,7 +22,7 @@ while True:
 
     params = {
         "environmentKey": environmentKey,
-        "path": path,
+        "device": device,
         "afterTs": last_ts,
     }
 
