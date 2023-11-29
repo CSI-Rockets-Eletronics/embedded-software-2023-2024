@@ -39,7 +39,7 @@ int PORT;
 String PATH_PREFIX;
 
 String ENVIRONMENT_KEY;
-String PATH;
+String DEVICE;
 
 // buffers for queued record and latest message
 
@@ -47,6 +47,11 @@ String PATH;
 Buffer queuedRecord = "";
 // empty if there is no new message since the last retrieval
 StaticJsonDoc latestMessage;
+
+// for uploading records
+
+// add this to esp_timer_get_time() to get the absolute timestamp
+int64_t absoluteTsOffset = 0;
 
 // for fetching new messages
 
@@ -198,6 +203,46 @@ int parseResBody(const Buffer res, Buffer dest) {
     return status;
 }
 
+// Returns true if successful.
+bool syncTs(WiFiClient& client) {
+    bool success = false;
+
+    String path = "/ts";
+
+    if (client.connect(HOST.c_str(), PORT)) {
+        Serial.println("Syncing ts");
+
+        postReq("GET", client, path, NULL);
+
+        Buffer res;
+        if (readRes(client, res)) {
+            Buffer resBody;
+            int status = parseResBody(res, resBody);
+
+            if (status == 200) {
+                Serial.println("syncTs success");
+                int64_t syncedTs = strtoll(resBody, NULL, 10);
+
+                absoluteTsOffset = syncedTs - esp_timer_get_time();
+                lastMessageTs = syncedTs;
+
+                success = true;
+            } else {
+                Serial.print("syncTs failed, status: ");
+                Serial.println(status);
+                Serial.println(resBody);
+            }
+        } else {
+            Serial.println("syncTs failed, network timeout");
+        }
+    } else {
+        Serial.println("syncTs connect failed");
+    }
+
+    client.stop();
+    return success;
+}
+
 void sendQueuedRecord(WiFiClient& client) {
     Buffer record;
     if (!getQueuedRecord(record)) {
@@ -233,7 +278,7 @@ void sendQueuedRecord(WiFiClient& client) {
 
 void pollLatestMessage(WiFiClient& client) {
     String path = "/messages/next?environmentKey=" + ENVIRONMENT_KEY +
-                  "&path=" + PATH + "&afterTs=" + lastMessageTs;
+                  "&device=" + DEVICE + "&afterTs=" + lastMessageTs;
 
     if (client.connect(HOST.c_str(), PORT)) {
         Serial.println("Polling latest message");
@@ -268,6 +313,10 @@ void pollLatestMessage(WiFiClient& client) {
 
 void runTask(void* pvParameters) {
     WiFiClient client;
+
+    while (!syncTs(client)) {
+        delay(5);
+    }
 
     while (true) {
         printHeartbeat();
@@ -312,8 +361,8 @@ bool queueRecord(const StaticJsonDoc& recordData) {
     StaticJsonDoc record;
 
     record["environmentKey"] = ENVIRONMENT_KEY;
-    record["path"] = PATH;
-    record["ts"] = esp_timer_get_time();
+    record["device"] = DEVICE;
+    record["ts"] = esp_timer_get_time() + absoluteTsOffset;
 
     JsonObject data = record.createNestedObject("data");
     data.set(recordData.as<JsonObjectConst>());
@@ -342,13 +391,13 @@ StaticJsonDoc getLatestMessage() {
     }
 }
 
-void init(ServerConfig serverConfig, String environmentKey, String path) {
+void init(ServerConfig serverConfig, String environmentKey, String device) {
     HOST = serverConfig.host;
     PORT = serverConfig.port;
     PATH_PREFIX = serverConfig.pathPrefix;
 
     ENVIRONMENT_KEY = environmentKey;
-    PATH = path;
+    DEVICE = device;
 
     initWifi();
     initTask();

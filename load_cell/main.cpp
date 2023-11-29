@@ -50,7 +50,6 @@ int main() {
 
         uint64_t timestamp = micros();
 
-        std::cout << "rec: " << timestamp << " "
-                  << "{\"data_converted\":" << lbs << "}" << std::endl;
+        std::cout << "rec: " << timestamp << " " << lbs << std::endl;
     }
 }

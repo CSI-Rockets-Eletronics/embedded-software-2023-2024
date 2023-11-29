@@ -25,7 +25,7 @@ typedef StaticJsonDocument<1024> StaticJsonDoc;
 typedef char Buffer[2048];  // give it some extra space
 
 // Returns true if the record was successfully queued. Creates a record with
-// appropriate `environmentKey`, `path`, and `ts` fields, and sets the `data`
+// appropriate `environmentKey`, `device`, and `ts` fields, and sets the `data`
 // field to `recordData`.
 bool queueRecord(const StaticJsonDoc& recordData);
 
@@ -33,7 +33,7 @@ bool queueRecord(const StaticJsonDoc& recordData);
 // call.
 StaticJsonDoc getLatestMessage();
 
-void init(ServerConfig serverConfig, String environmentKey, String path);
+void init(ServerConfig serverConfig, String environmentKey, String device);
 
 }  // namespace rockets_client
 
