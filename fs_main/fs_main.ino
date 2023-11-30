@@ -2,6 +2,7 @@
 #include <TickTwo.h>
 #include <rockets_client.h>
 
+#include "frequency_logger.h"
 #include "hardware.h"
 #include "interface.h"
 #include "state.h"
@@ -105,6 +106,8 @@ void syncWithNetwork() {
 
 TickTwo syncWithNetworkTicker(syncWithNetwork, SYNC_WITH_NETWORK_INTERVAL);
 
+FrequencyLogger frequencyLogger("main loop", 1000);
+
 void setup() {
     // init order matters
     hardware::init();
@@ -116,6 +119,8 @@ void setup() {
 }
 
 void loop() {
+    frequencyLogger.tick();
+
     // tick order matters
     state::tick();
     hardware::tick();
