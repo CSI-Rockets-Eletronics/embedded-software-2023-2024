@@ -85,6 +85,7 @@ class MovingMedianADC {
     void init(uint8_t adc_addr, TwoWire &wire, adsGain_t gain) {
         printSetZero();  // print initial zero
 
+        adc.setDataRate(RATE_ADS1115_860SPS);
         adc.setGain(gain);
         if (!adc.begin(adc_addr, &wire)) {
             usbSerial::debugPrint("Failed to initialize ADC for ");
