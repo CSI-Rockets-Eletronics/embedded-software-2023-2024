@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "frequency_logger.h"
 #include "fsDataDriver.h"
 #include "sentence_serial.h"
 #include "utils.h"
@@ -274,7 +275,11 @@ void clearCalibration() {
     usbSerial::debugPrintln("Cleared calibration from memory and EEPROM");
 }
 
+FrequencyLogger frequencyLogger("hardware", 1000);
+
 void primaryUpdate() {
+    frequencyLogger.tick();
+
     oxTank::adc.tick();
     combustionChamber::adc.tick();
 
