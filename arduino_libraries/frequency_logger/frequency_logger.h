@@ -1,3 +1,6 @@
+#ifndef FREQUENCY_LOGGER_H_
+#define FREQUENCY_LOGGER_H_
+
 #include <Arduino.h>
 
 class FrequencyLogger {
@@ -28,3 +31,5 @@ class FrequencyLogger {
     unsigned long lastPrintTime;
     unsigned long tickCount;
 };
+
+#endif  // FREQUENCY_LOGGER_H_
