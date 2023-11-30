@@ -13,10 +13,6 @@
 
 namespace hardware {
 
-// frequency for everything except serial to the main module
-// (oh boy, 3kHz)
-const int PRIMARY_FREQ_HZ = 3000;
-
 const int ADC_CALIBRATE_SAMPLE_COUNT = 100;
 
 const int OX_TANK_ADC_MEDIAN_WINDOW_SIZE = 5;
@@ -286,9 +282,6 @@ void primaryUpdate() {
     usbSerial::sendScientificPacket();
 }
 
-TickTwo primaryUpdateTicker(primaryUpdate, 1000000 / PRIMARY_FREQ_HZ, 0,
-                            MICROS_MICROS);
-
 void init() {
     usbSerial::init();
 
@@ -299,12 +292,10 @@ void init() {
     readCalibration();
 
     mainSerial::init();
-
-    primaryUpdateTicker.start();
 }
 
 void tick() {
-    primaryUpdateTicker.update();
+    primaryUpdate();
 
     mainSerial::tick();
 }
