@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "fsDataDriver.h"
-#include "monitor.h"
 #include "sentence_serial.h"
 #include "utils.h"
 
@@ -280,8 +279,6 @@ void primaryUpdate() {
     combustionChamber::adc.tick();
 
     usbSerial::sendScientificPacket();
-
-    monitor::incrementUpdateCount();
 }
 
 TickTwo primaryUpdateTicker(primaryUpdate, 1000000 / PRIMARY_FREQ_HZ, 0,
