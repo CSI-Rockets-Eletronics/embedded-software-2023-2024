@@ -4,6 +4,7 @@
 #include <ESP32Servo.h>
 #include <TickTwo.h>
 
+#include "frequency_logger.h"
 #include "sentence_serial.h"
 
 namespace hardware {
@@ -181,7 +182,12 @@ void init() {
 
 int64_t getCalibrationTime() { return calibrationTime; }
 
-void updateHardware() { relay::flush(); }
+FrequencyLogger frequencyLogger("hardware", 1000);
+
+void updateHardware() {
+    frequencyLogger.tick();
+    relay::flush();
+}
 
 TickTwo hardwareTicker(updateHardware, HARDWARE_INTERVAL);
 
