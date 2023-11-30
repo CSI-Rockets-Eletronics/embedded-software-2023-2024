@@ -7,11 +7,13 @@
 #include <vector>
 
 #include "frequency_logger.h"
-#include "fsDataDriver.h"
 #include "sentence_serial.h"
 #include "utils.h"
 
 namespace hardware {
+
+const int PC_BAUD = 115200;
+const int PI_BAUD = 115200;
 
 const int ADC_CALIBRATE_SAMPLE_COUNT = 100;
 
@@ -56,10 +58,10 @@ class MovingMedianADC {
     }
 
     void printSetZero() {
-        usbSerial::debugPrint("Set zero to ");
-        usbSerial::debugPrint(zero);
-        usbSerial::debugPrint(" for ");
-        usbSerial::debugPrintln(debugName);
+        Serial.print("Set zero to ");
+        Serial.print(zero);
+        Serial.print(" for ");
+        Serial.println(debugName);
     }
 
     void setZeroToDefault() { setZero(defaultZero); }
@@ -88,8 +90,8 @@ class MovingMedianADC {
         adc.setDataRate(RATE_ADS1115_860SPS);
         adc.setGain(gain);
         if (!adc.begin(adc_addr, &wire)) {
-            usbSerial::debugPrint("Failed to initialize ADC for ");
-            usbSerial::debugPrintln(debugName);
+            Serial.print("Failed to initialize ADC for ");
+            Serial.println(debugName);
             while (1)
                 ;
         }
@@ -147,37 +149,30 @@ MovingMedianADC adc("cc", CC_ADC_MEDIAN_WINDOW_SIZE, DEFAULT_ZERO,
 // to raspberry pi or computer (for debugging)
 namespace usbSerial {
 
-const int PC_BAUD = 115200;
-const int PI_BAUD = 115200;
-
 void sendScientificPacket() {
-    // don't send packet if connected to computer
-    if (PRINT_DEBUG_TO_SERIAL) return;
+    // TODO
 
-    unsigned long time = micros();
-    int timeSeconds = time / 1000000;
+    // // don't send packet if connected to computer
+    // if (PRINT_DEBUG_TO_SERIAL) return;
 
-    fsDataDriver::ScientificDataPacket packet = {
-        .time = time,
-        .oxTankPressure = oxTank::adc.getMPSI(),
-        .ccPressure = combustionChamber::adc.getMPSI(),
-        .oxidizerTankTransducerValue = oxTank::adc.getRawVolts() * 1000000,
-        .combustionChamberTransducerValue =
-            combustionChamber::adc.getRawVolts() * 1000000,
-        .timeSinceLastCalibration = 0,  // TODO
-        .timeSinceLastStartup = max(timeSeconds, 255),
-    };
+    // unsigned long time = micros();
+    // int timeSeconds = time / 1000000;
 
-    byte buf[fsDataDriver::SCIENTIFIC_DATA_PACKET_SIZE];
-    packet.dumpPacket(buf);
+    // fsDataDriver::ScientificDataPacket packet = {
+    //     .time = time,
+    //     .oxTankPressure = oxTank::adc.getMPSI(),
+    //     .ccPressure = combustionChamber::adc.getMPSI(),
+    //     .oxidizerTankTransducerValue = oxTank::adc.getRawVolts() * 1000000,
+    //     .combustionChamberTransducerValue =
+    //         combustionChamber::adc.getRawVolts() * 1000000,
+    //     .timeSinceLastCalibration = 0,  // TODO
+    //     .timeSinceLastStartup = max(timeSeconds, 255),
+    // };
 
-    Serial.write(buf, sizeof(buf));
-}
+    // byte buf[fsDataDriver::SCIENTIFIC_DATA_PACKET_SIZE];
+    // packet.dumpPacket(buf);
 
-void init() {
-    Serial.begin(PRINT_DEBUG_TO_SERIAL ? PC_BAUD : PI_BAUD);
-    while (!Serial && millis() < 500)
-        ;  // wait up to 500ms for serial to connect; needed for native USB
+    // Serial.write(buf, sizeof(buf));
 }
 
 }  // namespace usbSerial
@@ -204,8 +199,8 @@ void processCompletedSentence(const char *sentence) {
     } else if (sentenceStr == CLEAR_CALIBRATION_SENTENCE) {
         hardware::clearCalibration();
     } else {
-        usbSerial::debugPrint("Invalid sentence from main module: ");
-        usbSerial::debugPrintln(sentence);
+        Serial.print("Invalid sentence from main module: ");
+        Serial.println(sentence);
     }
 }
 
@@ -221,8 +216,8 @@ void sendSentence() {
 
     serial.sendSentence(sentence);
 
-    // usbSerial::debugPrint("Wrote sentence to main module: ");
-    // usbSerial::debugPrintln(sentence);
+    // Serial.print("Wrote sentence to main module: ");
+    // Serial.println(sentence);
 }
 
 TickTwo sentenceTicker(sendSentence, SENTENCE_INTERVAL);
@@ -259,7 +254,7 @@ void recalibrate() {
 
     mainSerial::serial.sendSentence(mainSerial::CALIBRATION_COMPLETE_SENTENCE);
 
-    usbSerial::debugPrintln("Recalibrated and saved to EEPROM");
+    Serial.println("Recalibrated and saved to EEPROM");
 }
 
 void clearCalibration() {
@@ -269,7 +264,7 @@ void clearCalibration() {
     EEPROM.writeUInt(0, 0x00000000);
     EEPROM.commit();
 
-    usbSerial::debugPrintln("Cleared calibration from memory and EEPROM");
+    Serial.println("Cleared calibration from memory and EEPROM");
 }
 
 FrequencyLogger frequencyLogger("hardware", 1000);
@@ -284,7 +279,9 @@ void primaryUpdate() {
 }
 
 void init() {
-    usbSerial::init();
+    Serial.begin(PC_BAUD);
+    while (!Serial && millis() < 500)
+        ;  // wait up to 500ms for serial to connect; needed for native USB
 
     oxTank::adc.init(OX_TANK_ADC_ADDR, Wire, OX_TANK_ADC_GAIN);
     combustionChamber::adc.init(CC_ADC_ADDR, Wire, CC_ADC_GAIN);
