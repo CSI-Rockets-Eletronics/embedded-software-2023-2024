@@ -5,8 +5,6 @@
 
 class SentenceSerial {
    private:
-    static const int BAUD = 115200;
-
     static const int MAX_SENTENCE_LEN = 64;
     static const char SENTENCE_START = '<';
     static const char SENTENCE_END = '>';
@@ -28,11 +26,12 @@ class SentenceSerial {
         serial.print(SENTENCE_END);
     }
 
-    void init(int rxPin, int txPin) {
-        serial.begin(BAUD, SERIAL_8N1, rxPin, txPin);
+    void init(int rxPin, int txPin, int baud = 115200) {
+        serial.begin(baud, SERIAL_8N1, rxPin, txPin);
         curSentence.reserve(MAX_SENTENCE_LEN + 1);  // +1 for null terminator
     }
 
+    // Calling this is not necessary if this serial is write only
     void tick() {
         while (serial.available()) {
             char c = serial.read();
