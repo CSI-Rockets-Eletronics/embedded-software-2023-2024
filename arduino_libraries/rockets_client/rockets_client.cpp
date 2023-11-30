@@ -2,6 +2,8 @@
 
 #include <WiFi.h>
 
+#include "frequency_logger.h"
+
 namespace rockets_client {
 
 // wifi options (should be used by every client)
@@ -62,6 +64,10 @@ int64_t lastMessageTs = 0;
 SemaphoreHandle_t queuedRecordMutex;
 SemaphoreHandle_t latestMessageMutex;
 
+// for logging
+
+FrequencyLogger frequencyLogger = FrequencyLogger("rockets client", 1000);
+
 // private functions
 
 // returns true if successful and queued record is non-empty
@@ -105,6 +111,8 @@ bool setLatestMessage(const Buffer src) {
 }
 
 void printHeartbeat() {
+    frequencyLogger.tick();
+
     // Serial.print("Free heap memory (bytes): ");
     // Serial.println(esp_get_free_heap_size());
 
