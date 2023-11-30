@@ -105,12 +105,12 @@ bool setLatestMessage(const Buffer src) {
 }
 
 void printHeartbeat() {
-    Serial.print("Free heap memory (bytes): ");
-    Serial.println(esp_get_free_heap_size());
+    // Serial.print("Free heap memory (bytes): ");
+    // Serial.println(esp_get_free_heap_size());
 
-    Serial.print("Network heartbeat: ");
+    // Serial.print("Network heartbeat: ");
     if (WiFi.status() == WL_CONNECTED) {
-        Serial.println("WiFi connected");
+        // Serial.println("WiFi connected");
     } else {
         Serial.println("WiFi not connected");
     }
@@ -250,7 +250,7 @@ void sendQueuedRecord(WiFiClient& client) {
     }
 
     if (client.connect(HOST.c_str(), PORT)) {
-        Serial.println("Sending queued record");
+        // Serial.println("Sending queued record");
 
         postReq("POST", client, "/records", record);
 
@@ -260,7 +260,7 @@ void sendQueuedRecord(WiFiClient& client) {
             int status = parseResBody(res, resBody);
 
             if (status == 200) {
-                Serial.println("sendQueuedRecord success");
+                // Serial.println("sendQueuedRecord success");
             } else {
                 Serial.print("sendQueuedRecord failed, status: ");
                 Serial.println(status);
@@ -281,7 +281,7 @@ void pollLatestMessage(WiFiClient& client) {
                   "&device=" + DEVICE + "&afterTs=" + lastMessageTs;
 
     if (client.connect(HOST.c_str(), PORT)) {
-        Serial.println("Polling latest message");
+        // Serial.println("Polling latest message");
 
         postReq("GET", client, path, NULL);
 
@@ -291,7 +291,7 @@ void pollLatestMessage(WiFiClient& client) {
             int status = parseResBody(res, resBody);
 
             if (status == 200) {
-                Serial.println("pollLatestMessage success");
+                // Serial.println("pollLatestMessage success");
 
                 if (strcmp(resBody, "NONE") != 0) {
                     setLatestMessage(resBody);
