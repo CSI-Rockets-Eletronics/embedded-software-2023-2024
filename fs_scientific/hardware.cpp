@@ -224,8 +224,8 @@ void sendSentence() {
 
     serial.sendSentence(sentence);
 
-    usbSerial::debugPrint("Wrote sentence to main module: ");
-    usbSerial::debugPrintln(sentence);
+    // usbSerial::debugPrint("Wrote sentence to main module: ");
+    // usbSerial::debugPrintln(sentence);
 }
 
 TickTwo sentenceTicker(sendSentence, SENTENCE_INTERVAL);
