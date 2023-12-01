@@ -5,16 +5,6 @@
 
 namespace interface {
 
-struct StationState {
-    int64_t timestamp;  // micros
-    byte stateByte;
-    byte relayStatusByte;
-    int32_t oxTankMPSI;
-    int32_t ccMPSI;
-    unsigned long timeSinceBoot;         // micros
-    unsigned long timeSinceCalibration;  // micros
-};
-
 struct RelayStatus {
     bool fill;
     bool vent;

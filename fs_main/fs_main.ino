@@ -1,11 +1,9 @@
 #include <Arduino.h>
-#include <ArduinoJson.h>
 #include <TickTwo.h>
+#include <rockets_client.h>
 
-#include "constants.h"
 #include "hardware.h"
 #include "interface.h"
-#include "network.h"
 #include "state.h"
 
 const int SYNC_WITH_NETWORK_INTERVAL = 50;
@@ -13,46 +11,33 @@ const int SYNC_WITH_NETWORK_INTERVAL = 50;
 void setStateReqBody() {
     int64_t timestamp = esp_timer_get_time();
 
-    StaticJsonDocument<1024> doc;
+    rockets_client::StaticJsonDoc recordData;
 
-    doc["stationId"] = constants::STATION_ID;
-    doc["source"] = constants::STATION_STATE_RECORD_SOURCE;
-    doc["timestamp"] = timestamp;
+    recordData["stateByte"] = interface::getStateByte();
+    recordData["relayStatusByte"] = interface::getRelayStatusByte();
+    recordData["oxTankMPSI"] = hardware::oxTank::getMPSI();
+    recordData["ccMPSI"] = hardware::combustionChamber::getMPSI();
+    recordData["timeSinceBoot"] = timestamp,
+    recordData["timeSinceCalibration"] =
+        timestamp - hardware::getCalibrationTime();
 
-    JsonObject data = doc.createNestedObject("data");
-
-    data["stateByte"] = interface::getStateByte();
-    data["relayStatusByte"] = interface::getRelayStatusByte();
-    data["oxTankMPSI"] = hardware::oxTank::getMPSI();
-    data["ccMPSI"] = hardware::combustionChamber::getMPSI();
-    data["timeSinceBoot"] = timestamp,
-    data["timeSinceCalibration"] = timestamp - hardware::getCalibrationTime();
-
-    char body[1024];
-    serializeJson(doc, body, sizeof(body));
-
-    network::setStateReqBody(body);
+    rockets_client::queueRecord(recordData);
 }
 
 void getCommandResBody() {
-    char body[1024];
-    if (!network::getCommandResBody(body, sizeof(body))) {
-        return;
-    }
+    rockets_client::StaticJsonDoc latestMessage =
+        rockets_client::getLatestMessage();
 
-    StaticJsonDocument<1024> doc;
-    auto err = deserializeJson(doc, body);
-
-    if (err != DeserializationError::Ok) {
-        Serial.print("Command response deserialization failed: ");
-        Serial.println(err.f_str());
+    auto messageData = latestMessage["data"];
+    if (messageData.isNull()) {
+        // no new message
         return;
     }
 
     // sample response: {"data":{"command":"keep"}}
 
-    const char* command = doc["data"]["command"];
-    if (command == nullptr) {
+    const char* command = messageData["command"];
+    if (command == NULL) {
         // no command
         return;
     }
@@ -101,7 +86,7 @@ void getCommandResBody() {
         state::setOpState(OpState::abort);
     } else if (commandStr == CUSTOM_COMMAND) {
         // `|` is the ArduinoJson way of setting the default value
-        int relayStatusByte = doc["data"]["relayStatusByte"] | -1;
+        int relayStatusByte = messageData["relayStatusByte"] | -1;
         if (relayStatusByte == -1) {
             Serial.println("No relayStatusByte in custom command");
             return;
@@ -124,7 +109,8 @@ void setup() {
     // init order matters
     hardware::init();
     state::init();
-    network::init();
+    rockets_client::init(rockets_client::serverConfigPresets.FS_PI, "0",
+                         "FiringStation");
 
     syncWithNetworkTicker.start();
 }

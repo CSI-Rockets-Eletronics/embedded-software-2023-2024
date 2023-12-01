@@ -4,7 +4,8 @@
 #include <ESP32Servo.h>
 #include <TickTwo.h>
 
-#include "sentenceSerial.h"
+#include "frequency_logger.h"
+#include "sentence_serial.h"
 
 namespace hardware {
 
@@ -31,7 +32,7 @@ long getMPSI() { return mpsi; }
 
 namespace sciSerial {
 
-const int BAUD = 115200;
+// remember to connect TX to RX and RX to TX
 const int RX_PIN = 48;
 const int TX_PIN = 47;
 
@@ -88,12 +89,12 @@ void tick() { serial.tick(); }
 namespace relay {
 
 // hardware mappings
-const int RELAY1_PIN = 16;  // banana plug
-const int RELAY2_PIN = 17;  // banana plug
-const int RELAY3_PIN = 18;  // banana plug
-const int RELAY4_PIN = 19;  // screw terminal
-const int RELAY5_PIN = 20;  // screw terminal (flashes during boot)
-const int RELAY6_PIN = 21;  // screw terminal
+const int RELAY1_PIN = 5;
+const int RELAY2_PIN = 6;
+const int RELAY3_PIN = 7;
+const int RELAY4_PIN = 15;
+const int RELAY5_PIN = 16;
+const int RELAY6_PIN = 17;
 
 const int FILL_PIN = RELAY1_PIN;
 const int VENT_PIN = RELAY2_PIN;
@@ -181,7 +182,12 @@ void init() {
 
 int64_t getCalibrationTime() { return calibrationTime; }
 
-void updateHardware() { relay::flush(); }
+FrequencyLogger frequencyLogger("hardware", 1000);
+
+void updateHardware() {
+    frequencyLogger.tick();
+    relay::flush();
+}
 
 TickTwo hardwareTicker(updateHardware, HARDWARE_INTERVAL);
 

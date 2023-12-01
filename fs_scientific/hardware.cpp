@@ -6,16 +6,14 @@
 
 #include <vector>
 
-#include "fsDataDriver.h"
-#include "monitor.h"
-#include "sentenceSerial.h"
+#include "frequency_logger.h"
+#include "sentence_serial.h"
 #include "utils.h"
 
 namespace hardware {
 
-// frequency for everything except serial to the main module
-// (oh boy, 3kHz)
-const int PRIMARY_FREQ_HZ = 3000;
+const int PC_BAUD = 115200;
+const int PI_BAUD = 115200;
 
 const int ADC_CALIBRATE_SAMPLE_COUNT = 100;
 
@@ -60,10 +58,10 @@ class MovingMedianADC {
     }
 
     void printSetZero() {
-        usbSerial::debugPrint("Set zero to ");
-        usbSerial::debugPrint(zero);
-        usbSerial::debugPrint(" for ");
-        usbSerial::debugPrintln(debugName);
+        Serial.print("Set zero to ");
+        Serial.print(zero);
+        Serial.print(" for ");
+        Serial.println(debugName);
     }
 
     void setZeroToDefault() { setZero(defaultZero); }
@@ -89,10 +87,11 @@ class MovingMedianADC {
     void init(uint8_t adc_addr, TwoWire &wire, adsGain_t gain) {
         printSetZero();  // print initial zero
 
+        adc.setDataRate(RATE_ADS1115_860SPS);
         adc.setGain(gain);
         if (!adc.begin(adc_addr, &wire)) {
-            usbSerial::debugPrint("Failed to initialize ADC for ");
-            usbSerial::debugPrintln(debugName);
+            Serial.print("Failed to initialize ADC for ");
+            Serial.println(debugName);
             while (1)
                 ;
         }
@@ -114,7 +113,7 @@ class MovingMedianADC {
 
     float readVolts() {
         float volts =
-            adc.computeVolts(singleEnded ? adc.readADC_SingleEnded(1)
+            adc.computeVolts(singleEnded ? adc.readADC_SingleEnded(0)
                                          : adc.readADC_Differential_0_1());
         if (flipVolts) {
             volts = -volts;
@@ -147,49 +146,36 @@ MovingMedianADC adc("cc", CC_ADC_MEDIAN_WINDOW_SIZE, DEFAULT_ZERO,
 
 }  // namespace combustionChamber
 
-// to raspberry pi or computer (for debugging)
-namespace usbSerial {
+// to raspberry pi
+namespace piSerial {
 
-const int PC_BAUD = 115200;
-const int PI_BAUD = 115200;
+// remember to connect TX to RX and RX to TX
+const int RX_PIN = 14;
+const int TX_PIN = 13;
 
-void sendScientificPacket() {
-    // don't send packet if connected to computer
-    if (PRINT_DEBUG_TO_SERIAL) return;
+void init() { Serial2.begin(PI_BAUD, SERIAL_8N1, RX_PIN, TX_PIN); }
 
-    unsigned long time = micros();
-    int timeSeconds = time / 1000000;
+void tick() {
+    // raspberry pi expects each line to be a JSON of a record's data field
+    // ex: {"ox":123456,"cc":123456}
 
-    fsDataDriver::ScientificDataPacket packet = {
-        .time = time,
-        .oxTankPressure = oxTank::adc.getMPSI(),
-        .ccPressure = combustionChamber::adc.getMPSI(),
-        .oxidizerTankTransducerValue = oxTank::adc.getRawVolts() * 1000000,
-        .combustionChamberTransducerValue =
-            combustionChamber::adc.getRawVolts() * 1000000,
-        .timeSinceLastCalibration = 0,  // TODO
-        .timeSinceLastStartup = max(timeSeconds, 255),
-    };
+    long ox = oxTank::adc.getMPSI();
+    long cc = combustionChamber::adc.getMPSI();
 
-    byte buf[fsDataDriver::SCIENTIFIC_DATA_PACKET_SIZE];
-    packet.dumpPacket(buf);
+    char sentence[64];
+    snprintf(sentence, sizeof(sentence), "{\"ox\":%ld,\"cc\":%ld}", ox, cc);
 
-    Serial.write(buf, sizeof(buf));
+    Serial2.println(sentence);
 }
 
-void init() {
-    Serial.begin(PRINT_DEBUG_TO_SERIAL ? PC_BAUD : PI_BAUD);
-    while (!Serial && millis() < 500)
-        ;  // wait up to 500ms for serial to connect; needed for native USB
-}
-
-}  // namespace usbSerial
+}  // namespace piSerial
 
 // to main board
 namespace mainSerial {
 
-const int RX_PIN = 26;
-const int TX_PIN = 27;
+// remember to connect TX to RX and RX to TX
+const int RX_PIN = 47;
+const int TX_PIN = 48;
 
 const int SENTENCE_INTERVAL = 50;
 
@@ -206,8 +192,8 @@ void processCompletedSentence(const char *sentence) {
     } else if (sentenceStr == CLEAR_CALIBRATION_SENTENCE) {
         hardware::clearCalibration();
     } else {
-        usbSerial::debugPrint("Invalid sentence from main module: ");
-        usbSerial::debugPrintln(sentence);
+        Serial.print("Invalid sentence from main module: ");
+        Serial.println(sentence);
     }
 }
 
@@ -223,8 +209,8 @@ void sendSentence() {
 
     serial.sendSentence(sentence);
 
-    usbSerial::debugPrint("Wrote sentence to main module: ");
-    usbSerial::debugPrintln(sentence);
+    // Serial.print("Wrote sentence to main module: ");
+    // Serial.println(sentence);
 }
 
 TickTwo sentenceTicker(sendSentence, SENTENCE_INTERVAL);
@@ -261,7 +247,7 @@ void recalibrate() {
 
     mainSerial::serial.sendSentence(mainSerial::CALIBRATION_COMPLETE_SENTENCE);
 
-    usbSerial::debugPrintln("Recalibrated and saved to EEPROM");
+    Serial.println("Recalibrated and saved to EEPROM");
 }
 
 void clearCalibration() {
@@ -271,26 +257,15 @@ void clearCalibration() {
     EEPROM.writeUInt(0, 0x00000000);
     EEPROM.commit();
 
-    usbSerial::debugPrintln("Cleared calibration from memory and EEPROM");
+    Serial.println("Cleared calibration from memory and EEPROM");
 }
 
-void primaryUpdate() {
-    oxTank::adc.tick();
-    combustionChamber::adc.tick();
-
-    usbSerial::sendScientificPacket();
-
-    monitor::incrementUpdateCount();
-}
-
-TickTwo primaryUpdateTicker(primaryUpdate, 1000000 / PRIMARY_FREQ_HZ, 0,
-                            MICROS_MICROS);
+FrequencyLogger frequencyLogger("hardware", 1000);
 
 void init() {
-    usbSerial::init();
-
-    // for ox tank and combustion chamber ADC
-    Wire.setPins(22, 21);  // SDA and SCL are flipped on the board
+    Serial.begin(PC_BAUD);
+    while (!Serial && millis() < 500)
+        ;  // wait up to 500ms for serial to connect; needed for native USB
 
     oxTank::adc.init(OX_TANK_ADC_ADDR, Wire, OX_TANK_ADC_GAIN);
     combustionChamber::adc.init(CC_ADC_ADDR, Wire, CC_ADC_GAIN);
@@ -298,13 +273,17 @@ void init() {
     EEPROM.begin(EEPROM_SIZE);
     readCalibration();
 
+    piSerial::init();
     mainSerial::init();
-
-    primaryUpdateTicker.start();
 }
 
 void tick() {
-    primaryUpdateTicker.update();
+    frequencyLogger.tick();
+
+    // read the ADCs and send sentences to the raspberry pi every tick
+    oxTank::adc.tick();
+    combustionChamber::adc.tick();
+    piSerial::tick();
 
     mainSerial::tick();
 }
