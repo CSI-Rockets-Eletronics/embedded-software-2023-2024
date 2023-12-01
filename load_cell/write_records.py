@@ -67,7 +67,10 @@ while True:
             # data=body_compressed,
             # headers={"content-type": "application/json-gzip"},
         )
-    except:
+    except Exception as e:
+        if isinstance(e, KeyboardInterrupt):
+            sys.exit(0)
+
         print(
             f"Error sending records to server (requests.post failed)",
             file=sys.stderr,

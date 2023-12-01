@@ -34,7 +34,10 @@ while True:
                 "content-type": "application/json",
             },
         )
-    except:
+    except Exception as e:
+        if isinstance(e, KeyboardInterrupt):
+            sys.exit(0)
+
         print(
             "Error reading messages from server (requests.post failed)",
             file=sys.stderr,
