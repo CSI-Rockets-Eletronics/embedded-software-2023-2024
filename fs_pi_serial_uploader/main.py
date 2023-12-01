@@ -45,7 +45,10 @@ while True:
             json=body,
             headers={"content-type": "application/json"},
         )
-    except:
+    except Exception as e:
+        if isinstance(e, KeyboardInterrupt):
+            sys.exit(0)
+
         print(
             f"Error sending records to server (requests.post failed)",
             file=sys.stderr,
