@@ -13,6 +13,9 @@ DEVICE = "Scientific"
 
 ser = serial.Serial("/dev/ttyS0", 115200)
 
+# throw away possibly partial line
+ser.readline()
+
 while True:
     records = []
 
