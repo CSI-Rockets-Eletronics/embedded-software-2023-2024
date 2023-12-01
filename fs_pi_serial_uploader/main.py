@@ -7,9 +7,9 @@ import serial
 MAX_RECORDS_PER_BATCH = 10
 MAX_LINE_LENGTH = 64
 
-url = "http://localhost:3000"
-environmentKey = "0"
-device = "Scientific"
+URL = "http://localhost:3000"
+ENVIRONMENT_KEY = "0"
+DEVICE = "Scientific"
 
 ser = serial.Serial("/dev/ttyS0", 115200)
 
@@ -33,14 +33,14 @@ while True:
         continue
 
     body = {
-        "environmentKey": environmentKey,
-        "device": device,
+        "environmentKey": ENVIRONMENT_KEY,
+        "device": DEVICE,
         "records": records,
     }
 
     try:
         result = requests.post(
-            f"{url}/records/batch",
+            f"{URL}/records/batch",
             # no compression
             json=body,
             headers={"content-type": "application/json"},
