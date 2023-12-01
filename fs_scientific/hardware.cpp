@@ -146,36 +146,29 @@ MovingMedianADC adc("cc", CC_ADC_MEDIAN_WINDOW_SIZE, DEFAULT_ZERO,
 
 }  // namespace combustionChamber
 
-// to raspberry pi or computer (for debugging)
-namespace usbSerial {
+// to raspberry pi
+namespace piSerial {
 
-void sendScientificPacket() {
-    // TODO
+// remember to connect TX to RX and RX to TX
+const int RX_PIN = 14;
+const int TX_PIN = 13;
 
-    // // don't send packet if connected to computer
-    // if (PRINT_DEBUG_TO_SERIAL) return;
+void init() { Serial2.begin(PI_BAUD, SERIAL_8N1, RX_PIN, TX_PIN); }
 
-    // unsigned long time = micros();
-    // int timeSeconds = time / 1000000;
+void tick() {
+    // raspberry pi expects each line to be a JSON of a record's data field
+    // ex: {"ox":123456,"cc":123456}
 
-    // fsDataDriver::ScientificDataPacket packet = {
-    //     .time = time,
-    //     .oxTankPressure = oxTank::adc.getMPSI(),
-    //     .ccPressure = combustionChamber::adc.getMPSI(),
-    //     .oxidizerTankTransducerValue = oxTank::adc.getRawVolts() * 1000000,
-    //     .combustionChamberTransducerValue =
-    //         combustionChamber::adc.getRawVolts() * 1000000,
-    //     .timeSinceLastCalibration = 0,  // TODO
-    //     .timeSinceLastStartup = max(timeSeconds, 255),
-    // };
+    long ox = oxTank::adc.getMPSI();
+    long cc = combustionChamber::adc.getMPSI();
 
-    // byte buf[fsDataDriver::SCIENTIFIC_DATA_PACKET_SIZE];
-    // packet.dumpPacket(buf);
+    char sentence[64];
+    snprintf(sentence, sizeof(sentence), "{\"ox\":%ld,\"cc\":%ld}", ox, cc);
 
-    // Serial.write(buf, sizeof(buf));
+    Serial2.println(sentence);
 }
 
-}  // namespace usbSerial
+}  // namespace piSerial
 
 // to main board
 namespace mainSerial {
@@ -269,15 +262,6 @@ void clearCalibration() {
 
 FrequencyLogger frequencyLogger("hardware", 1000);
 
-void primaryUpdate() {
-    frequencyLogger.tick();
-
-    oxTank::adc.tick();
-    combustionChamber::adc.tick();
-
-    usbSerial::sendScientificPacket();
-}
-
 void init() {
     Serial.begin(PC_BAUD);
     while (!Serial && millis() < 500)
@@ -289,11 +273,17 @@ void init() {
     EEPROM.begin(EEPROM_SIZE);
     readCalibration();
 
+    piSerial::init();
     mainSerial::init();
 }
 
 void tick() {
-    primaryUpdate();
+    frequencyLogger.tick();
+
+    // read the ADCs and send sentences to the raspberry pi every tick
+    oxTank::adc.tick();
+    combustionChamber::adc.tick();
+    piSerial::tick();
 
     mainSerial::tick();
 }
