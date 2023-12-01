@@ -26,12 +26,22 @@
 //     Serial.println();
 // }
 
+
+int Drogue=6; //5 low pullup
+int Main=7;
+int Payload=8;
+
+
 #include <MPU9255.h>
 
 MPU9255 mpu;
 
 void setup() {
     Serial.begin(115200);  // initialize Serial port
+
+	pinMode(Drogue, OUTPUT);
+	pinMode(Main, OUTPUT);
+	pinMode(Payload, OUTPUT);
 
     if (mpu.init(21, 20)) {
         Serial.println("initialization failed");
@@ -46,23 +56,41 @@ void loop() {
     mpu.read_mag();   // get data from the magnetometer
 
     // print all data in serial monitor
-    Serial.print(",AX:");
+    Serial.print("AX:");
     Serial.print(mpu.ax);
-    Serial.print(",AY:");
+    Serial.print(',');
+    Serial.print("AY:");
     Serial.print(mpu.ay);
-    Serial.print(",AZ:");
+    Serial.print(',');
+    Serial.print("AZ:");
     Serial.print(mpu.az);
-    Serial.print(",GX:");
+    Serial.print(',');
+    Serial.print("GX:");
     Serial.print(mpu.gx);
-    Serial.print(",GY:");
+    Serial.print(',');
+    Serial.print("GY:");
     Serial.print(mpu.gy);
-    Serial.print(",GZ:");
+    Serial.print(',');
+    Serial.print("GZ:");
     Serial.print(mpu.gz);
-    Serial.print(",MX:");
+    Serial.print(',');
+    Serial.print("MX:");
     Serial.print(mpu.mx);
-    Serial.print(",MY:");
+    Serial.print(',');
+    Serial.print("MY:");
     Serial.print(mpu.my);
-    Serial.print(",MZ:");
+    Serial.print(',');
+    Serial.print("MZ:");
     Serial.print(mpu.mz);
+    Serial.print(',');
     delay(100);
+
+    digitalWrite(Drogue, HIGH);
+    digitalWrite(Main, HIGH);
+    digitalWrite(Payload, HIGH);
+	delay(5000);
+    digitalWrite(Drogue, LOW);
+	digitalWrite(Main, LOW);
+    digitalWrite(Payload, LOW);
+	delay(5000);
 }
