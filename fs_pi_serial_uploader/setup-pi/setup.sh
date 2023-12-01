@@ -7,7 +7,7 @@ cd $REPO_DIR
 
 # Create a python venv and install pyserial
 sudo apt update
-sudo apt install python3-venv
+sudo apt install -y python3-venv
 python -m venv env
 source env/bin/activate
 pip install pyserial
