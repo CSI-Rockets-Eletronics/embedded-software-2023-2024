@@ -89,25 +89,17 @@ void loop()  // run over and over again
 
         rockets_client::StaticJsonDoc recordData;
 
-        recordData["hour"] = GPS.hour;
-        recordData["minutes"] = GPS.minute;
-        recordData["seconds"] = GPS.seconds;
-        recordData["milliseconds"] = GPS.milliseconds;
-        recordData["day"] = GPS.day;
-        recordData["month"] = GPS.month;
-        recordData["year"] = GPS.year;
         recordData["fix"] = GPS.fix;
         recordData["fixquality"] = GPS.fixquality;
         if (GPS.fix) {
-            recordData["latitude"] = GPS.latitude;
-            recordData["longitude"] = GPS.longitude;
-            recordData["lat"] = String(GPS.lat);
-            recordData["lon"] = String(GPS.lon);
+            recordData["latitude_fixed"] = GPS.latitude_fixed;
+            recordData["longitude_fixed"] = GPS.longitude_fixed;
             recordData["speed"] = GPS.speed;
             recordData["angle"] = GPS.angle;
             recordData["altitude"] = GPS.altitude;
             recordData["satellites"] = GPS.satellites;
             recordData["antenna"] = GPS.antenna;
+            recordData["PDOP"] = GPS.PDOP;
         }
 
         rockets_client::queueRecord(recordData);
