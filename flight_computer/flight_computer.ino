@@ -82,15 +82,15 @@ void loop() {
     Serial.print(',');
     Serial.print("MZ:");
     Serial.print(mpu.mz);
-    Serial.print(',');
+    Serial.println();
     delay(100);
 
-    digitalWrite(Drogue, HIGH);
-    digitalWrite(Main, HIGH);
-    digitalWrite(Payload, HIGH);
-	delay(5000);
-    digitalWrite(Drogue, LOW);
-	digitalWrite(Main, LOW);
-    digitalWrite(Payload, LOW);
-	delay(5000);
+    // digitalWrite(Drogue, HIGH);
+    // digitalWrite(Main, HIGH);
+    // digitalWrite(Payload, HIGH);
+	// delay(5000);
+    // digitalWrite(Drogue, LOW);
+	// digitalWrite(Main, LOW);
+    // digitalWrite(Payload, LOW);
+	// delay(5000);
 }
