@@ -16,6 +16,7 @@
 // and help support open source hardware & software! -ada
 
 #include <Adafruit_GPS.h>
+#include <rockets_client.h>
 
 // what's the name of the hardware serial port?
 #define GPSSerial Serial1
@@ -62,6 +63,8 @@ void setup() {
 
     // Ask for firmware version
     GPSSerial.println(PMTK_Q_RELEASE);
+
+    rockets_client::init(rockets_client::serverConfigPresets.MECHE, "0", "GPS");
 }
 
 void loop()  // run over and over again
@@ -76,12 +79,30 @@ void loop()  // run over and over again
         // a tricky thing here is if we print the NMEA sentence, or data
         // we end up not listening and catching other sentences!
         // so be very wary if using OUTPUT_ALLDATA and trying to print out data
-        Serial.print(GPS.lastNMEA());    // this also sets the newNMEAreceived()
-                                         // flag to false
-        if (!GPS.parse(GPS.lastNMEA()))  // this also sets the newNMEAreceived()
-                                         // flag to false
+        Serial.print(GPS.lastNMEA());  // this also sets the newNMEAreceived()
+                                       // flag to false
+        if (!GPS.parse(GPS.lastNMEA())) {  // this also sets the
+                                           // newNMEAreceived() flag to false
             return;  // we can fail to parse a sentence in which case we should
                      // just wait for another
+        }
+
+        rockets_client::StaticJsonDoc recordData;
+
+        recordData["fix"] = GPS.fix;
+        recordData["fixquality"] = GPS.fixquality;
+        if (GPS.fix) {
+            recordData["latitude_fixed"] = GPS.latitude_fixed;
+            recordData["longitude_fixed"] = GPS.longitude_fixed;
+            recordData["speed"] = GPS.speed;
+            recordData["angle"] = GPS.angle;
+            recordData["altitude"] = GPS.altitude;
+            recordData["satellites"] = GPS.satellites;
+            recordData["antenna"] = GPS.antenna;
+            recordData["PDOP"] = GPS.PDOP;
+        }
+
+        rockets_client::queueRecord(recordData);
     }
 
     // approximately every 2 seconds or so, print out the current stats

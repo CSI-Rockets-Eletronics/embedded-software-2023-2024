@@ -4,5 +4,5 @@ Symlink all the folders here into your Arduino libraries folder. This lets us
 On Mac, run the following for each folder in `arduino_libraries`:
 
 ```bash
-ln -s /path/to/library ~/Documents/Arduino/libraries/
+ln -s /absolute/path/to/library ~/Documents/Arduino/libraries/
 ```
