@@ -57,19 +57,6 @@ def appendlists(t, ax, ay, az, gx, gy, gz, mx, my, mz):
     my.append(MY[-1])
     mz.append(MZ[-1])
 
-def plot(t, ax, ay, az, gx, gy, gz, mx, my, mz):
-    plt.cla()
-    plt.plot(t, ax, label="ax")
-    plt.plot(t, ay, label="ay")
-    plt.plot(t, az, label="az")
-    plt.plot(t, gx, label="gx")
-    plt.plot(t, gy, label="gy")
-    plt.plot(t, gz, label="gz")
-    plt.plot(t, mx, label="mx")
-    plt.plot(t, my, label="my")
-    plt.plot(t, mz, label="mz")
-    plt.pause(1)
-
 def readserial(comport, baudrate):
     ser = serial.Serial(
         comport, baudrate, timeout=0.1
@@ -88,9 +75,8 @@ def readserial(comport, baudrate):
         tolists(data)
         appendlists(t, ax, ay, az, gx, gy, gz, mx, my, mz)
 
-        # plot(t, ax, ay, az, gx, gy, gz, mx, my, mz)
-        # plt.plot(t, ax, label="ax")
-        plt.plot(t, ay, label="ay")
+        plt.plot(t, ax, label="ax",alpha=0.5)
+        # plt.plot(t, ay, label="ay")
         # plt.plot(t, az, label="az")
         # plt.plot(t, gx, label="gx")
         # plt.plot(t, gy, label="gy")
@@ -102,10 +88,11 @@ def readserial(comport, baudrate):
         plt.legend(bbox_to_anchor=(1, 1), loc='upper left')
         
         N=len(t)
-        yf = fft(gx)
+        yf = fft(ax)
         xf = fftfreq(N, 0.1)[:N//2]
         # plt.plot(xf, 2.0/N * np.abs(yf[0:N//2]))
-        plt.pause(1)
+        plt.plot(xf/5*max(t), -4000+16/N * np.abs(yf[0:N//2]))
+        plt.pause(0.01)
         plt.cla()
 
 readserial("COM6", 115200)
