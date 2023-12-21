@@ -1,7 +1,7 @@
 #!/bin/bash -i
 
 for port in /dev/ttyUSB{0..4}; do
-    echo "Port: $port"
+    echo "Port $port:"
     address=$(python -m esptool --port "$port" read_mac | grep MAC | uniq | cut -d ' ' -f 2)
 
     if [ -z "$address" ]; then
@@ -10,7 +10,7 @@ for port in /dev/ttyUSB{0..4}; do
 
     echo "MAC: $address"
 
-    case $output in
+    case $address in
         "68:b6:b3:3f:07:74")
             echo "Radio rocket"
             ;;
