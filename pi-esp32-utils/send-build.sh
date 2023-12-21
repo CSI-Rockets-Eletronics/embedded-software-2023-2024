@@ -1,7 +1,7 @@
 #!/bin/bash -i
 
-SSH_DOMAIN=4.tcp.ngrok.io
-SSH_PORT=14267
+SSH_DOMAIN=9.tcp.ngrok.io
+SSH_PORT=23364
 
 # List all .ino files in the ./build directory
 files=$(find ./build -type f -name "*.bin")
