@@ -1,5 +1,8 @@
 #!/bin/bash -i
 
+SSH_DOMAIN=4.tcp.ngrok.io
+SSH_PORT=14267
+
 # List all .ino files in the ./build directory
 files=$(find ./build -type f -name "*.bin")
 
@@ -10,9 +13,9 @@ if [ -z "$files" ]; then
 fi
 
 # Remove the old build directory and create a new one
-ssh -p 12939 victator@4.tcp.ngrok.io "rm -rf ~/esp32-build-temp && mkdir ~/esp32-build-temp"
+ssh -p $SSH_PORT "victator@$SSH_DOMAIN" "rm -rf ~/esp32-build-temp && mkdir ~/esp32-build-temp"
 
 # Send files over scp
 for file in $files; do
-    scp -P 12939 "$file" victator@4.tcp.ngrok.io:~/esp32-build-temp/
+    scp -P $SSH_PORT "$file" "victator@$SSH_DOMAIN:~/esp32-build-temp/"
 done
