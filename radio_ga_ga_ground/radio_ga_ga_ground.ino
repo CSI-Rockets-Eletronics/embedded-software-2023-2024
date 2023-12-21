@@ -36,7 +36,7 @@ void setup() {
     Serial.begin(115200);
     while (!Serial)
         ;
-	
+
     // spi.begin(SCLK, MISO, MOSI, SS);  // Set the SPI pins
     // rf95.setSPI(spi); // Set the SPI instance for the RH_RF95 object
     if (!rf95.init()) Serial.println("init failed");
@@ -46,7 +46,7 @@ void setup() {
 
     // If you are using a high power RF95 eg RFM95HW, you *must* set a Tx power
     // with the ishighpowermodule flag set like this:
-    // rf95.setTxPower(14, true);
+    rf95.setTxPower(23, false);
 
     // The encryption key has to be the same as the one in the client
     // uint8_t key[] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
