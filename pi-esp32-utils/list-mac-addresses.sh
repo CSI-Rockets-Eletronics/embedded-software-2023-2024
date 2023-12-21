@@ -8,7 +8,7 @@ for port in /dev/ttyUSB{0..4}; do
         continue
     fi
 
-    echo -e "MAC: $address\t\c"
+    echo -e "$address\t\c"
 
     case $address in
         "68:b6:b3:3f:07:74")
