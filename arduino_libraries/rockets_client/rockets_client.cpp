@@ -43,12 +43,17 @@ String PATH_PREFIX;
 String ENVIRONMENT_KEY;
 String DEVICE;
 
+bool POLL_MESSAGES;
+String POLL_RECORD_DEVICES;
+
 // buffers for queued record and latest message
 
 // length 0 if no record is queued
 Buffer queuedRecord = "";
 // empty if there is no new message since the last retrieval
 StaticJsonDoc latestMessage;
+// empty only at the beginning, before the first poll completes
+StaticJsonDoc latestRecords;
 
 // for uploading records
 
@@ -331,8 +336,11 @@ void runTask(void* pvParameters) {
 
         sendQueuedRecord(client);
         delay(5);
-        pollLatestMessage(client);
-        delay(5);
+
+        if (POLL_MESSAGES) {
+            pollLatestMessage(client);
+            delay(5);
+        }
     }
 }
 
@@ -399,13 +407,19 @@ StaticJsonDoc getLatestMessage() {
     }
 }
 
-void init(ServerConfig serverConfig, String environmentKey, String device) {
+// `pollRecordDevices` should be a comma-separated list of devices, e.g.
+// "deviceA,deviceB". Empty string for `pollRecordDevices` means don't poll.
+void init(ServerConfig serverConfig, String environmentKey, String device,
+          bool pollMessages, String pollRecordDevices) {
     HOST = serverConfig.host;
     PORT = serverConfig.port;
     PATH_PREFIX = serverConfig.pathPrefix;
 
     ENVIRONMENT_KEY = environmentKey;
     DEVICE = device;
+
+    POLL_MESSAGES = pollMessages;
+    POLL_RECORD_DEVICES = pollRecordDevices;
 
     initWifi();
     initTask();

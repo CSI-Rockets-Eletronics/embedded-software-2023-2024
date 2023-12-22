@@ -110,7 +110,7 @@ void setup() {
     hardware::init();
     state::init();
     rockets_client::init(rockets_client::serverConfigPresets.FS_PI, "0",
-                         "FiringStation");
+                         "FiringStation", true);
 
     syncWithNetworkTicker.start();
 }

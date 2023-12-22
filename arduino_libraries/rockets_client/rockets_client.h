@@ -33,7 +33,8 @@ bool queueRecord(const StaticJsonDoc& recordData);
 // call.
 StaticJsonDoc getLatestMessage();
 
-void init(ServerConfig serverConfig, String environmentKey, String device);
+void init(ServerConfig serverConfig, String environmentKey, String device,
+          bool pollMessages = false, String pollRecordDevices = "");
 
 }  // namespace rockets_client
 
