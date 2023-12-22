@@ -30,8 +30,15 @@ typedef char Buffer[2048];  // give it some extra space
 bool queueRecord(const StaticJsonDoc& recordData);
 
 // Returns an empty json object ("{}") if there is no message since the last
-// call.
+// call. Must set `pollMessages` to true during init.
 StaticJsonDoc getLatestMessage();
+
+// Returns an empty object if unsuccessful or the first poll is still in
+// progress. If the object is not empty, then there will be a key for each
+// requested device, with a record object or null as the value. This does not
+// erase the stored records after retrieving them. Must set `pollRecordsDevices`
+// to a non-empty string during init.
+StaticJsonDoc getLatestRecords();
 
 void init(ServerConfig serverConfig, String environmentKey, String device,
           bool pollMessages = false, String pollRecordDevices = "");

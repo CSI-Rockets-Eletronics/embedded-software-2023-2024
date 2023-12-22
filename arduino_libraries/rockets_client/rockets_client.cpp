@@ -68,6 +68,7 @@ int64_t lastMessageTs = 0;
 
 SemaphoreHandle_t queuedRecordMutex;
 SemaphoreHandle_t latestMessageMutex;
+SemaphoreHandle_t latestRecordsMutex;
 
 // for logging
 
@@ -109,6 +110,26 @@ bool setLatestMessage(const Buffer src) {
     if (xSemaphoreTake(latestMessageMutex, portMAX_DELAY)) {
         latestMessage = doc;
         xSemaphoreGive(latestMessageMutex);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// returns true if successful
+bool setLatestRecords(const Buffer src) {
+    StaticJsonDoc doc;
+    auto err = deserializeJson(doc, src);
+
+    if (err != DeserializationError::Ok) {
+        Serial.print("Poll records response deserialization failed: ");
+        Serial.println(err.f_str());
+        return false;
+    }
+
+    if (xSemaphoreTake(latestRecordsMutex, portMAX_DELAY)) {
+        latestRecords = doc;
+        xSemaphoreGive(latestRecordsMutex);
         return true;
     } else {
         return false;
@@ -324,6 +345,10 @@ void pollLatestMessage(WiFiClient& client) {
     client.stop();
 }
 
+void pollLatestRecords(WiFiClient& client) {
+    // TODO
+}
+
 void runTask(void* pvParameters) {
     WiFiClient client;
 
@@ -339,6 +364,11 @@ void runTask(void* pvParameters) {
 
         if (POLL_MESSAGES) {
             pollLatestMessage(client);
+            delay(5);
+        }
+
+        if (POLL_RECORD_DEVICES.length() > 0) {
+            pollLatestRecords(client);
             delay(5);
         }
     }
@@ -392,7 +422,6 @@ bool queueRecord(const StaticJsonDoc& recordData) {
     }
 }
 
-// Returns an empty object if unsuccessful or there is no new message.
 StaticJsonDoc getLatestMessage() {
     StaticJsonDoc doc;
 
@@ -400,6 +429,19 @@ StaticJsonDoc getLatestMessage() {
         doc = latestMessage;
         latestMessage = StaticJsonDoc();
         xSemaphoreGive(latestMessageMutex);
+        return doc;
+    } else {
+        // return empty json object
+        return doc;
+    }
+}
+
+StaticJsonDoc getLatestRecords() {
+    StaticJsonDoc doc;
+
+    if (xSemaphoreTake(latestRecordsMutex, portMAX_DELAY)) {
+        doc = latestRecords;
+        xSemaphoreGive(latestRecordsMutex);
         return doc;
     } else {
         // return empty json object
