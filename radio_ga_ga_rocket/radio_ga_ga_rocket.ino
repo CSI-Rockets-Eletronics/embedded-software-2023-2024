@@ -13,6 +13,7 @@
 
 #include <RH_RF95.h>
 #include <SPI.h>
+#include <rockets_client.h>
 
 #define SCLK 12
 #define MISO 13
@@ -45,29 +46,45 @@ void setup() {
     // 				  0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08
     // 				};
     // rf95.setEncryptionKey(key);
+
+    rockets_client::init(rockets_client::serverConfigPresets.ROCKET_PI, "0", "",
+                         false, "GPS");
 }
 
 void loop() {
-    Serial.println("Sending to rf95_server");
-    // Send a message to rf95_server
-    uint8_t data[] = "Hello World!";
-    rf95.send(data, sizeof(data));
+    rockets_client::StaticJsonDoc records = rockets_client::getLatestRecords();
 
-    rf95.waitPacketSent();
-    // Now wait for a reply
-    uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
-    uint8_t len = sizeof(buf);
+    JsonObject gps = records["GPS"]["data"];
+    bool fix = gps["fix"];
+    int fixquality = gps["fixquality"];
 
-    if (rf95.waitAvailableTimeout(500)) {
-        // Should be a reply message for us now
-        if (rf95.recv(buf, &len)) {
-            Serial.print("got reply: ");
-            Serial.println((char*)buf);
-        } else {
-            Serial.println("recv failed");
-        }
-    } else {
-        Serial.println("No reply, is rf95_server running?");
-    }
-    delay(400);
+    Serial.print("fix: ");
+    Serial.println(fix);
+    Serial.print("fixquality: ");
+    Serial.println(fixquality);
+
+    delay(500);
+
+    // Serial.println("Sending to rf95_server");
+    // // Send a message to rf95_server
+    // uint8_t data[] = "Hello World!";
+    // rf95.send(data, sizeof(data));
+
+    // rf95.waitPacketSent();
+    // // Now wait for a reply
+    // uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
+    // uint8_t len = sizeof(buf);
+
+    // if (rf95.waitAvailableTimeout(500)) {
+    //     // Should be a reply message for us now
+    //     if (rf95.recv(buf, &len)) {
+    //         Serial.print("got reply: ");
+    //         Serial.println((char*)buf);
+    //     } else {
+    //         Serial.println("recv failed");
+    //     }
+    // } else {
+    //     Serial.println("No reply, is rf95_server running?");
+    // }
+    // delay(400);
 }
