@@ -412,6 +412,7 @@ void runTask(void* pvParameters) {
 void initTask() {
     queuedRecordMutex = xSemaphoreCreateMutex();
     latestMessageMutex = xSemaphoreCreateMutex();
+    latestRecordsMutex = xSemaphoreCreateMutex();
 
     xTaskCreatePinnedToCore(runTask, "network", STACK_DEPTH, NULL, PRIORITY,
                             NULL, CORE_ID);
