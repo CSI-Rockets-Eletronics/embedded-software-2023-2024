@@ -346,7 +346,36 @@ void pollLatestMessage(WiFiClient& client) {
 }
 
 void pollLatestRecords(WiFiClient& client) {
-    // TODO
+    String path = "/records/multiDevice?environmentKey=" + ENVIRONMENT_KEY +
+                  "&devices=" + POLL_RECORD_DEVICES;
+
+    if (client.connect(HOST.c_str(), PORT)) {
+        // Serial.println("Polling latest records");
+
+        postReq("GET", client, path, NULL);
+
+        Buffer res;
+        if (readRes(client, res)) {
+            Buffer resBody;
+            int status = parseResBody(res, resBody);
+
+            if (status == 200) {
+                // Serial.println("pollLatestRecords success");
+
+                setLatestRecords(resBody);
+            } else {
+                Serial.print("pollLatestRecords failed, status: ");
+                Serial.println(status);
+                Serial.println(resBody);
+            }
+        } else {
+            Serial.println("pollLatestRecords failed, network timeout");
+        }
+    } else {
+        Serial.println("pollLatestRecords connect failed");
+    }
+
+    client.stop();
 }
 
 void runTask(void* pvParameters) {
