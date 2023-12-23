@@ -27,6 +27,8 @@ Adafruit_GPS GPS(&GPSSerial);
 // Set GPSECHO to 'false' to turn off echoing the GPS data to the Serial console
 // Set to 'true' if you want to debug and listen to the raw GPS sentences
 #define GPSECHO false
+#define GPS_PRINT_NMEA true
+
 #define RXPIN 47
 #define TXPIN 48
 
@@ -68,26 +70,32 @@ void setup() {
                          "GPS");
 }
 
-void loop()  // run over and over again
-{
+void loop() {
     // read data from the GPS in the 'main loop'
     char c = GPS.read();
+
     // if you want to debug, this is a good time to do it!
-    if (GPSECHO)
+    if (GPSECHO) {
         if (c) Serial.print(c);
+    }
+
     // if a sentence is received, we can check the checksum, parse it...
     if (GPS.newNMEAreceived()) {
         // a tricky thing here is if we print the NMEA sentence, or data
         // we end up not listening and catching other sentences!
         // so be very wary if using OUTPUT_ALLDATA and trying to print out data
-        Serial.print(GPS.lastNMEA());  // this also sets the newNMEAreceived()
-                                       // flag to false
-        if (!GPS.parse(GPS.lastNMEA())) {  // this also sets the
-                                           // newNMEAreceived() flag to false
-            return;  // we can fail to parse a sentence in which case we should
-                     // just wait for another
+        if (GPS_PRINT_NMEA) {
+            Serial.print(GPS.lastNMEA());
         }
 
+        // this also sets the newNMEAreceived() flag to false
+        if (!GPS.parse(GPS.lastNMEA())) {
+            // we can fail to parse a sentence in which case we should just wait
+            // for another
+            return;
+        }
+
+        // send data to server
         rockets_client::StaticJsonDoc recordData;
 
         recordData["fix"] = GPS.fix;
