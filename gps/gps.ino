@@ -100,8 +100,8 @@ void loop() {
         rockets_client::StaticJsonDoc recordData;
 
         recordData["fix"] = GPS.fix;
-        recordData["fixquality"] = GPS.fixquality;
         if (GPS.fix) {
+            recordData["fixquality"] = GPS.fixquality;
             recordData["latitude_fixed"] = GPS.latitude_fixed;
             recordData["longitude_fixed"] = GPS.longitude_fixed;
             recordData["speed"] = GPS.speed;
