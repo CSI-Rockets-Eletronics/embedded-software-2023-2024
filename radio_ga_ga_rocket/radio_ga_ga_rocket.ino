@@ -15,6 +15,8 @@
 #include <SPI.h>
 #include <rockets_client.h>
 
+#include "radio_packet.h"
+
 #define SCLK 12
 #define MISO 13
 #define MOSI 11
@@ -51,19 +53,34 @@ void setup() {
                          false, "GPS");
 }
 
+// everything besides fix will be zero until the first time the GPS gets a fix
+RadioPacket packet = {
+    .fix = false,
+    .fixquality = 0,
+    .satellites = 0,
+    .PDOP = 0,
+    .latitude_fixed = 0,
+    .longitude_fixed = 0,
+    .altitude = 0,
+};
+
 void loop() {
     rockets_client::StaticJsonDoc records = rockets_client::getLatestRecords();
-
     JsonObject gps = records["GPS"]["data"];
-    bool fix = gps["fix"];
-    int fixquality = gps["fixquality"];
 
-    Serial.print("fix: ");
-    Serial.println(fix);
-    Serial.print("fixquality: ");
-    Serial.println(fixquality);
+    packet.fix = gps["fix"];
 
-    delay(500);
+    if (packet.fix) {
+        packet.fixquality = gps["fixquality"];
+        packet.satellites = gps["satellites"];
+        packet.PDOP = (uint8_t)gps["PDOP"].as<float>();
+        packet.latitude_fixed = gps["latitude_fixed"];
+        packet.longitude_fixed = gps["longitude_fixed"];
+        packet.altitude = gps["altitude"];
+    }
+
+    rf95.send((uint8_t*)&packet, sizeof(packet));
+    rf95.waitPacketSent();
 
     // Serial.println("Sending to rf95_server");
     // // Send a message to rf95_server
