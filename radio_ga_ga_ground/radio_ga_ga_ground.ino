@@ -14,23 +14,8 @@
 #include <RH_RF95.h>
 #include <SPI.h>
 
-#define SCLK 12
-#define MISO 13
-#define MOSI 11
-#define SS 10
-#define INT 2
-
-// SPIClass spi(HSPI);
-
-RH_RF95 rf95(SS, INT);
-
 // Singleton instance of the radio driver
-// RH_RF95 rf95(10, 18);
-// Setting the pins for the ESP32
-// RH_RF95 rf95(15, 16); // For RF95 on PJRC breakout board with Teensy 3.1
-// RH_RF95 rf95(4, 2); // For MoteinoMEGA
-// https://lowpowerlab.com/shop/moteinomega RH_RF95 rf95(8, 7); // Adafruit
-// Feather 32u4
+RH_RF95 rf95;
 
 void setup() {
     Serial.begin(115200);
@@ -53,15 +38,6 @@ void setup() {
     // 				  0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08
     // 				};
     // rf95.setEncryptionKey(key);
-
-    // #if 0
-    // 	// For compat with RFM95 Struct_send
-    // 	rf95.setModemConfig(RH_RF95::GFSK_Rb250Fd250);
-    // 	rf95.setPreambleLength(3);
-    // 	uint8_t syncwords[] = { 0x2d, 0x64 };
-    // 	rf95.setSyncWords(syncwords, sizeof(syncwords));
-    // 	rf95.setEncryptionKey((uint8_t*)"thisIsEncryptKey");
-    // #endif
 }
 
 void loop() {

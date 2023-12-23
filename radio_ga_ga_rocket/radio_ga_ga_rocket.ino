@@ -25,10 +25,6 @@
 
 // Singleton instance of the radio driver
 RH_RF95 rf95;
-// RH_RF95 rf95(15, 16); // For RF95 on PJRC breakout board with Teensy 3.1
-// RH_RF95 rf95(4, 2); // For MoteinoMEGA
-// https://lowpowerlab.com/shop/moteinomega RH_RF95 rf95(8, 7); // Adafruit
-// Feather 32u4
 
 void setup() {
     Serial.begin(115200);
