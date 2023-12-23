@@ -27,7 +27,7 @@ Adafruit_GPS GPS(&GPSSerial);
 // Set GPSECHO to 'false' to turn off echoing the GPS data to the Serial console
 // Set to 'true' if you want to debug and listen to the raw GPS sentences
 #define GPSECHO false
-#define GPS_PRINT_NMEA true
+#define GPS_PRINT_NMEA false
 
 #define RXPIN 47
 #define TXPIN 48
