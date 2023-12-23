@@ -64,7 +64,8 @@ void setup() {
     // Ask for firmware version
     GPSSerial.println(PMTK_Q_RELEASE);
 
-    rockets_client::init(rockets_client::serverConfigPresets.MECHE, "0", "GPS");
+    rockets_client::init(rockets_client::serverConfigPresets.ROCKET_PI, "0",
+                         "GPS");
 }
 
 void loop()  // run over and over again

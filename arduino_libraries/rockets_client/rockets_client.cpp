@@ -20,6 +20,12 @@ ServerConfigPresets serverConfigPresets = {
             .port = 3000,
             .pathPrefix = "",
         },
+    .ROCKET_PI =
+        {
+            .host = "rocket-pi.local",
+            .port = 3000,
+            .pathPrefix = "",
+        },
     .MECHE =
         {
             .host = "csiwiki.me.columbia.edu",

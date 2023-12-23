@@ -16,6 +16,7 @@ struct ServerConfig {
 
 struct ServerConfigPresets {
     ServerConfig FS_PI;
+    ServerConfig ROCKET_PI;
     ServerConfig MECHE;
 };
 
