@@ -3,7 +3,7 @@
 SCRIPT_DIR=$(realpath "$(dirname "$0")")
 
 # prompt for the port
-read -p "Port num (e.g. \"1\"for /dev/ttyUSB1): " port
+read -p "Port num (e.g. \"1\" for /dev/ttyUSB1): " port
 
 # find file ending in .ino.bootloader.bin
 bootloader=$(find ~/esp32-build-temp -type f -name "*.ino.bootloader.bin")
