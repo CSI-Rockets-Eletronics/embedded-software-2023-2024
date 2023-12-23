@@ -14,6 +14,8 @@
 #include <RH_RF95.h>
 #include <SPI.h>
 
+#include "radio_packet.h"
+
 // Singleton instance of the radio driver
 RH_RF95 rf95;
 
@@ -41,24 +43,68 @@ void setup() {
 }
 
 void loop() {
-    if (rf95.available()) {
-        // Should be a message for us now
-        uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
-        uint8_t len = sizeof(buf);
-        if (rf95.recv(buf, &len)) {
-            //      RH_RF95::printBuffer("request: ", buf, len);
-            Serial.print("got request: ");
-            Serial.println((char*)buf);
-            //      Serial.print("RSSI: ");
-            //      Serial.println(rf95.lastRssi(), DEC);
+    rf95.waitAvailable();
 
-            // Send a reply
-            uint8_t data[] = "And hello back to you";
-            rf95.send(data, sizeof(data));
-            rf95.waitPacketSent();
-            Serial.println("Sent a reply");
-        } else {
-            Serial.println("recv failed");
-        }
+    // Should be a message for us now
+    uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
+    uint8_t len = sizeof(buf);
+
+    // try to receive packet
+    if (!rf95.recv(buf, &len)) {
+        Serial.println("recv failed");
+        return;
     }
+
+    // check that the length of the received packet is correct
+    if (len != sizeof(RadioPacket)) {
+        Serial.println("invalid packet size");
+        return;
+    }
+
+    // print packet
+    RadioPacket* packet = (RadioPacket*)buf;
+
+    Serial.print("fix: ");
+    Serial.println(packet->fix);
+
+    if (packet->fix) {
+        Serial.print("fixquality: ");
+        Serial.println(packet->fixquality);
+
+        Serial.print("satellites: ");
+        Serial.println(packet->satellites);
+
+        Serial.print("PDOP: ");
+        Serial.println(packet->PDOP);
+
+        Serial.print("latitude_fixed: ");
+        Serial.println(packet->latitude_fixed);
+
+        Serial.print("longitude_fixed: ");
+        Serial.println(packet->longitude_fixed);
+
+        Serial.print("altitude: ");
+        Serial.println(packet->altitude);
+    }
+
+    // if (rf95.available()) {
+    //     // Should be a message for us now
+    //     uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
+    //     uint8_t len = sizeof(buf);
+    //     if (rf95.recv(buf, &len)) {
+    //         //      RH_RF95::printBuffer("request: ", buf, len);
+    //         Serial.print("got request: ");
+    //         Serial.println((char*)buf);
+    //         //      Serial.print("RSSI: ");
+    //         //      Serial.println(rf95.lastRssi(), DEC);
+
+    //         // Send a reply
+    //         uint8_t data[] = "And hello back to you";
+    //         rf95.send(data, sizeof(data));
+    //         rf95.waitPacketSent();
+    //         Serial.println("Sent a reply");
+    //     } else {
+    //         Serial.println("recv failed");
+    //     }
+    // }
 }
