@@ -92,6 +92,7 @@ void loop() {
         if (!GPS.parse(GPS.lastNMEA())) {
             // we can fail to parse a sentence in which case we should just wait
             // for another
+            Serial.println("Failed to parse GPS data");
             return;
         }
 
