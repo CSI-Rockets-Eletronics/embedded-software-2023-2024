@@ -75,7 +75,7 @@ void loop() {
         Serial.println(packet->satellites);
 
         Serial.print("PDOP: ");
-        Serial.println(packet->PDOP);
+        Serial.println(packet->PDOP_10 / 10.0);
 
         Serial.print("latitude_fixed: ");
         Serial.println(packet->latitude_fixed);
