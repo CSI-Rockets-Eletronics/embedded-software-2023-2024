@@ -41,6 +41,9 @@ void setup() {
     // connect at 115200 so we can read the GPS fast enough and echo without
     // dropping chars also spit it out
     Serial.begin(115200);
+    while (!Serial && millis() < 500)
+        ;  // wait up to 500ms for serial to connect; needed for native USB
+
     Serial.println("Adafruit GPS library basic parsing test!");
 
     Serial1.setPins(RXPIN, TXPIN);

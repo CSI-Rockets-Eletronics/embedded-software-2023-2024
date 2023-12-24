@@ -28,8 +28,9 @@ RH_RF95 rf95;
 
 void setup() {
     Serial.begin(115200);
-    while (!Serial)
-        ;
+    while (!Serial && millis() < 500)
+        ;  // wait up to 500ms for serial to connect; needed for native USB
+
     if (!rf95.init()) Serial.println("init failed");
     // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, +13dbM (for
     // low power module) No encryption

@@ -21,8 +21,8 @@ RH_RF95 rf95;
 
 void setup() {
     Serial.begin(115200);
-    while (!Serial)
-        ;
+    while (!Serial && millis() < 500)
+        ;  // wait up to 500ms for serial to connect; needed for native USB
 
     // spi.begin(SCLK, MISO, MOSI, SS);  // Set the SPI pins
     // rf95.setSPI(spi); // Set the SPI instance for the RH_RF95 object
