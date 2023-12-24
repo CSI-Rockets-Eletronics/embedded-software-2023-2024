@@ -69,7 +69,7 @@ void loop() {
     if (packet.fix) {
         packet.fixquality = gps["fixquality"];
         packet.satellites = gps["satellites"];
-        packet.PDOP = (uint8_t)gps["PDOP"].as<float>();
+        packet.PDOP_10 = (uint8_t)(gps["PDOP"].as<float>() * 10);
         packet.latitude_fixed = gps["latitude_fixed"];
         packet.longitude_fixed = gps["longitude_fixed"];
         packet.altitude = gps["altitude"];
