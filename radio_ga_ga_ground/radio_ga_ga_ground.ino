@@ -65,27 +65,29 @@ void loop() {
     RadioPacket* packet = (RadioPacket*)buf;
 
     Serial.print("fix: ");
-    Serial.println(packet->fix);
+    Serial.print(packet->fix);
 
     if (packet->fix) {
-        Serial.print("fixquality: ");
-        Serial.println(packet->fixquality);
+        Serial.print("\tfixquality: ");
+        Serial.print(packet->fixquality);
 
-        Serial.print("satellites: ");
-        Serial.println(packet->satellites);
+        Serial.print("\tsatellites: ");
+        Serial.print(packet->satellites);
 
-        Serial.print("PDOP: ");
-        Serial.println(packet->PDOP_10 / 10.0);
+        Serial.print("\tPDOP: ");
+        Serial.print(packet->PDOP_10 / 10.0);
 
-        Serial.print("latitude_fixed: ");
-        Serial.println(packet->latitude_fixed);
+        Serial.print("\tlatitude_fixed: ");
+        Serial.print(packet->latitude_fixed);
 
-        Serial.print("longitude_fixed: ");
-        Serial.println(packet->longitude_fixed);
+        Serial.print("\tlongitude_fixed: ");
+        Serial.print(packet->longitude_fixed);
 
-        Serial.print("altitude: ");
-        Serial.println(packet->altitude);
+        Serial.print("\taltitude: ");
+        Serial.print(packet->altitude);
     }
+
+    Serial.println();
 
     // if (rf95.available()) {
     //     // Should be a message for us now
