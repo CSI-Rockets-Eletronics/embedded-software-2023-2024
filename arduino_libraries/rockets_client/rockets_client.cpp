@@ -34,7 +34,7 @@ ServerConfigPresets serverConfigPresets = {
         },
     .ALEX_LAPTOP =
         {
-            .host = "http://csi-alex-laptop-data-server.ngrok.io",
+            .host = "csi-alex-laptop-data-server.ngrok.io",
             .port = 80,
             .pathPrefix = "",
         },
