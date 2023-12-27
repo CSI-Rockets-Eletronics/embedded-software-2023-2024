@@ -13,6 +13,7 @@
 
 #include <RH_RF95.h>
 #include <SPI.h>
+#include <rockets_client.h>
 
 #include "radio_packet.h"
 
@@ -40,6 +41,9 @@ void setup() {
     // 				  0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08
     // 				};
     // rf95.setEncryptionKey(key);
+
+    rockets_client::init(rockets_client::serverConfigPresets.ROCKET_PI, "0",
+                         "radio-ground");
 }
 
 void loop() {
@@ -61,8 +65,26 @@ void loop() {
         return;
     }
 
-    // print packet
     RadioPacket* packet = (RadioPacket*)buf;
+
+    // send data to server
+
+    rockets_client::StaticJsonDoc recordData;
+    JsonObject gps = recordData.createNestedObject("gps");
+
+    gps["fix"] = packet->fix;
+    if (packet->fix) {
+        gps["fixquality"] = packet->fixquality;
+        gps["satellites"] = packet->satellites;
+        gps["PDOP"] = packet->PDOP_10 / 10.0;
+        gps["latitude_fixed"] = packet->latitude_fixed;
+        gps["longitude_fixed"] = packet->longitude_fixed;
+        gps["altitude"] = packet->altitude;
+    }
+
+    rockets_client::queueRecord(recordData);
+
+    // print packet
 
     Serial.print("fix: ");
     Serial.print(packet->fix);
