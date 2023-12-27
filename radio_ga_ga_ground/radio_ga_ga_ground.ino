@@ -43,7 +43,7 @@ void setup() {
     // rf95.setEncryptionKey(key);
 
     rockets_client::init(rockets_client::serverConfigPresets.ROCKET_PI, "0",
-                         "radio-ground");
+                         "RadioGround");
 }
 
 void loop() {
