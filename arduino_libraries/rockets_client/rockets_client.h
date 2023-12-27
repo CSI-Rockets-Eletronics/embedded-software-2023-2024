@@ -18,6 +18,7 @@ struct ServerConfigPresets {
     ServerConfig FS_PI;
     ServerConfig ROCKET_PI;
     ServerConfig MECHE;
+    ServerConfig ALEX_LAPTOP;
 };
 
 extern ServerConfigPresets serverConfigPresets;

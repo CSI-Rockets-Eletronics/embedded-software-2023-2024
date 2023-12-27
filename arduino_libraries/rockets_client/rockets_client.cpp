@@ -32,6 +32,12 @@ ServerConfigPresets serverConfigPresets = {
             .port = 3001,
             .pathPrefix = "/rocketsdata2",
         },
+    .ALEX_LAPTOP =
+        {
+            .host = "http://csi-alex-laptop-data-server.ngrok.io",
+            .port = 80,
+            .pathPrefix = "",
+        },
 };
 
 // task parameters
