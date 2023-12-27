@@ -27,6 +27,8 @@ Adafruit_GPS GPS(&GPSSerial);
 // Set GPSECHO to 'false' to turn off echoing the GPS data to the Serial console
 // Set to 'true' if you want to debug and listen to the raw GPS sentences
 #define GPSECHO false
+#define GPS_PRINT_NMEA false
+
 #define RXPIN 47
 #define TXPIN 48
 
@@ -39,6 +41,9 @@ void setup() {
     // connect at 115200 so we can read the GPS fast enough and echo without
     // dropping chars also spit it out
     Serial.begin(115200);
+    while (!Serial && millis() < 500)
+        ;  // wait up to 500ms for serial to connect; needed for native USB
+
     Serial.println("Adafruit GPS library basic parsing test!");
 
     Serial1.setPins(RXPIN, TXPIN);
@@ -52,7 +57,7 @@ void setup() {
     // For parsing data, we don't suggest using anything but either RMC only or
     // RMC+GGA since the parser doesn't care about other sentences at this time
     // Set the update rate
-    GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);  // 1 Hz update rate
+    GPS.sendCommand(PMTK_SET_NMEA_UPDATE_10HZ);  // 1 Hz update rate
     // For the parsing code to work nicely and have time to sort thru the data,
     // and print it out we don't suggest using anything higher than 1 Hz
 
@@ -64,34 +69,42 @@ void setup() {
     // Ask for firmware version
     GPSSerial.println(PMTK_Q_RELEASE);
 
-    rockets_client::init(rockets_client::serverConfigPresets.MECHE, "0", "GPS");
+    rockets_client::init(rockets_client::serverConfigPresets.ROCKET_PI, "0",
+                         "GPS");
 }
 
-void loop()  // run over and over again
-{
+void loop() {
     // read data from the GPS in the 'main loop'
     char c = GPS.read();
+
     // if you want to debug, this is a good time to do it!
-    if (GPSECHO)
+    if (GPSECHO) {
         if (c) Serial.print(c);
+    }
+
     // if a sentence is received, we can check the checksum, parse it...
     if (GPS.newNMEAreceived()) {
         // a tricky thing here is if we print the NMEA sentence, or data
         // we end up not listening and catching other sentences!
         // so be very wary if using OUTPUT_ALLDATA and trying to print out data
-        Serial.print(GPS.lastNMEA());  // this also sets the newNMEAreceived()
-                                       // flag to false
-        if (!GPS.parse(GPS.lastNMEA())) {  // this also sets the
-                                           // newNMEAreceived() flag to false
-            return;  // we can fail to parse a sentence in which case we should
-                     // just wait for another
+        if (GPS_PRINT_NMEA) {
+            Serial.print(GPS.lastNMEA());
         }
 
+        // this also sets the newNMEAreceived() flag to false
+        if (!GPS.parse(GPS.lastNMEA())) {
+            // we can fail to parse a sentence in which case we should just wait
+            // for another
+            Serial.println("Failed to parse GPS data");
+            return;
+        }
+
+        // send data to server
         rockets_client::StaticJsonDoc recordData;
 
         recordData["fix"] = GPS.fix;
-        recordData["fixquality"] = GPS.fixquality;
         if (GPS.fix) {
+            recordData["fixquality"] = GPS.fixquality;
             recordData["latitude_fixed"] = GPS.latitude_fixed;
             recordData["longitude_fixed"] = GPS.longitude_fixed;
             recordData["speed"] = GPS.speed;

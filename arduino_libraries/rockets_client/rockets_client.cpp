@@ -20,6 +20,12 @@ ServerConfigPresets serverConfigPresets = {
             .port = 3000,
             .pathPrefix = "",
         },
+    .ROCKET_PI =
+        {
+            .host = "rocket-pi.local",
+            .port = 3000,
+            .pathPrefix = "",
+        },
     .MECHE =
         {
             .host = "csiwiki.me.columbia.edu",
@@ -43,12 +49,17 @@ String PATH_PREFIX;
 String ENVIRONMENT_KEY;
 String DEVICE;
 
+bool POLL_MESSAGES;
+String POLL_RECORD_DEVICES;
+
 // buffers for queued record and latest message
 
 // length 0 if no record is queued
 Buffer queuedRecord = "";
 // empty if there is no new message since the last retrieval
 StaticJsonDoc latestMessage;
+// empty only at the beginning, before the first poll completes
+StaticJsonDoc latestRecords;
 
 // for uploading records
 
@@ -63,6 +74,7 @@ int64_t lastMessageTs = 0;
 
 SemaphoreHandle_t queuedRecordMutex;
 SemaphoreHandle_t latestMessageMutex;
+SemaphoreHandle_t latestRecordsMutex;
 
 // for logging
 
@@ -104,6 +116,26 @@ bool setLatestMessage(const Buffer src) {
     if (xSemaphoreTake(latestMessageMutex, portMAX_DELAY)) {
         latestMessage = doc;
         xSemaphoreGive(latestMessageMutex);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// returns true if successful
+bool setLatestRecords(const Buffer src) {
+    StaticJsonDoc doc;
+    auto err = deserializeJson(doc, src);
+
+    if (err != DeserializationError::Ok) {
+        Serial.print("Poll records response deserialization failed: ");
+        Serial.println(err.f_str());
+        return false;
+    }
+
+    if (xSemaphoreTake(latestRecordsMutex, portMAX_DELAY)) {
+        latestRecords = doc;
+        xSemaphoreGive(latestRecordsMutex);
         return true;
     } else {
         return false;
@@ -319,6 +351,39 @@ void pollLatestMessage(WiFiClient& client) {
     client.stop();
 }
 
+void pollLatestRecords(WiFiClient& client) {
+    String path = "/records/multiDevice?environmentKey=" + ENVIRONMENT_KEY +
+                  "&devices=" + POLL_RECORD_DEVICES;
+
+    if (client.connect(HOST.c_str(), PORT)) {
+        // Serial.println("Polling latest records");
+
+        postReq("GET", client, path, NULL);
+
+        Buffer res;
+        if (readRes(client, res)) {
+            Buffer resBody;
+            int status = parseResBody(res, resBody);
+
+            if (status == 200) {
+                // Serial.println("pollLatestRecords success");
+
+                setLatestRecords(resBody);
+            } else {
+                Serial.print("pollLatestRecords failed, status: ");
+                Serial.println(status);
+                Serial.println(resBody);
+            }
+        } else {
+            Serial.println("pollLatestRecords failed, network timeout");
+        }
+    } else {
+        Serial.println("pollLatestRecords connect failed");
+    }
+
+    client.stop();
+}
+
 void runTask(void* pvParameters) {
     WiFiClient client;
 
@@ -331,14 +396,23 @@ void runTask(void* pvParameters) {
 
         sendQueuedRecord(client);
         delay(5);
-        pollLatestMessage(client);
-        delay(5);
+
+        if (POLL_MESSAGES) {
+            pollLatestMessage(client);
+            delay(5);
+        }
+
+        if (POLL_RECORD_DEVICES.length() > 0) {
+            pollLatestRecords(client);
+            delay(5);
+        }
     }
 }
 
 void initTask() {
     queuedRecordMutex = xSemaphoreCreateMutex();
     latestMessageMutex = xSemaphoreCreateMutex();
+    latestRecordsMutex = xSemaphoreCreateMutex();
 
     xTaskCreatePinnedToCore(runTask, "network", STACK_DEPTH, NULL, PRIORITY,
                             NULL, CORE_ID);
@@ -384,7 +458,6 @@ bool queueRecord(const StaticJsonDoc& recordData) {
     }
 }
 
-// Returns an empty object if unsuccessful or there is no new message.
 StaticJsonDoc getLatestMessage() {
     StaticJsonDoc doc;
 
@@ -399,13 +472,32 @@ StaticJsonDoc getLatestMessage() {
     }
 }
 
-void init(ServerConfig serverConfig, String environmentKey, String device) {
+StaticJsonDoc getLatestRecords() {
+    StaticJsonDoc doc;
+
+    if (xSemaphoreTake(latestRecordsMutex, portMAX_DELAY)) {
+        doc = latestRecords;
+        xSemaphoreGive(latestRecordsMutex);
+        return doc;
+    } else {
+        // return empty json object
+        return doc;
+    }
+}
+
+// `pollRecordDevices` should be a comma-separated list of devices, e.g.
+// "deviceA,deviceB". Empty string for `pollRecordDevices` means don't poll.
+void init(ServerConfig serverConfig, String environmentKey, String device,
+          bool pollMessages, String pollRecordDevices) {
     HOST = serverConfig.host;
     PORT = serverConfig.port;
     PATH_PREFIX = serverConfig.pathPrefix;
 
     ENVIRONMENT_KEY = environmentKey;
     DEVICE = device;
+
+    POLL_MESSAGES = pollMessages;
+    POLL_RECORD_DEVICES = pollRecordDevices;
 
     initWifi();
     initTask();
