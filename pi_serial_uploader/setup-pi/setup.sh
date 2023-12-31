@@ -13,6 +13,11 @@ if [ ! -f .env ]; then
     exit 1
 fi
 
+# Enable the serial port
+sudo raspi-config nonint do_serial_hw 0
+# Disable serial console over the serial port
+sudo raspi-config nonint do_serial_cons 1
+
 # Create a python venv and install the requirements
 sudo apt update
 sudo apt install -y python3-venv
@@ -32,3 +37,5 @@ sudo systemctl enable serial-uploader.service
 
 # Start the service
 sudo systemctl restart serial-uploader.service
+
+echo "Reboot to apply changes to enable the serial port."
