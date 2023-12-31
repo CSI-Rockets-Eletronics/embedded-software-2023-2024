@@ -42,7 +42,7 @@ while True:
 
     body = {
         "environmentKey": ENVIRONMENT_KEY,
-        "device": DEVICE,
+        "device": device,
         "records": records,
     }
 
