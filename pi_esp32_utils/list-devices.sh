@@ -26,6 +26,9 @@ for port in /dev/ttyUSB{0..3}; do
         "68:b6:b3:3f:33:f8")
             echo "Scientific"
             ;;
+        "68:b6:b3:3f:34:3c")
+            echo "Flight computer"
+            ;;
         *)
             echo "Unknown"
             ;;
