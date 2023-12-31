@@ -3,3 +3,4 @@ c_cpp_properties.json
 **/.vscode/settings.json
 build
 env
+.env

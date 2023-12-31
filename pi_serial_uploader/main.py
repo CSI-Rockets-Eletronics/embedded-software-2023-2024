@@ -3,13 +3,18 @@ import time
 import requests
 import sys
 import serial
+import os
+from dotenv import load_dotenv
 
 MAX_RECORDS_PER_BATCH = 10
 MAX_LINE_LENGTH = 64
 
 URL = "http://localhost:3000"
 ENVIRONMENT_KEY = "0"
-DEVICE = "Scientific"
+
+load_dotenv()
+
+device = os.getenv("DEVICE")
 
 ser = serial.Serial("/dev/ttyS0", 115200)
 
