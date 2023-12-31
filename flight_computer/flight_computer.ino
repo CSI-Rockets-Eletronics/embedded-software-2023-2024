@@ -39,9 +39,9 @@ MPU9255 mpu;
 void setup() {
     Serial.begin(115200);  // initialize Serial port
 
-	pinMode(Drogue, OUTPUT);
-	pinMode(Main, OUTPUT);
-	pinMode(Payload, OUTPUT);
+	// pinMode(Drogue, OUTPUT);
+	// pinMode(Main, OUTPUT);
+	// pinMode(Payload, OUTPUT);
 
     if (mpu.init(21, 20)) {
         Serial.println("initialization failed");
