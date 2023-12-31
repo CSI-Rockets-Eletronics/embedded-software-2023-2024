@@ -6,6 +6,13 @@ REPO_DIR=$(realpath "$(dirname "$0")/..")
 # Go to the repo directory
 cd "$REPO_DIR"
 
+# Exit if .env doesn't exist
+if [ ! -f .env ]; then
+    echo "Please create a .env file inside pi_serial_uploader."
+    echo "Set DEVICE=\"<device for created records>\""
+    exit 1
+fi
+
 # Create a python venv and install the requirements
 sudo apt update
 sudo apt install -y python3-venv
