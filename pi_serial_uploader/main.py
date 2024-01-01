@@ -30,10 +30,19 @@ while True:
         if len(records) >= MAX_RECORDS_PER_BATCH:
             continue
 
+        try:
+            data = json.loads(input_line)
+        except json.JSONDecodeError:
+            print(
+                f"Error parsing input line: {input_line}",
+                file=sys.stderr,
+            )
+            continue
+
         records.append(
             {
                 "ts": time.time_ns() // 1000,
-                "data": json.loads(input_line),
+                "data": data,
             }
         )
 
