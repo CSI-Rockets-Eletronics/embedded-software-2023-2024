@@ -34,6 +34,8 @@ def run(
 
         while ser.in_waiting > 0:
             input_packet = ser.read_until(serial_delimiter)
+            # remove delimiter
+            input_packet = input_packet[: -len(serial_delimiter)]
 
             try:
                 input_parsed = parse_serial_packet(input_packet)
