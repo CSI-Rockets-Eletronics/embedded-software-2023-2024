@@ -2,7 +2,7 @@ import uploader
 import struct
 import json
 
-delimiter = b"\xAA\xAA"  # {0b10101010, 0b10101010}
+delimiter = b"\xAA\x55"  # {0b10101010, 0b01010101}
 
 
 def parse(packet: bytes) -> str:
