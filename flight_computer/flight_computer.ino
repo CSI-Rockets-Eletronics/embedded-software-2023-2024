@@ -97,7 +97,7 @@ void loop() {
 
     // worst case, the delimiter occurs in the data,
     // in which case we drop a packet
-    uint8_t packet_delimiter[] = {0b10101010, 0b10101010, 0b10101010};
+    uint8_t packet_delimiter[] = {0b10101010, 0b10101010};
     Serial2.write(packet_delimiter, sizeof(packet_delimiter));
 
     // print all data in serial monitor
