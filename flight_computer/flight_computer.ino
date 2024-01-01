@@ -26,11 +26,9 @@
 //     Serial.println();
 // }
 
-
-int Drogue=6; //5 low pullup
-int Main=7;
-int Payload=8;
-
+// int Drogue = 6;  // 5 low pullup
+// int Main = 7;
+// int Payload = 8;
 
 #include <MPU9255.h>
 
@@ -39,9 +37,9 @@ MPU9255 mpu;
 void setup() {
     Serial.begin(115200);  // initialize Serial port
 
-	// pinMode(Drogue, OUTPUT);
-	// pinMode(Main, OUTPUT);
-	// pinMode(Payload, OUTPUT);
+    // pinMode(Drogue, OUTPUT);
+    // pinMode(Main, OUTPUT);
+    // pinMode(Payload, OUTPUT);
 
     if (mpu.init(21, 20)) {
         Serial.println("initialization failed");
@@ -88,9 +86,9 @@ void loop() {
     // digitalWrite(Drogue, HIGH);
     // digitalWrite(Main, HIGH);
     // digitalWrite(Payload, HIGH);
-	// delay(5000);
+    // delay(5000);
     // digitalWrite(Drogue, LOW);
-	// digitalWrite(Main, LOW);
+    // digitalWrite(Main, LOW);
     // digitalWrite(Payload, LOW);
-	// delay(5000);
+    // delay(5000);
 }
