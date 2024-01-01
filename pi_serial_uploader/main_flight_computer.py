@@ -35,4 +35,4 @@ def parse_packet(packet: bytes) -> str:
     raise ValueError(f"Expected packet length 16 or 20, got {len(packet)}")
 
 
-uploader.run("FlightComputer", delimiter, parse_packet)
+uploader.run(parse_device, delimiter, parse_packet)
