@@ -8,7 +8,7 @@ from typing import Callable
 
 def run(
     device: str,
-    serial_delimiter: bytes = "\n",
+    serial_delimiter: bytes = b"\n",
     parse_serial_packet: Callable[[bytes], str] = lambda x: x.decode("utf-8"),
 ):
     """
