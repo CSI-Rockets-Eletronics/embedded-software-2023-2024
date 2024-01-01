@@ -76,10 +76,10 @@ void loop() {
     mpu.read_gyro();  // get data from the gyroscope
     // mpu.read_mag();   // get data from the magnetometer
 
-    uint64_t ts_host = esp_timer_get_time();
+    int64_t ts_host = esp_timer_get_time();
 
     // deal with endianness
-    uint64_t ts = htonll(ts_host);
+    int64_t ts = htonll(ts_host);
     int16_t ax = htons(mpu.ax);
     int16_t ay = htons(mpu.ay);
     int16_t az = htons(mpu.az);
