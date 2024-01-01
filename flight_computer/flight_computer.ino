@@ -10,6 +10,9 @@ const int TX_PIN = 48;
 
 const int DHT_PIN = 2;
 
+// worst case, the delimiter occurs in the data, in which case we drop a packet
+uint8_t PACKET_DELIMITER[] = {0b10101010, 0b01010101};
+
 MPU9255 mpu;
 DHT dht(DHT_PIN, DHT11);
 
@@ -51,10 +54,7 @@ void mpuLoop() {
     Serial2.write((uint8_t *)&gy, sizeof(gy));  // 2 bytes
     Serial2.write((uint8_t *)&gz, sizeof(gz));  // 2 bytes
 
-    // worst case, the delimiter occurs in the data,
-    // in which case we drop a packet
-    uint8_t packet_delimiter[] = {0b10101010, 0b01010101};
-    Serial2.write(packet_delimiter, sizeof(packet_delimiter));
+    Serial2.write(PACKET_DELIMITER, sizeof(PACKET_DELIMITER));
 }
 
 void dhtLoop() {
