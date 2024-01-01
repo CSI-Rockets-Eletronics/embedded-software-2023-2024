@@ -46,15 +46,21 @@ void mpuLoop() {
     uint16_t gy = htons(mpu.gy);
     uint16_t gz = htons(mpu.gz);
 
-    Serial2.write((uint8_t *)&ts, sizeof(ts));  // 8 bytes
-    Serial2.write((uint8_t *)&ax, sizeof(ax));  // 2 bytes
-    Serial2.write((uint8_t *)&ay, sizeof(ay));  // 2 bytes
-    Serial2.write((uint8_t *)&az, sizeof(az));  // 2 bytes
-    Serial2.write((uint8_t *)&gx, sizeof(gx));  // 2 bytes
-    Serial2.write((uint8_t *)&gy, sizeof(gy));  // 2 bytes
-    Serial2.write((uint8_t *)&gz, sizeof(gz));  // 2 bytes
+    if (xSemaphoreTake(piSerialMutex, portMAX_DELAY)) {
+        Serial2.write((uint8_t *)&ts, sizeof(ts));  // 8 bytes
+        Serial2.write((uint8_t *)&ax, sizeof(ax));  // 2 bytes
+        Serial2.write((uint8_t *)&ay, sizeof(ay));  // 2 bytes
+        Serial2.write((uint8_t *)&az, sizeof(az));  // 2 bytes
+        Serial2.write((uint8_t *)&gx, sizeof(gx));  // 2 bytes
+        Serial2.write((uint8_t *)&gy, sizeof(gy));  // 2 bytes
+        Serial2.write((uint8_t *)&gz, sizeof(gz));  // 2 bytes
 
-    Serial2.write(PACKET_DELIMITER, sizeof(PACKET_DELIMITER));
+        Serial2.write(PACKET_DELIMITER, sizeof(PACKET_DELIMITER));
+
+        xSemaphoreGive(piSerialMutex);
+    } else {
+        Serial.println("Failed to take mutex in mpuLoop!");
+    }
 }
 
 void dhtLoop() {
@@ -77,11 +83,17 @@ void dhtLoop() {
     uint32_t temp = htonl(*((uint32_t *)&temp_host));
     uint32_t hum = htonl(*((uint32_t *)&hum_host));
 
-    Serial2.write((uint8_t *)&ts_host, sizeof(ts_host));  // 8 bytes
-    Serial2.write((uint8_t *)&temp, sizeof(temp));        // 4 bytes
-    Serial2.write((uint8_t *)&hum, sizeof(hum));          // 4 bytes
+    if (xSemaphoreTake(piSerialMutex, portMAX_DELAY)) {
+        Serial2.write((uint8_t *)&ts_host, sizeof(ts_host));  // 8 bytes
+        Serial2.write((uint8_t *)&temp, sizeof(temp));        // 4 bytes
+        Serial2.write((uint8_t *)&hum, sizeof(hum));          // 4 bytes
 
-    Serial2.write(PACKET_DELIMITER, sizeof(PACKET_DELIMITER));
+        Serial2.write(PACKET_DELIMITER, sizeof(PACKET_DELIMITER));
+
+        xSemaphoreGive(piSerialMutex);
+    } else {
+        Serial.println("Failed to take mutex in dhtLoop!");
+    }
 }
 
 void runDhtTask(void *pvParameters) {
