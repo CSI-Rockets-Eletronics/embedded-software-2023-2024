@@ -58,7 +58,30 @@ void mpuLoop() {
 }
 
 void dhtLoop() {
-    // TODO
+    dhtFreqLogger.tick();
+
+    int64_t ts_host = esp_timer_get_time();
+
+    // force read once for both temperature and humidity
+    bool success = dht.read(true);
+    if (!success) {
+        Serial.println("Failed to read from DHT sensor!");
+        return;
+    }
+
+    // these will use the values from the last read()
+    float temp_host = dht.readTemperature();
+    float hum_host = dht.readHumidity();
+
+    // deal with endianness
+    uint32_t temp = htonl(*((uint32_t *)&temp_host));
+    uint32_t hum = htonl(*((uint32_t *)&hum_host));
+
+    Serial2.write((uint8_t *)&ts_host, sizeof(ts_host));  // 8 bytes
+    Serial2.write((uint8_t *)&temp, sizeof(temp));        // 4 bytes
+    Serial2.write((uint8_t *)&hum, sizeof(hum));          // 4 bytes
+
+    Serial2.write(PACKET_DELIMITER, sizeof(PACKET_DELIMITER));
 }
 
 void runDhtTask(void *pvParameters) {
