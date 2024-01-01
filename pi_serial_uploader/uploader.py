@@ -49,15 +49,15 @@ def post_records(device: str, records: list[Any]):
 
 def run(
     parse_device: str | Callable[[bytes], str],
-    serial_delimiter: bytes = b"\n",
-    parse_serial_packet: Callable[[bytes], str] = lambda x: x.decode("utf-8"),
+    delimiter: bytes = b"\n",
+    parse_packet: Callable[[bytes], str] = lambda x: x.decode("utf-8"),
 ):
     """
     Continuously read from serial port and send data to server.
 
     parse_device: device name to send to server, or function that takes a serial packet and returns a device name (and throws an exception if it fails)
-    serial_delimiter: delimiter between serial packets
-    parse_serial_packet: function to parse a serial packet into json (and throws an exception if it fails)
+    delimiter: delimiter between serial packets
+    parse_packet: function to parse a serial packet into json (and throws an exception if it fails)
     """
 
     ser = serial.Serial("/dev/ttyS0", 115200)
@@ -71,9 +71,9 @@ def run(
         records_count = 0
 
         while ser.in_waiting > 0:
-            input_packet = ser.read_until(serial_delimiter)
+            input_packet = ser.read_until(delimiter)
             # remove delimiter
-            input_packet = input_packet[: -len(serial_delimiter)]
+            input_packet = input_packet[: -len(delimiter)]
 
             try:
                 device = (
@@ -81,7 +81,7 @@ def run(
                     if callable(parse_device)
                     else parse_device
                 )
-                input_parsed = parse_serial_packet(input_packet)
+                input_parsed = parse_packet(input_packet)
             except Exception as e:
                 print(
                     "Error parsing input packet:",
