@@ -82,13 +82,14 @@ void dhtLoop() {
     float hum_host = dht.readHumidity();
 
     // deal with endianness
+    uint64_t ts = htonll(ts_host);
     uint32_t temp = htonl(*((uint32_t *)&temp_host));
     uint32_t hum = htonl(*((uint32_t *)&hum_host));
 
     if (xSemaphoreTake(piSerialMutex, portMAX_DELAY)) {
-        Serial2.write((uint8_t *)&ts_host, sizeof(ts_host));  // 8 bytes
-        Serial2.write((uint8_t *)&temp, sizeof(temp));        // 4 bytes
-        Serial2.write((uint8_t *)&hum, sizeof(hum));          // 4 bytes
+        Serial2.write((uint8_t *)&ts, sizeof(ts));      // 8 bytes
+        Serial2.write((uint8_t *)&temp, sizeof(temp));  // 4 bytes
+        Serial2.write((uint8_t *)&hum, sizeof(hum));    // 4 bytes
 
         Serial2.write(PACKET_DELIMITER, sizeof(PACKET_DELIMITER));
 
