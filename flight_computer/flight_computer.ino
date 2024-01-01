@@ -67,6 +67,10 @@ void setup() {
     } else {
         Serial.println("initialization successful!");
     }
+
+    // save power
+    mpu.disable(magnetometer);
+    mpu.disable(thermometer);
 }
 
 void loop() {
