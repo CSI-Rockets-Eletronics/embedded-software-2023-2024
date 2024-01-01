@@ -5,20 +5,20 @@
 
 class FrequencyLogger {
    public:
-    FrequencyLogger(String label, long printFrequencyMs)
+    FrequencyLogger(String label, unsigned long printIntervalMs)
         : label(label),
-          printFrequencyMs(printFrequencyMs),
+          printIntervalMs(printIntervalMs),
           lastPrintTime(millis()),
           tickCount(0) {}
 
     void tick() {
         tickCount++;
 
-        if (millis() - lastPrintTime > printFrequencyMs) {
+        if (millis() - lastPrintTime > printIntervalMs) {
             Serial.print("[");
             Serial.print(label);
             Serial.print("] Frequency: ");
-            Serial.print(tickCount);
+            Serial.print((unsigned long)(tickCount * 1000.0 / printIntervalMs));
             Serial.println(" Hz");
             lastPrintTime = millis();
             tickCount = 0;
@@ -27,7 +27,7 @@ class FrequencyLogger {
 
    private:
     String label;
-    unsigned long printFrequencyMs;
+    unsigned long printIntervalMs;
     unsigned long lastPrintTime;
     unsigned long tickCount;
 };
