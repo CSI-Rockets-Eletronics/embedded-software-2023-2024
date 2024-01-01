@@ -71,15 +71,16 @@ void loop() {
 
     int64_t ts = esp_timer_get_time();
 
-    char sentence[1024];
-    snprintf(sentence, sizeof(sentence),
-             "{\"ts\":%lld,"
-             "\"ax\":%d,\"ay\":%d,\"az\":%d,"
-             "\"gx\":%d,\"gy\":%d,\"gz\":%d}",
-             ts, mpu.ax, mpu.ay, mpu.az, mpu.gx, mpu.gy, mpu.gz);
+    Serial2.write((uint8_t *)&ts, sizeof(ts));          // 8 bytes
+    Serial2.write((uint8_t *)&mpu.ax, sizeof(mpu.ax));  // 2 bytes
+    Serial2.write((uint8_t *)&mpu.ay, sizeof(mpu.ay));  // 2 bytes
+    Serial2.write((uint8_t *)&mpu.az, sizeof(mpu.az));  // 2 bytes
+    Serial2.write((uint8_t *)&mpu.gx, sizeof(mpu.gx));  // 2 bytes
+    Serial2.write((uint8_t *)&mpu.gy, sizeof(mpu.gy));  // 2 bytes
+    Serial2.write((uint8_t *)&mpu.gz, sizeof(mpu.gz));  // 2 bytes
 
-    // Serial.println(sentence);
-    Serial2.println(sentence);
+    uint8_t packet_delimiter[] = {0b10101010, 0b10101010};
+    Serial2.write(packet_delimiter, sizeof(packet_delimiter));
 
     // print all data in serial monitor
     // Serial.print("AX:");
