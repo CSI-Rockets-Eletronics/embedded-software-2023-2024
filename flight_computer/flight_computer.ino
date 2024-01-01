@@ -84,11 +84,11 @@ void setup() {
 void loop() {
     frequencyLogger.tick();
 
+    int64_t ts_host = esp_timer_get_time();
+
     mpu.read_acc();   // get data from the accelerometer
     mpu.read_gyro();  // get data from the gyroscope
     // mpu.read_mag();   // get data from the magnetometer
-
-    int64_t ts_host = esp_timer_get_time();
 
     // deal with endianness
     int64_t ts = htonll(ts_host);
