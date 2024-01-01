@@ -7,7 +7,6 @@ import os
 from dotenv import load_dotenv
 
 MAX_RECORDS_PER_BATCH = 10
-MAX_LINE_LENGTH = 64
 
 URL = "http://localhost:3000"
 ENVIRONMENT_KEY = "0"
@@ -24,7 +23,7 @@ ser.readline()
 while True:
     records = []
 
-    while ser.in_waiting > MAX_LINE_LENGTH:
+    while ser.in_waiting > 0:
         input_line = ser.readline()
 
         if len(records) >= MAX_RECORDS_PER_BATCH:
