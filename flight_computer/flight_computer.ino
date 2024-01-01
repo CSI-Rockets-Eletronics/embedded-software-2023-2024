@@ -43,6 +43,13 @@ MPU9255 mpu;
 // for logging
 FrequencyLogger frequencyLogger = FrequencyLogger("flight computer", 1000);
 
+// https://stackoverflow.com/questions/3022552/is-there-any-standard-htonl-like-function-for-64-bits-integers-in-c
+inline uint64_t htonll(uint64_t x) {
+    return ((1 == htonl(1))
+                ? (x)
+                : ((uint64_t)htonl((x) & 0xFFFFFFFF) << 32) | htonl((x) >> 32));
+}
+
 void setup() {
     Serial.begin(115200);
     while (!Serial && millis() < 500)
@@ -69,15 +76,24 @@ void loop() {
     mpu.read_gyro();  // get data from the gyroscope
     // mpu.read_mag();   // get data from the magnetometer
 
-    int64_t ts = esp_timer_get_time();
+    uint64_t ts_host = esp_timer_get_time();
 
-    Serial2.write((uint8_t *)&ts, sizeof(ts));          // 8 bytes
-    Serial2.write((uint8_t *)&mpu.ax, sizeof(mpu.ax));  // 2 bytes
-    Serial2.write((uint8_t *)&mpu.ay, sizeof(mpu.ay));  // 2 bytes
-    Serial2.write((uint8_t *)&mpu.az, sizeof(mpu.az));  // 2 bytes
-    Serial2.write((uint8_t *)&mpu.gx, sizeof(mpu.gx));  // 2 bytes
-    Serial2.write((uint8_t *)&mpu.gy, sizeof(mpu.gy));  // 2 bytes
-    Serial2.write((uint8_t *)&mpu.gz, sizeof(mpu.gz));  // 2 bytes
+    // deal with endianness
+    uint64_t ts = htonll(ts_host);
+    int16_t ax = htons(mpu.ax);
+    int16_t ay = htons(mpu.ay);
+    int16_t az = htons(mpu.az);
+    int16_t gx = htons(mpu.gx);
+    int16_t gy = htons(mpu.gy);
+    int16_t gz = htons(mpu.gz);
+
+    Serial2.write((uint8_t *)&ts, sizeof(ts));  // 8 bytes
+    Serial2.write((uint8_t *)&ax, sizeof(ax));  // 2 bytes
+    Serial2.write((uint8_t *)&ay, sizeof(ay));  // 2 bytes
+    Serial2.write((uint8_t *)&az, sizeof(az));  // 2 bytes
+    Serial2.write((uint8_t *)&gx, sizeof(gx));  // 2 bytes
+    Serial2.write((uint8_t *)&gy, sizeof(gy));  // 2 bytes
+    Serial2.write((uint8_t *)&gz, sizeof(gz));  // 2 bytes
 
     uint8_t packet_delimiter[] = {0b10101010, 0b10101010};
     Serial2.write(packet_delimiter, sizeof(packet_delimiter));
