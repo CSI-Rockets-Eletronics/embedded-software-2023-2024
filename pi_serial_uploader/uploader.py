@@ -11,6 +11,14 @@ def run(
     serial_delimiter: bytes = "\n",
     parse_serial_packet: Callable[[bytes], str] = lambda x: x.decode("utf-8"),
 ):
+    """
+    Continuously read from serial port and send data to server.
+
+    device: device name to send to server
+    serial_delimiter: delimiter between serial packets
+    parse_serial_packet: function to parse serial packet into json, which throws an exception if it fails
+    """
+
     MAX_RECORDS_PER_BATCH = 50
 
     URL = "http://localhost:3000"
@@ -26,7 +34,16 @@ def run(
 
         while ser.in_waiting > 0:
             input_packet = ser.read_until(serial_delimiter)
-            input_parsed = parse_serial_packet(input_packet)
+
+            try:
+                input_parsed = parse_serial_packet(input_packet)
+            except Exception as e:
+                print(
+                    "Error parsing input packet:",
+                    e,
+                    file=sys.stderr,
+                )
+                continue
 
             if len(records) >= MAX_RECORDS_PER_BATCH:
                 continue
