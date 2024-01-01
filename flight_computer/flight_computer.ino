@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <DHT.h>
 #include <MPU9255.h>
+#include <endian.h>
 
 #include "frequency_logger.h"
 
@@ -22,13 +23,6 @@ SemaphoreHandle_t piSerialMutex;
 FrequencyLogger mpuFreqLogger = FrequencyLogger("MPU", 1000);
 FrequencyLogger dhtFreqLogger = FrequencyLogger("DHT", 2000);
 
-// https://stackoverflow.com/questions/3022552/is-there-any-standard-htonl-like-function-for-64-bits-integers-in-c
-inline uint64_t htonll(uint64_t x) {
-    return ((1 == htonl(1))
-                ? (x)
-                : ((uint64_t)htonl((x) & 0xFFFFFFFF) << 32) | htonl((x) >> 32));
-}
-
 void mpuLoop() {
     mpuFreqLogger.tick();
 
@@ -38,7 +32,7 @@ void mpuLoop() {
     mpu.read_gyro();  // get data from the gyroscope
 
     // deal with endianness
-    uint64_t ts = htonll(ts_host);
+    uint64_t ts = htobe64(ts_host);  // network byte order is big endian
     uint16_t ax = htons(mpu.ax);
     uint16_t ay = htons(mpu.ay);
     uint16_t az = htons(mpu.az);
@@ -82,7 +76,7 @@ void dhtLoop() {
     float hum_host = dht.readHumidity();
 
     // deal with endianness
-    uint64_t ts = htonll(ts_host);
+    uint64_t ts = htobe64(ts_host);  // network byte order is big endian
     uint32_t temp = htonl(*((uint32_t *)&temp_host));
     uint32_t hum = htonl(*((uint32_t *)&hum_host));
 
