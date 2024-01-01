@@ -95,7 +95,7 @@ void loop() {
     Serial2.write((uint8_t *)&gy, sizeof(gy));  // 2 bytes
     Serial2.write((uint8_t *)&gz, sizeof(gz));  // 2 bytes
 
-    // worst case, the delimeter occurs in the data,
+    // worst case, the delimiter occurs in the data,
     // in which case we drop a packet
     uint8_t packet_delimiter[] = {0b10101010, 0b10101010};
     Serial2.write(packet_delimiter, sizeof(packet_delimiter));
