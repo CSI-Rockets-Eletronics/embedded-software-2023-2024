@@ -34,13 +34,22 @@
 
 #include "frequency_logger.h"
 
+// remember to connect TX to RX and RX to TX
+const int RX_PIN = 47;
+const int TX_PIN = 48;
+
 MPU9255 mpu;
 
 // for logging
 FrequencyLogger frequencyLogger = FrequencyLogger("flight computer", 1000);
 
 void setup() {
-    Serial.begin(115200);  // initialize Serial port
+    Serial.begin(115200);
+    while (!Serial && millis() < 500)
+        ;  // wait up to 500ms for serial to connect; needed for native USB
+
+    // for Raspberry Pi
+    Serial2.begin(115200, SERIAL_8N1, RX_PIN, TX_PIN);
 
     // pinMode(Drogue, OUTPUT);
     // pinMode(Main, OUTPUT);
@@ -58,37 +67,46 @@ void loop() {
 
     mpu.read_acc();   // get data from the accelerometer
     mpu.read_gyro();  // get data from the gyroscope
-    mpu.read_mag();   // get data from the magnetometer
+    // mpu.read_mag();   // get data from the magnetometer
+
+    char sentence[1024];
+    snprintf(sentence, sizeof(sentence),
+             "{\"ax\":%d,\"ay\":%d,\"az\":%d,\"gx\":%d,\"gy\":%d,\"gz\":%d}",
+             mpu.ax, mpu.ay, mpu.az, mpu.gx, mpu.gy, mpu.gz);
+
+    // Serial.println(sentence);
+    Serial2.println(sentence);
 
     // print all data in serial monitor
-    Serial.print("AX:");
-    Serial.print(mpu.ax);
-    Serial.print(',');
-    Serial.print("AY:");
-    Serial.print(mpu.ay);
-    Serial.print(',');
-    Serial.print("AZ:");
-    Serial.print(mpu.az);
-    Serial.print(',');
-    Serial.print("GX:");
-    Serial.print(mpu.gx);
-    Serial.print(',');
-    Serial.print("GY:");
-    Serial.print(mpu.gy);
-    Serial.print(',');
-    Serial.print("GZ:");
-    Serial.print(mpu.gz);
-    Serial.print(',');
-    Serial.print("MX:");
-    Serial.print(mpu.mx);
-    Serial.print(',');
-    Serial.print("MY:");
-    Serial.print(mpu.my);
-    Serial.print(',');
-    Serial.print("MZ:");
-    Serial.print(mpu.mz);
-    Serial.println();
-    delay(100);
+    // Serial.print("AX:");
+    // Serial.print(mpu.ax);
+    // Serial.print(',');
+    // Serial.print("AY:");
+    // Serial.print(mpu.ay);
+    // Serial.print(',');
+    // Serial.print("AZ:");
+    // Serial.print(mpu.az);
+    // Serial.print(',');
+    // Serial.print("GX:");
+    // Serial.print(mpu.gx);
+    // Serial.print(',');
+    // Serial.print("GY:");
+    // Serial.print(mpu.gy);
+    // Serial.print(',');
+    // Serial.print("GZ:");
+    // Serial.print(mpu.gz);
+    // Serial.print(',');
+    // Serial.print("MX:");
+    // Serial.print(mpu.mx);
+    // Serial.print(',');
+    // Serial.print("MY:");
+    // Serial.print(mpu.my);
+    // Serial.print(',');
+    // Serial.print("MZ:");
+    // Serial.print(mpu.mz);
+    // Serial.println();
+
+    // delay(100);
 
     // digitalWrite(Drogue, HIGH);
     // digitalWrite(Main, HIGH);
