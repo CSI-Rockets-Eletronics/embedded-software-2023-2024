@@ -71,6 +71,14 @@ void setup() {
     // save power
     mpu.disable(magnetometer);
     mpu.disable(thermometer);
+
+    // set bandwidth
+    mpu.set_acc_bandwidth(acc_460Hz);
+    mpu.set_gyro_bandwidth(gyro_250Hz);
+
+    // set scale
+    mpu.set_acc_scale(scale_16g);
+    mpu.set_gyro_scale(scale_2000dps);
 }
 
 void loop() {
