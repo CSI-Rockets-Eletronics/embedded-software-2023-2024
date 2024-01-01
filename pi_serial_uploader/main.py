@@ -6,7 +6,7 @@ import serial
 import os
 from dotenv import load_dotenv
 
-MAX_RECORDS_PER_BATCH = 10
+MAX_RECORDS_PER_BATCH = 50
 
 URL = "http://localhost:3000"
 ENVIRONMENT_KEY = "0"
