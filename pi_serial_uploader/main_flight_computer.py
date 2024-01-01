@@ -6,6 +6,9 @@ delimiter = b"\xAA\xAA"  # {0b10101010, 0b10101010}
 
 
 def parse(packet: bytes) -> str:
+    if len(packet) != 20:
+        raise ValueError(f"Expected packet length 20, got {len(packet)}")
+
     # breakdown of "!qhhhhhh":
     #   "!": network byte order
     #   "q": long long
