@@ -32,7 +32,12 @@
 
 #include <MPU9255.h>
 
+#include "frequency_logger.h"
+
 MPU9255 mpu;
+
+// for logging
+FrequencyLogger frequencyLogger = FrequencyLogger("flight computer", 1000);
 
 void setup() {
     Serial.begin(115200);  // initialize Serial port
@@ -49,6 +54,8 @@ void setup() {
 }
 
 void loop() {
+    frequencyLogger.tick();
+
     mpu.read_acc();   // get data from the accelerometer
     mpu.read_gyro();  // get data from the gyroscope
     mpu.read_mag();   // get data from the magnetometer
