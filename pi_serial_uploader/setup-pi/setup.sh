@@ -6,10 +6,10 @@ REPO_DIR=$(realpath "$(dirname "$0")/..")
 # Go to the repo directory
 cd "$REPO_DIR"
 
-# Exit if .env doesn't exist
-if [ ! -f .env ]; then
-    echo "Please create a .env file inside pi_serial_uploader."
-    echo "Set DEVICE=\"<device for created records>\""
+# Exit if main.py doesn't exist
+if [ ! -f main.py ]; then
+    echo "Please symlink a `main_*.py` file to `main.py` inside pi_serial_uploader."
+    echo "Example: `ln -s main_foo.py main.py`"
     exit 1
 fi
 
