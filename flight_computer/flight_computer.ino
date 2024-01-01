@@ -20,7 +20,7 @@ SemaphoreHandle_t piSerialMutex;
 
 // for logging
 FrequencyLogger mpuFreqLogger = FrequencyLogger("MPU", 1000);
-FrequencyLogger dhtFreqLogger = FrequencyLogger("DHT", 1000);
+FrequencyLogger dhtFreqLogger = FrequencyLogger("DHT", 2000);
 
 // https://stackoverflow.com/questions/3022552/is-there-any-standard-htonl-like-function-for-64-bits-integers-in-c
 inline uint64_t htonll(uint64_t x) {
@@ -64,6 +64,8 @@ void mpuLoop() {
 }
 
 void dhtLoop() {
+    delay(1000);  // DHT11 needs at least 1s between reads
+
     dhtFreqLogger.tick();
 
     int64_t ts_host = esp_timer_get_time();
