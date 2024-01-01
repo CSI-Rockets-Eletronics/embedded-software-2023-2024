@@ -7,6 +7,7 @@ import os
 from dotenv import load_dotenv
 
 MAX_RECORDS_PER_BATCH = 10
+MAX_LINE_LENGTH = 64
 
 URL = "http://localhost:3000"
 ENVIRONMENT_KEY = "0"
@@ -15,7 +16,7 @@ load_dotenv()
 
 device = os.getenv("DEVICE")
 
-ser = serial.Serial("/dev/ttyS0", 115200, timeout=0)
+ser = serial.Serial("/dev/ttyS0", 115200)
 
 # throw away possibly partial line
 ser.readline()
@@ -23,15 +24,10 @@ ser.readline()
 while True:
     records = []
 
-    while True:
-        # will be empty if no data is in buffer, due to timeout=0
+    while ser.in_waiting > MAX_LINE_LENGTH:
         input_line = ser.readline()
 
-        if len(input_line) == 0:
-            break
-
         if len(records) >= MAX_RECORDS_PER_BATCH:
-            # flush overflowing records
             continue
 
         try:
