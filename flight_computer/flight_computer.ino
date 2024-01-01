@@ -69,10 +69,14 @@ void loop() {
     mpu.read_gyro();  // get data from the gyroscope
     // mpu.read_mag();   // get data from the magnetometer
 
+    int64_t ts = esp_timer_get_time();
+
     char sentence[1024];
     snprintf(sentence, sizeof(sentence),
-             "{\"ax\":%d,\"ay\":%d,\"az\":%d,\"gx\":%d,\"gy\":%d,\"gz\":%d}",
-             mpu.ax, mpu.ay, mpu.az, mpu.gx, mpu.gy, mpu.gz);
+             "{\"ts\":%lld,"
+             "\"ax\":%d,\"ay\":%d,\"az\":%d,"
+             "\"gx\":%d,\"gy\":%d,\"gz\":%d}",
+             ts, mpu.ax, mpu.ay, mpu.az, mpu.gx, mpu.gy, mpu.gz);
 
     // Serial.println(sentence);
     Serial2.println(sentence);
