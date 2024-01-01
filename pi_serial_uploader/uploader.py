@@ -62,8 +62,8 @@ def run(
 
     ser = serial.Serial("/dev/ttyS0", 115200)
 
-    # throw away possibly partial line
-    ser.readline()
+    # throw away possibly partial packet
+    ser.read_until(delimiter)
 
     while True:
         # device -> records
