@@ -38,13 +38,13 @@ void mpuLoop() {
     mpu.read_gyro();  // get data from the gyroscope
 
     // deal with endianness
-    int64_t ts = htonll(ts_host);
-    int16_t ax = htons(mpu.ax);
-    int16_t ay = htons(mpu.ay);
-    int16_t az = htons(mpu.az);
-    int16_t gx = htons(mpu.gx);
-    int16_t gy = htons(mpu.gy);
-    int16_t gz = htons(mpu.gz);
+    uint64_t ts = htonll(ts_host);
+    uint16_t ax = htons(mpu.ax);
+    uint16_t ay = htons(mpu.ay);
+    uint16_t az = htons(mpu.az);
+    uint16_t gx = htons(mpu.gx);
+    uint16_t gy = htons(mpu.gy);
+    uint16_t gz = htons(mpu.gz);
 
     Serial2.write((uint8_t *)&ts, sizeof(ts));  // 8 bytes
     Serial2.write((uint8_t *)&ax, sizeof(ax));  // 2 bytes
