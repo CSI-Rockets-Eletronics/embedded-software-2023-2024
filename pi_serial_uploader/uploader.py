@@ -3,9 +3,14 @@ import time
 import requests
 import sys
 import serial
+from typing import Callable
 
 
-def run(device: str):
+def run(
+    device: str,
+    serial_delimiter: bytes = "\n",
+    parse_serial_packet: Callable[[bytes], str] = lambda x: x.decode("utf-8"),
+):
     MAX_RECORDS_PER_BATCH = 50
 
     URL = "http://localhost:3000"
@@ -20,16 +25,17 @@ def run(device: str):
         records = []
 
         while ser.in_waiting > 0:
-            input_line = ser.readline()
+            input_packet = ser.read_until(serial_delimiter)
+            input_parsed = parse_serial_packet(input_packet)
 
             if len(records) >= MAX_RECORDS_PER_BATCH:
                 continue
 
             try:
-                data = json.loads(input_line)
+                data = json.loads(input_parsed)
             except json.JSONDecodeError:
                 print(
-                    f"Error parsing input line: {input_line}",
+                    f"Error parsing input json: {input_parsed}",
                     file=sys.stderr,
                 )
                 continue
