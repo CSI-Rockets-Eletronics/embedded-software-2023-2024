@@ -150,6 +150,8 @@ void loop() {
         Serial.print((int)GPS.fix);
         Serial.print(" quality: ");
         Serial.println((int)GPS.fixquality);
+        Serial.print("Antenna status: ");
+        Serial.println((int)GPS.antenna);
         if (GPS.fix) {
             Serial.print("Location: ");
             Serial.print(GPS.latitude, 4);
@@ -165,8 +167,6 @@ void loop() {
             Serial.println(GPS.altitude);
             Serial.print("Satellites: ");
             Serial.println((int)GPS.satellites);
-            Serial.print("Antenna status: ");
-            Serial.println((int)GPS.antenna);
         }
     }
 }
