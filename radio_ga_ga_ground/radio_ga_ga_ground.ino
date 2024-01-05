@@ -42,8 +42,8 @@ void setup() {
     // 				};
     // rf95.setEncryptionKey(key);
 
-    rockets_client::init(rockets_client::serverConfigPresets.ROCKET_PI, "0",
-                         "RadioGround");
+    rockets_client::init(rockets_client::serverConfigPresets.ALEX_HOME_DESKTOP,
+                         "0", "RadioGround");
 }
 
 void loop() {
