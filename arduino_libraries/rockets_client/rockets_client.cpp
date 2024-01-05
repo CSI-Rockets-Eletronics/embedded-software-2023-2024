@@ -38,6 +38,12 @@ ServerConfigPresets serverConfigPresets = {
             .port = 80,
             .pathPrefix = "",
         },
+    .ALEX_HOME_DESKTOP =
+        {
+            .host = "xdxdxdxdxd.mynetgear.com",
+            .port = 3000,
+            .pathPrefix = "",
+        },
 };
 
 // task parameters

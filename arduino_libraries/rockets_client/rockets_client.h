@@ -19,6 +19,7 @@ struct ServerConfigPresets {
     ServerConfig ROCKET_PI;
     ServerConfig MECHE;
     ServerConfig ALEX_LAPTOP;
+    ServerConfig ALEX_HOME_DESKTOP;
 };
 
 extern ServerConfigPresets serverConfigPresets;
