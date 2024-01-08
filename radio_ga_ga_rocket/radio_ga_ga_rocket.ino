@@ -52,28 +52,28 @@ void setup() {
 
 // everything besides fix will be zero until the first time the GPS gets a fix
 RadioPacket packet = {
-    .fix = false,
-    .fixquality = 0,
-    .satellites = 0,
-    .PDOP_10 = 0,
-    .latitude_fixed = 0,
-    .longitude_fixed = 0,
-    .altitude = 0,
+    .gps_ts_tail = 0,
+    .gps_fix = false,
+    .gps_fixquality = 0,
+    .gps_satellites = 0,
+    .gps_latitude_fixed = 0,
+    .gps_longitude_fixed = 0,
+    .gps_altitude = 0,
 };
 
 void loop() {
     rockets_client::StaticJsonDoc records = rockets_client::getLatestRecords();
     JsonObject gps = records["GPS"]["data"];
 
-    packet.fix = gps["fix"];
+    packet.gps_ts_tail = gps["ts_tail"];
+    packet.gps_fix = gps["fix"];
 
-    if (packet.fix) {
-        packet.fixquality = gps["fixquality"];
-        packet.satellites = gps["satellites"];
-        packet.PDOP_10 = (uint8_t)(gps["PDOP"].as<float>() * 10);
-        packet.latitude_fixed = gps["latitude_fixed"];
-        packet.longitude_fixed = gps["longitude_fixed"];
-        packet.altitude = gps["altitude"];
+    if (packet.gps_fix) {
+        packet.gps_fixquality = gps["fixquality"];
+        packet.gps_satellites = gps["satellites"];
+        packet.gps_latitude_fixed = gps["latitude_fixed"];
+        packet.gps_longitude_fixed = gps["longitude_fixed"];
+        packet.gps_altitude = gps["altitude"];
     }
 
     rf95.send((uint8_t*)&packet, sizeof(packet));

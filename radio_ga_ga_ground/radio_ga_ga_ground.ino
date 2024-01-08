@@ -72,41 +72,41 @@ void loop() {
     rockets_client::StaticJsonDoc recordData;
     JsonObject gps = recordData.createNestedObject("gps");
 
-    gps["fix"] = packet->fix;
-    if (packet->fix) {
-        gps["fixquality"] = packet->fixquality;
-        gps["satellites"] = packet->satellites;
-        gps["PDOP"] = packet->PDOP_10 / 10.0;
-        gps["latitude_fixed"] = packet->latitude_fixed;
-        gps["longitude_fixed"] = packet->longitude_fixed;
-        gps["altitude"] = packet->altitude;
+    gps["ts_tail"] = packet->gps_ts_tail;
+    gps["fix"] = packet->gps_fix;
+    if (packet->gps_fix) {
+        gps["fixquality"] = packet->gps_fixquality;
+        gps["satellites"] = packet->gps_satellites;
+        gps["latitude_fixed"] = packet->gps_latitude_fixed;
+        gps["longitude_fixed"] = packet->gps_longitude_fixed;
+        gps["altitude"] = packet->gps_altitude;
     }
 
     rockets_client::queueRecord(recordData);
 
     // print packet
 
-    Serial.print("fix: ");
-    Serial.print(packet->fix);
+    Serial.print("ts_tail: ");
+    Serial.print(packet->gps_ts_tail);
 
-    if (packet->fix) {
+    Serial.print("fix: ");
+    Serial.print(packet->gps_fix);
+
+    if (packet->gps_fix) {
         Serial.print("\tfixquality: ");
-        Serial.print(packet->fixquality);
+        Serial.print(packet->gps_fixquality);
 
         Serial.print("\tsatellites: ");
-        Serial.print(packet->satellites);
-
-        Serial.print("\tPDOP: ");
-        Serial.print(packet->PDOP_10 / 10.0);
+        Serial.print(packet->gps_satellites);
 
         Serial.print("\tlatitude_fixed: ");
-        Serial.print(packet->latitude_fixed);
+        Serial.print(packet->gps_latitude_fixed);
 
         Serial.print("\tlongitude_fixed: ");
-        Serial.print(packet->longitude_fixed);
+        Serial.print(packet->gps_longitude_fixed);
 
         Serial.print("\taltitude: ");
-        Serial.print(packet->altitude);
+        Serial.print(packet->gps_altitude);
     }
 
     Serial.println();
