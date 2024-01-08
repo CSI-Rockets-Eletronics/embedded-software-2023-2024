@@ -17,6 +17,8 @@
 
 #include "radio_packet.h"
 
+const bool UPLOAD_TO_SERVER = true;
+
 // Singleton instance of the radio driver
 RH_RF95 rf95;
 
@@ -42,8 +44,11 @@ void setup() {
     // 				};
     // rf95.setEncryptionKey(key);
 
-    rockets_client::init(rockets_client::serverConfigPresets.ALEX_HOME_DESKTOP,
-                         "0", "RadioGround");
+    if (UPLOAD_TO_SERVER) {
+        rockets_client::init(
+            rockets_client::serverConfigPresets.ALEX_HOME_DESKTOP, "0",
+            "RadioGround");
+    }
 }
 
 void loop() {
@@ -82,7 +87,9 @@ void loop() {
         gps["altitude"] = packet->gps_altitude;
     }
 
-    rockets_client::queueRecord(recordData);
+    if (UPLOAD_TO_SERVER) {
+        rockets_client::queueRecord(recordData);
+    }
 
     // print packet
 
