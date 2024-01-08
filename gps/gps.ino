@@ -16,6 +16,7 @@
 // and help support open source hardware & software! -ada
 
 #include <Adafruit_GPS.h>
+#include <Arduino.h>
 #include <rockets_client.h>
 
 // what's the name of the hardware serial port?
@@ -99,10 +100,15 @@ void loop() {
             return;
         }
 
+        // send last byte of timestamp for debugging
+        uint8_t ts_tail = esp_timer_get_time();
+
         // send data to server
         rockets_client::StaticJsonDoc recordData;
 
+        recordData["ts_tail"] = ts_tail;
         recordData["fix"] = GPS.fix;
+
         if (GPS.fix) {
             recordData["fixquality"] = GPS.fixquality;
             recordData["latitude_fixed"] = GPS.latitude_fixed;
