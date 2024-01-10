@@ -96,7 +96,7 @@ void loop() {
     Serial.print("ts_tail: ");
     Serial.print(packet->gps_ts_tail);
 
-    Serial.print("fix: ");
+    Serial.print("\tfix: ");
     Serial.print(packet->gps_fix);
 
     if (packet->gps_fix) {
