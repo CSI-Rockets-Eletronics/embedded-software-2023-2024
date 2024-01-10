@@ -13,6 +13,7 @@
 
 #include <RH_RF95.h>
 #include <SPI.h>
+#include <TickTwo.h>
 #include <rockets_client.h>
 
 #include "radio_packet.h"
@@ -23,8 +24,28 @@
 #define SS 10
 #define INT 2
 
+const int PRINT_GPS_TS_INTERVAL = 1000;
+
 // Singleton instance of the radio driver
 RH_RF95 rf95;
+
+// everything besides fix will be zero until the first time the GPS gets a fix
+RadioPacket packet = {
+    .gps_ts_tail = 0,
+    .gps_fix = false,
+    .gps_fixquality = 0,
+    .gps_satellites = 0,
+    .gps_latitude_fixed = 0,
+    .gps_longitude_fixed = 0,
+    .gps_altitude = 0,
+};
+
+void printGpsTs() {
+    Serial.print("GPS ts_tail: ");
+    Serial.println(packet.gps_ts_tail);
+}
+
+TickTwo printGpsTsTicker(printGpsTs, PRINT_GPS_TS_INTERVAL);
 
 void setup() {
     Serial.begin(115200);
@@ -48,18 +69,9 @@ void setup() {
 
     rockets_client::init(rockets_client::serverConfigPresets.ROCKET_PI, "0", "",
                          false, "GPS");
-}
 
-// everything besides fix will be zero until the first time the GPS gets a fix
-RadioPacket packet = {
-    .gps_ts_tail = 0,
-    .gps_fix = false,
-    .gps_fixquality = 0,
-    .gps_satellites = 0,
-    .gps_latitude_fixed = 0,
-    .gps_longitude_fixed = 0,
-    .gps_altitude = 0,
-};
+    printGpsTsTicker.start();
+}
 
 void loop() {
     rockets_client::StaticJsonDoc records = rockets_client::getLatestRecords();
@@ -78,6 +90,8 @@ void loop() {
 
     rf95.send((uint8_t*)&packet, sizeof(packet));
     rf95.waitPacketSent();
+
+    printGpsTsTicker.update();
 
     // Serial.println("Sending to rf95_server");
     // // Send a message to rf95_server
