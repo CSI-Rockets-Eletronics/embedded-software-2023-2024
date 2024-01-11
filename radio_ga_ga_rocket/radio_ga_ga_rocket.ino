@@ -12,6 +12,9 @@
 #define SS 5
 #define INT 1
 
+#define FREQUENCY 915.0
+#define TX_POWER 23
+
 #define PRINT_GPS_TS_INTERVAL 1000
 
 // SPI with custom pins
@@ -47,11 +50,11 @@ void setup() {
     if (!rf95.init()) Serial.println("init failed");
     // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, +13dbM (for
     // low power module) No encryption
-    if (!rf95.setFrequency(915.0)) Serial.println("setFrequency failed");
+    if (!rf95.setFrequency(FREQUENCY)) Serial.println("setFrequency failed");
 
     // If you are using a high power RF95 eg RFM95HW, you *must* set a Tx power
     // with the ishighpowermodule flag set like this:
-    rf95.setTxPower(23, false);
+    rf95.setTxPower(TX_POWER, false);
 
     // The encryption key has to be the same as the one in the server
     // uint8_t key[] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
