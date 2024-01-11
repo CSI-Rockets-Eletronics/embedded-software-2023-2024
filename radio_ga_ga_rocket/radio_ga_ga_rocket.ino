@@ -1,16 +1,4 @@
-// rf95_client.pde
-// -*- mode: C++ -*-
-// Example sketch showing how to create a simple messaging client
-// with the RH_RF95 class. RH_RF95 class does not provide for addressing or
-// reliability, so you should only use RH_RF95  if you do not need the higher
-// level messaging abilities.
-// It is designed to work with the other example rf95_server.
-// Demonstrates the use of AES encryption, setting the frequency and modem
-// configuration
-// Tested on Moteino with RFM95 http://lowpowerlab.com/moteino/
-// Tested on miniWireless with RFM95 www.anarduino.com/miniwireless
-// Tested on Teensy 3.1 with RF95 on PJRC breakout board
-
+#include <RHSoftwareSPI.h>
 #include <RH_RF95.h>
 #include <SPI.h>
 #include <TickTwo.h>
@@ -18,16 +6,18 @@
 
 #include "radio_packet.h"
 
-#define SCLK 12
-#define MISO 13
-#define MOSI 11
-#define SS 10
-#define INT 2
+#define SCK 16
+#define MISO 7
+#define MOSI 6
+#define SS 5
+#define INT 1
 
-const int PRINT_GPS_TS_INTERVAL = 1000;
+#define PRINT_GPS_TS_INTERVAL 1000
 
+// SPI with custom pins
+RHSoftwareSPI spi;
 // Singleton instance of the radio driver
-RH_RF95 rf95;
+RH_RF95 rf95(SS, INT, spi);
 
 // everything besides fix will be zero until the first time the GPS gets a fix
 RadioPacket packet = {
@@ -52,10 +42,12 @@ void setup() {
     while (!Serial && millis() < 500)
         ;  // wait up to 500ms for serial to connect; needed for native USB
 
+    spi.setPins(MISO, MOSI, SCK);
+
     if (!rf95.init()) Serial.println("init failed");
     // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, +13dbM (for
     // low power module) No encryption
-    if (!rf95.setFrequency(434.0)) Serial.println("setFrequency failed");
+    if (!rf95.setFrequency(915.0)) Serial.println("setFrequency failed");
 
     // If you are using a high power RF95 eg RFM95HW, you *must* set a Tx power
     // with the ishighpowermodule flag set like this:
