@@ -50,7 +50,7 @@ const float DEFAULT_ZERO = 0;
 long convertVoltsToMPSI(float volts) { return (long)(volts * 1000000 / 0.202); }
 
 MovingMedianADC adc("cc", CC_ADC_MEDIAN_WINDOW_SIZE, DEFAULT_ZERO,
-                    convertVoltsToMPSI, false, true);
+                    convertVoltsToMPSI, false);
 
 }  // namespace combustionChamber
 

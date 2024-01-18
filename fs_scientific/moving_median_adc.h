@@ -9,10 +9,9 @@ class MovingMedianADC {
    public:
     MovingMedianADC(const char *debugName, int windowSize, float defaultZero,
                     std::function<long(float)> convertVoltsToMPSI,
-                    bool singleEnded, bool flipVolts = false)
+                    bool singleEnded)
         : debugName(debugName),
           singleEnded(singleEnded),
-          flipVolts(flipVolts),
           defaultZero(defaultZero),
           zero(defaultZero),
           medianVolts(windowSize, defaultZero),
@@ -74,7 +73,6 @@ class MovingMedianADC {
    private:
     const char *debugName;
     const bool singleEnded;
-    const bool flipVolts;
     const float defaultZero;
     const std::function<long(float)> convertVoltsToMPSI;
 
@@ -84,13 +82,8 @@ class MovingMedianADC {
     utils::MovingMedian<float> medianVolts;
 
     float readVolts() {
-        float volts =
-            adc.computeVolts(singleEnded ? adc.readADC_SingleEnded(0)
-                                         : adc.readADC_Differential_0_1());
-        if (flipVolts) {
-            volts = -volts;
-        }
-        return volts;
+        return adc.computeVolts(singleEnded ? adc.readADC_SingleEnded(0)
+                                            : adc.readADC_Differential_0_1());
     }
 };
 
