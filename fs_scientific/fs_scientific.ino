@@ -5,6 +5,8 @@
 #include "moving_median_adc.h"
 #include "sentence_serial.h"
 
+const bool PRINT_DEBUG = false;
+
 // serial constants
 
 const int PC_BAUD = 115200;
@@ -123,8 +125,10 @@ void sendSentence() {
 
     serial.sendSentence(sentence);
 
-    // Serial.print("Wrote sentence to main module: ");
-    // Serial.println(sentence);
+    if (PRINT_DEBUG) {
+        Serial.print("Wrote sentence to main module: ");
+        Serial.println(sentence);
+    }
 }
 
 TickTwo sentenceTicker(sendSentence, SENTENCE_INTERVAL);
