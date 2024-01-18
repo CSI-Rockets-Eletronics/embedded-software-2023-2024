@@ -37,6 +37,9 @@ const adsGain_t ADC2_GAIN = GAIN_ONE;
 
 // device constants
 
+const ADCMode OX_TANK_ADC_MODE = ADCMode::SingleEnded;
+const ADCMode CC_ADC_MODE = ADCMode::Differential;
+
 const float OX_TANK_MPSI_PER_VOLT = 1000 / 0.00341944869;
 const float CC_MPSI_PER_VOLT = 1000000 / 0.202;
 
@@ -46,9 +49,9 @@ Adafruit_ADS1115 adc1;
 Adafruit_ADS1115 adc2;
 
 MovingMedianADC<Adafruit_ADS1115> oxTankADC("ox tank", ADC_MEDIAN_WINDOW_SIZE,
-                                            adc1, ADCMode::SingleEnded);
+                                            adc1, OX_TANK_ADC_MODE);
 MovingMedianADC<Adafruit_ADS1115> ccADC("cc", ADC_MEDIAN_WINDOW_SIZE, adc2,
-                                        ADCMode::Differential);
+                                        CC_ADC_MODE);
 
 void recalibrate();
 void clearCalibration();
