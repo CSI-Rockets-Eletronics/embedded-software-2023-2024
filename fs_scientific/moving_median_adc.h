@@ -5,7 +5,14 @@
 
 #include "utils.h"
 
-enum class ADCMode { SingleEnded, Differential };
+enum class ADCMode {
+    SingleEnded_0,
+    SingleEnded_1,
+    SingleEnded_2,
+    SingleEnded_3,
+    Differential_0_1,
+    Differential_2_3
+};
 
 template <typename ADCType>
 class MovingMedianADC {
@@ -52,9 +59,30 @@ class MovingMedianADC {
     utils::MovingMedian<float> medianVolts;
 
     float readVolts() {
-        return adc.computeVolts(mode == ADCMode::SingleEnded
-                                    ? adc.readADC_SingleEnded(0)
-                                    : adc.readADC_Differential_0_1());
+        int16_t counts = 0;
+
+        switch (mode) {
+            case ADCMode::SingleEnded_0:
+                counts = adc.readADC_SingleEnded(0);
+                break;
+            case ADCMode::SingleEnded_1:
+                counts = adc.readADC_SingleEnded(1);
+                break;
+            case ADCMode::SingleEnded_2:
+                counts = adc.readADC_SingleEnded(2);
+                break;
+            case ADCMode::SingleEnded_3:
+                counts = adc.readADC_SingleEnded(3);
+                break;
+            case ADCMode::Differential_0_1:
+                counts = adc.readADC_Differential_0_1();
+                break;
+            case ADCMode::Differential_2_3:
+                counts = adc.readADC_Differential_2_3();
+                break;
+        }
+
+        return adc.computeVolts(counts);
     }
 
     void printSetZeroVolts() {
