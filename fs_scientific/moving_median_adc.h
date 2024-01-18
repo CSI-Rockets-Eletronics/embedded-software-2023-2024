@@ -5,85 +5,62 @@
 
 #include "utils.h"
 
+enum class ADCMode { SingleEnded, Differential };
+
 class MovingMedianADC {
    public:
-    MovingMedianADC(const char *debugName, int windowSize, float defaultZero,
-                    std::function<long(float)> convertVoltsToMPSI,
-                    bool singleEnded)
+    MovingMedianADC(const char* debugName, int windowSize,
+                    Adafruit_ADS1115& adc, ADCMode mode)
         : debugName(debugName),
-          singleEnded(singleEnded),
-          defaultZero(defaultZero),
-          zero(defaultZero),
-          medianVolts(windowSize, defaultZero),
-          convertVoltsToMPSI(convertVoltsToMPSI) {}
+          mode(mode),
+          adc(adc),
+          medianVolts(windowSize, 0) {}
 
-    // returns new zero
+    // returns new zero volts
     float recalibrate(int sampleCount) {
         std::vector<float> samples;
         for (int i = 0; i < sampleCount; i++) {
             samples.push_back(readVolts());
         }
-        float newZero = utils::median(samples);
-        setZero(newZero);
-        return newZero;
+        float newZeroVolts = utils::median(samples);
+        setZero(newZeroVolts);
+        return newZeroVolts;
     }
 
-    void printSetZero() {
-        Serial.print("Set zero to ");
-        Serial.print(zero);
-        Serial.print(" for ");
-        Serial.println(debugName);
+    void resetZero() { setZero(0); }
+
+    void setZero(float newZeroVolts) {
+        zeroVolts = newZeroVolts;
+        medianVolts.reset(newZeroVolts);
+        printSetZeroVolts();
     }
 
-    void setZeroToDefault() { setZero(defaultZero); }
+    float getLatestVolts() { return medianVolts.getLatest() - zeroVolts; }
 
-    void setZero(float newZero) {
-        zero = newZero;
-        medianVolts.reset(newZero);
-        printSetZero();
-    }
+    float getMedianVolts() { return medianVolts.getMedian() - zeroVolts; }
 
-    long getMPSI() {
-        float volts = medianVolts.getLatest() - zero;
-        return convertVoltsToMPSI(volts);
-    }
-
-    long getMedianMPSI() {
-        float volts = medianVolts.getMedian() - zero;
-        return convertVoltsToMPSI(volts);
-    }
-
-    float getRawVolts() { return medianVolts.getLatest(); }
-
-    void init(uint8_t adc_addr, TwoWire &wire, adsGain_t gain) {
-        printSetZero();  // print initial zero
-
-        adc.setDataRate(RATE_ADS1115_860SPS);
-        adc.setGain(gain);
-        if (!adc.begin(adc_addr, &wire)) {
-            Serial.print("Failed to initialize ADC for ");
-            Serial.println(debugName);
-            while (1)
-                ;
-        }
-    }
-
+    // polls ADC for a new reading and saves it
     void tick() { medianVolts.add(readVolts()); }
 
    private:
-    const char *debugName;
-    const bool singleEnded;
-    const float defaultZero;
-    const std::function<long(float)> convertVoltsToMPSI;
+    const char* debugName;
+    Adafruit_ADS1115& adc;
+    const ADCMode mode;
 
-    Adafruit_ADS1115 adc;
-
-    float zero;
+    float zeroVolts = 0;
     utils::MovingMedian<float> medianVolts;
 
     float readVolts() {
-        return adc.computeVolts(singleEnded ? adc.readADC_SingleEnded(0)
-                                            : adc.readADC_Differential_0_1());
+        return adc.computeVolts(mode == ADCMode::SingleEnded
+                                    ? adc.readADC_SingleEnded(0)
+                                    : adc.readADC_Differential_0_1());
+    }
+
+    void printSetZeroVolts() {
+        Serial.print("Set zero to ");
+        Serial.print(zeroVolts);
+        Serial.print("volts for ");
+        Serial.println(debugName);
     }
 };
 
