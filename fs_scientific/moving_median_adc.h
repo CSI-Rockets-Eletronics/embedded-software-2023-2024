@@ -7,10 +7,11 @@
 
 enum class ADCMode { SingleEnded, Differential };
 
+template <typename ADCType>
 class MovingMedianADC {
    public:
-    MovingMedianADC(const char* debugName, int windowSize,
-                    Adafruit_ADS1115& adc, ADCMode mode)
+    MovingMedianADC(const char* debugName, int windowSize, ADCType& adc,
+                    ADCMode mode)
         : debugName(debugName),
           mode(mode),
           adc(adc),
@@ -44,7 +45,7 @@ class MovingMedianADC {
 
    private:
     const char* debugName;
-    Adafruit_ADS1115& adc;
+    ADCType& adc;
     const ADCMode mode;
 
     float zeroVolts = 0;

@@ -45,10 +45,10 @@ const float CC_MPSI_PER_VOLT = 1000000 / 0.202;
 Adafruit_ADS1115 adc1;
 Adafruit_ADS1115 adc2;
 
-MovingMedianADC oxTankADC("ox tank", ADC_MEDIAN_WINDOW_SIZE, adc1,
-                          ADCMode::SingleEnded);
-MovingMedianADC ccADC("cc", ADC_MEDIAN_WINDOW_SIZE, adc2,
-                      ADCMode::Differential);
+MovingMedianADC<Adafruit_ADS1115> oxTankADC("ox tank", ADC_MEDIAN_WINDOW_SIZE,
+                                            adc1, ADCMode::SingleEnded);
+MovingMedianADC<Adafruit_ADS1115> ccADC("cc", ADC_MEDIAN_WINDOW_SIZE, adc2,
+                                        ADCMode::Differential);
 
 void recalibrate();
 void clearCalibration();
