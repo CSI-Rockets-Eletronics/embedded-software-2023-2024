@@ -15,7 +15,20 @@ url = sys.argv[1]
 environmentKey = sys.argv[2]
 device = sys.argv[3]
 
-last_ts = None
+
+def fetch_ts():
+    result = requests.get(
+        f"{url}/ts",
+        headers={"content-type": "application/json"},
+    )
+
+    if result.status_code != 200:
+        raise Exception(f"Error fetching ts from server (status: {result.status_code})")
+
+    return result.json()
+
+
+last_ts = fetch_ts()
 
 while True:
     time.sleep(FETCH_INTERVAL_SEC)
@@ -30,9 +43,7 @@ while True:
         result = requests.get(
             f"{url}/messages/next",
             params=params,
-            headers={
-                "content-type": "application/json",
-            },
+            headers={"content-type": "application/json"},
         )
     except Exception as e:
         if isinstance(e, KeyboardInterrupt):
