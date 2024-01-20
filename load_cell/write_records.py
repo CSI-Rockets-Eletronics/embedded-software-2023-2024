@@ -31,8 +31,8 @@ while True:
         if len(records) >= MAX_RECORDS_PER_BATCH:
             continue
 
-        split = input_line.split(" ", 2)
-        if len(split) != 3 or split[0] != "rec:":
+        split = input_line.split(" ")
+        if len(split) != 4 or split[0] != "rec:":
             continue
         _, ts, lbs1, lbs2 = split
 
