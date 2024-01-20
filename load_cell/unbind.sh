@@ -2,15 +2,18 @@
 
 set -eo pipefail
 
-# Get the usb device to unbind
+# Get the usb devices to unbind
 output=$(ls /sys/bus/usb/drivers/ftdi_sio)
 # Split the output into an array
 output_array=($output)
-# Get the first element of the array
-usb_device=${output_array[0]}
 
-# if $usb_device is "bind", then the device is already unbound
-if [ "$usb_device" != "bind" ]; then
+# Loop through the output array
+for usb_device in "${output_array[@]}"; do
+    # All the devices that we want to unbind are listed before the "bind" entry
+    if [ "$usb_device" == "bind" ]; then
+        break
+    fi
+
     # Unbind the usb device
     echo -n $usb_device | sudo tee /sys/bus/usb/drivers/ftdi_sio/unbind
-fi
+done
