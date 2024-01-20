@@ -31,14 +31,8 @@ class IDA100 {
     };
 
    public:
-    IDA100(PVOID devIndex, double ticksPerPound)
+    IDA100(const char *serialNumber, double ticksPerPound)
         : ticksPerPound(ticksPerPound) {
-        // read serial number of device at devIndex
-        char serialNumber[64];
-        safe_FT("FT_ListDevices",
-                FT_ListDevices(devIndex, serialNumber,
-                               FT_LIST_BY_INDEX | FT_OPEN_BY_SERIAL_NUMBER));
-
         // open device by serial number and store into this.ftHandle
         std::cout << "Opening device with serial number: " << serialNumber
                   << std::endl;

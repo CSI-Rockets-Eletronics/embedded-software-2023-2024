@@ -34,15 +34,13 @@ while True:
         split = input_line.split(" ", 2)
         if len(split) != 3 or split[0] != "rec:":
             continue
-        _, ts, data = split
-
-        ts = int(ts)
-        data = json.loads(data)
+        _, ts, lbs1, lbs2 = split
 
         records.append(
             {
-                "ts": ts,
-                "data": data,
+                "ts": int(ts),
+                "lbs1": json.loads(lbs1),
+                "lbs2": json.loads(lbs2),
             }
         )
 

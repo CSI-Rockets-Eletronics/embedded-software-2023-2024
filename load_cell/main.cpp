@@ -5,15 +5,19 @@
 
 #include "ida100.h"
 
-const PVOID DEV_INDEX = 0;
+const char* SERIAL_NUMBER_1 = "652964";
+const char* SERIAL_NUMBER_2 = "1076702";
 
-const double TICKS_PER_POUND = 10.0 / 2000.0 * 100000.0 * 3.5;
+const double TICKS_PER_POUND_1 = 10.0 / 2000.0 * 100000.0 * 3.5;
+const double TICKS_PER_POUND_2 = 10.0 / 2000.0 * 100000.0 * 3.5;
 
-IDA100 ida100(DEV_INDEX, TICKS_PER_POUND);
+IDA100 loadCell1(SERIAL_NUMBER_1, TICKS_PER_POUND_1);
+IDA100 loadCell2(SERIAL_NUMBER_2, TICKS_PER_POUND_2);
 
 void sigintHandler(int sig) {
-    std::cout << "Caught SIGINT, closing device" << std::endl;
-    ida100.close();
+    std::cout << "Caught SIGINT, closing devices" << std::endl;
+    loadCell1.close();
+    loadCell2.close();
     exit(sig);
 }
 
@@ -33,7 +37,8 @@ void checkForCalibration() {
         std::cin >> message;
 
         if (message == "calibrate") {
-            ida100.calibrate();
+            loadCell1.calibrate();
+            loadCell2.calibrate();
         }
     }
 }
@@ -41,15 +46,18 @@ void checkForCalibration() {
 int main() {
     signal(SIGINT, sigintHandler);
 
-    ida100.calibrate();
+    loadCell1.calibrate();
+    loadCell2.calibrate();
 
     while (true) {
         checkForCalibration();
 
-        double lbs = ida100.readLbs();
-
         uint64_t timestamp = micros();
 
-        std::cout << "rec: " << timestamp << " " << lbs << std::endl;
+        double lbs1 = loadCell1.readLbs();
+        double lbs2 = loadCell2.readLbs();
+
+        std::cout << "rec: " << timestamp << " " << lbs1 << " " << lbs2
+                  << std::endl;
     }
 }
