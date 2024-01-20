@@ -39,8 +39,10 @@ while True:
         records.append(
             {
                 "ts": int(ts),
-                "lbs1": json.loads(lbs1),
-                "lbs2": json.loads(lbs2),
+                "data": {
+                    "lbs1": float(lbs1),
+                    "lbs2": float(lbs2),
+                },
             }
         )
 
