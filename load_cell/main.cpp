@@ -9,7 +9,7 @@
 IDA100 loadCell;
 
 void sigintHandler(int sig) {
-    std::cout << "Caught SIGINT, closing devices" << std::endl;
+    std::cout << "Caught SIGINT, closing device" << std::endl;
     loadCell.close();
     exit(sig);
 }
