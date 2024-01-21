@@ -16,20 +16,16 @@ fi
 mkfifo pipe0
 mkfifo pipe1
 
-(
-    set -eo pipefail
-    # start read_messages.py in background
-    python read_messages.py http://localhost:3000 0 LoadCell0 > pipe0 & READ_PID_0=$!
-    # start main and write_records.py in foreground
-    ./main 652964 1750 < pipe0 | python write_records.py http://localhost:3000 0 LoadCell0
-    # kill read_messages.py
-    kill $READ_PID_0
-) & (
-    set -eo pipefail
-    # start read_messages.py in background
-    python read_messages.py http://localhost:3000 0 LoadCell1 > pipe1 & READ_PID_1=$!
-    # start main and write_records.py in foreground
-    ./main 1076702 1750 < pipe1 | python write_records.py http://localhost:3000 0 LoadCell1
-    # kill read_messages.py
-    kill $READ_PID_1
-)
+# start read_messages.py in background
+python read_messages.py http://localhost:3000 0 LoadCell0 > pipe0 &
+python read_messages.py http://localhost:3000 0 LoadCell1 > pipe1 &
+
+# start main and write_records.py in background
+./main 652964 1750 < pipe0 | python write_records.py http://localhost:3000 0 LoadCell0 &
+./main 1076702 1750 < pipe1 | python write_records.py http://localhost:3000 0 LoadCell1 &
+
+# wait for any of the background processes to finish
+wait -n
+
+# kill the other background processes
+pkill -P $$
