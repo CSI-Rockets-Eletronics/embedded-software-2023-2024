@@ -1,7 +1,5 @@
 import sys
 import requests
-import gzip
-import json
 import select
 
 DEBUG_PRINT = False
@@ -35,7 +33,7 @@ while True:
         split = input_line.split(" ")
         if len(split) != 3 or split[0] != "rec:":
             continue
-        _, ts, lbs  = split
+        _, ts, lbs = split
 
         records.append(
             {
@@ -53,17 +51,11 @@ while True:
         "records": records,
     }
 
-    # body_compressed = gzip.compress(json.dumps(body).encode("utf-8"))
-
     try:
         result = requests.post(
             f"{url}/records/batch",
-            # no compression
             json=body,
             headers={"content-type": "application/json"},
-            # compression (not needed for localhost, as we'd just be wasting CPU)
-            # data=body_compressed,
-            # headers={"content-type": "application/json-gzip"},
         )
     except Exception as e:
         if isinstance(e, KeyboardInterrupt):
