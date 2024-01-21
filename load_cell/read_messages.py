@@ -50,7 +50,7 @@ while True:
             sys.exit(0)
 
         print(
-            "Error reading messages from server (requests.post failed)",
+            "Error reading messages from server (requests.get failed)",
             file=sys.stderr,
         )
         continue
