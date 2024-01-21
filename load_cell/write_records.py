@@ -4,6 +4,7 @@ import gzip
 import json
 import select
 
+DEBUG_PRINT = False
 MAX_RECORDS_PER_BATCH = 10
 
 if len(sys.argv) < 4:
@@ -79,7 +80,7 @@ while True:
             f"Error sending records to server (status: {result.status_code})",
             file=sys.stderr,
         )
-    else:
+    elif DEBUG_PRINT:
         print(
             # f"Sent {len(records)} records to server (compressed length={len(body_compressed)})",
             f"Sent {len(records)} records to server",
