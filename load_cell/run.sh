@@ -28,4 +28,4 @@ python read_messages.py http://localhost:3000 0 LoadCell1 > pipe1 &
 wait -n
 
 # kill the other background processes
-pkill -P $$
+kill 0
