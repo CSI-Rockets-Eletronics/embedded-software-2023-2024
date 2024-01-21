@@ -27,3 +27,6 @@ wait -n
 
 # kill the other background processes
 pkill -P $$
+
+# wait for the background processes to finish
+wait
