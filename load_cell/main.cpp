@@ -2,22 +2,15 @@
 #include <sys/poll.h>
 
 #include <chrono>
+#include <string>
 
 #include "ida100.h"
 
-const char* SERIAL_NUMBER_1 = "652964";
-const char* SERIAL_NUMBER_2 = "1076702";
-
-const double TICKS_PER_POUND_1 = 10.0 / 2000.0 * 100000.0 * 3.5;
-const double TICKS_PER_POUND_2 = 10.0 / 2000.0 * 100000.0 * 3.5;
-
-IDA100 loadCell1(SERIAL_NUMBER_1, TICKS_PER_POUND_1);
-IDA100 loadCell2(SERIAL_NUMBER_2, TICKS_PER_POUND_2);
+IDA100 loadCell;
 
 void sigintHandler(int sig) {
     std::cout << "Caught SIGINT, closing devices" << std::endl;
-    loadCell1.close();
-    loadCell2.close();
+    loadCell.close();
     exit(sig);
 }
 
@@ -37,27 +30,33 @@ void checkForCalibration() {
         std::cin >> message;
 
         if (message == "calibrate") {
-            loadCell1.calibrate();
-            loadCell2.calibrate();
+            loadCell.calibrate();
         }
     }
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+    if (argc != 3) {
+        std::cout << "Usage: " << argv[0]
+                  << " <serial number> <ticks per pound>" << std::endl;
+        exit(1);
+    }
+
+    char* serialNumber = argv[1];
+    double ticksPerPound = std::stod(argv[2]);
+
+    loadCell.open(serialNumber);
+
     signal(SIGINT, sigintHandler);
 
-    loadCell1.calibrate();
-    loadCell2.calibrate();
+    loadCell.calibrate();
 
     while (true) {
         checkForCalibration();
 
         uint64_t timestamp = micros();
+        double lbs = loadCell.read() / ticksPerPound;
 
-        double lbs1 = loadCell1.readLbs();
-        double lbs2 = loadCell2.readLbs();
-
-        std::cout << "rec: " << timestamp << " " << lbs1 << " " << lbs2
-                  << std::endl;
+        std::cout << "rec: " << timestamp << " " << lbs << std::endl;
     }
 }

@@ -32,17 +32,14 @@ while True:
             continue
 
         split = input_line.split(" ")
-        if len(split) != 4 or split[0] != "rec:":
+        if len(split) != 3 or split[0] != "rec:":
             continue
-        _, ts, lbs1, lbs2 = split
+        _, ts, lbs  = split
 
         records.append(
             {
                 "ts": int(ts),
-                "data": {
-                    "lbs1": float(lbs1),
-                    "lbs2": float(lbs2),
-                },
+                "data": float(lbs),
             }
         )
 

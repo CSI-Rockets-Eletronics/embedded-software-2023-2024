@@ -8,13 +8,12 @@
 
 #include "ftd2xx.h"
 
+static const int CALIBRATE_SAMPLES = 50;
+
 class IDA100 {
    private:
-    const int CALIBRATE_SAMPLES = 50;
-
-    const double ticksPerPound;
-
     FT_HANDLE ftHandle;
+    bool isOpen = false;
     int calibZero;
 
     void die(std::string msg) {
@@ -22,32 +21,13 @@ class IDA100 {
         exit(1);
     };
 
-    void safe_FT(const char *label, FT_STATUS ftStatus) {
+    void safe_FT(const char* label, FT_STATUS ftStatus) {
         if (ftStatus != FT_OK) {
             std::string msg = "safe_FT error for " + std::string(label) + ": " +
                               std::to_string(ftStatus);
             die(msg);
         }
     };
-
-   public:
-    IDA100(const char *serialNumber, double ticksPerPound)
-        : ticksPerPound(ticksPerPound) {
-        // open device by serial number and store into this.ftHandle
-        std::cout << "Opening device with serial number: " << serialNumber
-                  << std::endl;
-        safe_FT("FT_OpenEx", FT_OpenEx((PVOID)serialNumber,
-                                       FT_OPEN_BY_SERIAL_NUMBER, &ftHandle));
-
-        // set device parameters (snooped from FUTEK_USB_DLL)
-        safe_FT("FT_SetTimeouts", FT_SetTimeouts(ftHandle, 500, 500));
-        safe_FT("FT_SetUSBParameters", FT_SetUSBParameters(ftHandle, 8, 8));
-        safe_FT("FT_SetLatencyTimer", FT_SetLatencyTimer(ftHandle, 2));
-    }
-
-    void close() { safe_FT("FT_Close", FT_Close(ftHandle)); }
-
-    ~IDA100() { close(); }
 
     int readRawData() {
         DWORD bytesWritten;
@@ -96,9 +76,47 @@ class IDA100 {
         return data;
     }
 
-    int readCalibratedData() { return readRawData() - calibZero; }
+   public:
+    void open(const char* serialNumber) {
+        if (isOpen) {
+            die("IDA100 open() called when already open");
+        }
+        isOpen = true;
+
+        // open device by serial number and store into this.ftHandle
+        std::cout << "Opening device with serial number: " << serialNumber
+                  << std::endl;
+        safe_FT("FT_OpenEx", FT_OpenEx((PVOID)serialNumber,
+                                       FT_OPEN_BY_SERIAL_NUMBER, &ftHandle));
+
+        // set device parameters (snooped from FUTEK_USB_DLL)
+        safe_FT("FT_SetTimeouts", FT_SetTimeouts(ftHandle, 500, 500));
+        safe_FT("FT_SetUSBParameters", FT_SetUSBParameters(ftHandle, 8, 8));
+        safe_FT("FT_SetLatencyTimer", FT_SetLatencyTimer(ftHandle, 2));
+    }
+
+    void close() {
+        if (!isOpen) {
+            die("IDA100 close() called when not open");
+        }
+        isOpen = false;
+
+        safe_FT("FT_Close", FT_Close(ftHandle));
+    }
+
+    int read() {
+        if (!isOpen) {
+            die("IDA100 read() called before open()");
+        }
+
+        return readRawData() - calibZero;
+    }
 
     void calibrate() {
+        if (!isOpen) {
+            die("IDA100 calibrate() called before open()");
+        }
+
         std::vector<int> samples;
         for (int i = 0; i < CALIBRATE_SAMPLES; i++) {
             samples.push_back(readRawData());
@@ -108,8 +126,6 @@ class IDA100 {
         std::sort(samples.begin(), samples.end());
         calibZero = samples[CALIBRATE_SAMPLES / 2];
     }
-
-    double readLbs() { return readCalibratedData() / ticksPerPound; }
 };
 
 #endif  // IDA100_H
