@@ -2,6 +2,14 @@
 
 set -eo pipefail
 
+# Function to kill all background processes
+kill_all() {
+    pkill -P $$
+}
+
+# Trap the SIGINT signal (Ctrl+C) and call the kill_all function
+trap kill_all SIGINT
+
 ./unbind.sh
 
 # remove pipes if they exist
@@ -28,4 +36,4 @@ python read_messages.py http://localhost:3000 0 LoadCell1 > pipe1 &
 wait -n
 
 # kill the other background processes
-pkill -P $$
+kill_all
