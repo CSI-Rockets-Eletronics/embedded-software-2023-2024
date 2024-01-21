@@ -1,6 +1,7 @@
 import sys
 import requests
 import select
+import time
 
 DEBUG_PRINT = False
 MAX_RECORDS_PER_BATCH = 10
@@ -20,6 +21,9 @@ device = sys.argv[3]
 def has_input():
     return select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], [])
 
+
+record_count = 0
+start_time = time.time()
 
 while True:
     records = []
@@ -78,3 +82,12 @@ while True:
             f"Sent {len(records)} records to server",
             file=sys.stderr,
         )
+
+    record_count += len(records)
+
+    elapsed_time = time.time() - start_time
+    if elapsed_time >= 1:
+        frequency = record_count / elapsed_time
+        print(f"Frequency: {frequency} records/second")
+        record_count = 0
+        start_time = time.time()
