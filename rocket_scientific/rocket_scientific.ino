@@ -214,6 +214,9 @@ void setup() {
             ;
     }
 
+    oxTankADC.enableContinuous();
+    ccADC.enableContinuous();
+
     EEPROM.begin(EEPROM_SIZE);
     readCalibration();
 
