@@ -14,15 +14,44 @@ enum class ADCMode {
     Differential_2_3
 };
 
+// if continuous is true, the ADC must only be used for one channel
 template <typename ADCType>
 class MovingMedianADC {
    public:
     MovingMedianADC(const char* debugName, int windowSize, ADCType& adc,
                     ADCMode mode)
         : debugName(debugName),
-          mode(mode),
           adc(adc),
+          mode(mode),
           medianVolts(windowSize, 0) {}
+
+    void enableContinuous() {
+        uint16_t mux;
+
+        switch (mode) {
+            case ADCMode::SingleEnded_0:
+                mux = ADS1X15_REG_CONFIG_MUX_SINGLE_0;
+                break;
+            case ADCMode::SingleEnded_1:
+                mux = ADS1X15_REG_CONFIG_MUX_SINGLE_1;
+                break;
+            case ADCMode::SingleEnded_2:
+                mux = ADS1X15_REG_CONFIG_MUX_SINGLE_2;
+                break;
+            case ADCMode::SingleEnded_3:
+                mux = ADS1X15_REG_CONFIG_MUX_SINGLE_3;
+                break;
+            case ADCMode::Differential_0_1:
+                mux = ADS1X15_REG_CONFIG_MUX_DIFF_0_1;
+                break;
+            case ADCMode::Differential_2_3:
+                mux = ADS1X15_REG_CONFIG_MUX_DIFF_2_3;
+                break;
+        }
+
+        adc.startADCReading(mux, true);
+        continuous = true;
+    }
 
     // returns new zero volts
     float recalibrate(int sampleCount) {
@@ -55,31 +84,36 @@ class MovingMedianADC {
     ADCType& adc;
     const ADCMode mode;
 
+    bool continuous = false;
     float zeroVolts = 0;
     utils::MovingMedian<float> medianVolts;
 
     float readVolts() {
-        int16_t counts = 0;
+        int16_t counts;
 
-        switch (mode) {
-            case ADCMode::SingleEnded_0:
-                counts = adc.readADC_SingleEnded(0);
-                break;
-            case ADCMode::SingleEnded_1:
-                counts = adc.readADC_SingleEnded(1);
-                break;
-            case ADCMode::SingleEnded_2:
-                counts = adc.readADC_SingleEnded(2);
-                break;
-            case ADCMode::SingleEnded_3:
-                counts = adc.readADC_SingleEnded(3);
-                break;
-            case ADCMode::Differential_0_1:
-                counts = adc.readADC_Differential_0_1();
-                break;
-            case ADCMode::Differential_2_3:
-                counts = adc.readADC_Differential_2_3();
-                break;
+        if (continuous) {
+            counts = adc.getLastConversionResults();
+        } else {
+            switch (mode) {
+                case ADCMode::SingleEnded_0:
+                    counts = adc.readADC_SingleEnded(0);
+                    break;
+                case ADCMode::SingleEnded_1:
+                    counts = adc.readADC_SingleEnded(1);
+                    break;
+                case ADCMode::SingleEnded_2:
+                    counts = adc.readADC_SingleEnded(2);
+                    break;
+                case ADCMode::SingleEnded_3:
+                    counts = adc.readADC_SingleEnded(3);
+                    break;
+                case ADCMode::Differential_0_1:
+                    counts = adc.readADC_Differential_0_1();
+                    break;
+                case ADCMode::Differential_2_3:
+                    counts = adc.readADC_Differential_2_3();
+                    break;
+            }
         }
 
         return adc.computeVolts(counts);
