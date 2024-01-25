@@ -26,6 +26,8 @@ void setPyroValve(bool on);
 void setPyroCutter(bool on);
 void setIgniter(bool on);
 
+void setServoValveAttached(bool attached);
+
 }  // namespace relay
 
 namespace oxTank {

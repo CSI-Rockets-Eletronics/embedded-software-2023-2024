@@ -397,6 +397,7 @@ void tick() {
     setPyroCutter(false);
     setPyroValve(false);
     setIgniter(false);
+    setServoValveAttached(false);
 
     switch (curState) {
         // standby
@@ -486,23 +487,28 @@ void tick() {
         // fire
         case State::FIRE_PYRO_CUTTER:
             setPyroCutter(true);
+            setServoValveAttached(true);
             break;
         case State::FIRE_IGNITER:
             setPyroCutter(true);
             setIgniter(true);
+            setServoValveAttached(true);
             break;
         case State::FIRE_PYRO_VALVE:
             setPyroCutter(true);
             setIgniter(true);
             setPyroValve(true);
+            setServoValveAttached(true);
             break;
         // fire-manual-igniter
         case State::FIRE_MANUAL_IGNITER:
             setIgniter(true);
+            setServoValveAttached(true);
             break;
         // fire-manual-valve
         case State::FIRE_MANUAL_VALVE:
             setPyroValve(true);
+            setServoValveAttached(true);
             break;
         // abort
         case State::ABORT:

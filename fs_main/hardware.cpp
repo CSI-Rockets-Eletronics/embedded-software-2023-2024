@@ -89,6 +89,7 @@ void tick() { serial.tick(); }
 namespace relay {
 
 // hardware mappings
+
 const int RELAY1_PIN = 5;
 const int RELAY2_PIN = 6;
 const int RELAY3_PIN = 7;
@@ -96,15 +97,20 @@ const int RELAY4_PIN = 15;
 const int RELAY5_PIN = 16;
 const int RELAY6_PIN = 17;
 
+const int SERVO1_PIN = 18;
+const int SERVO2_PIN = 8;
+const int SERVO3_PIN = 9;
+
+// logical mappings
+
 const int FILL_PIN = RELAY1_PIN;
 const int VENT_PIN = RELAY2_PIN;
 const int IGNITER_PIN = RELAY3_PIN;
 const int PYRO_CUTTER_PIN = RELAY6_PIN;
 
-// we just need to turn this pin off (since it gets enabled during boot)
-const int EXTRA_PIN = RELAY5_PIN;
+const int SERVO_VALVE_PIN = SERVO1_PIN;
 
-const int SERVO_VALVE_PIN = 18;
+// end mappings
 
 const int SERVO_VALVE_CLOSED_POS = 58;
 const int SERVO_VALVE_OPEN_POS = 162;
@@ -112,13 +118,13 @@ const int SERVO_VALVE_OPEN_POS = 162;
 // the valve is controlled by a servo rather than a relay
 Servo servoValve;
 
-bool servoValveAttached = false;
-
 bool fillOn = false;
 bool ventOn = false;
 bool pyroValveOn = false;
 bool pyroCutterOn = false;
 bool igniterOn = false;
+
+bool servoValveAttached = false;
 
 bool getFill() { return fillOn; }
 bool getVent() { return ventOn; }
@@ -132,17 +138,21 @@ void setPyroValve(bool on) { pyroValveOn = on; }
 void setPyroCutter(bool on) { pyroCutterOn = on; }
 void setIgniter(bool on) { igniterOn = on; }
 
+void setServoValveAttached(bool attached) { servoValveAttached = attached; }
+
 void writeRelay(int pin, bool on) { digitalWrite(pin, on ? HIGH : LOW); }
 
 void writeServoValveAttached(bool shouldAttach) {
-    if (servoValveAttached == shouldAttach) return;
+    static bool _currentlyAttached = false;
+
+    if (_currentlyAttached == shouldAttach) return;
+    _currentlyAttached = shouldAttach;
 
     if (shouldAttach) {
         servoValve.attach(SERVO_VALVE_PIN);
     } else {
         servoValve.detach();
     }
-    servoValveAttached = shouldAttach;
 }
 
 void flush() {
@@ -151,11 +161,9 @@ void flush() {
     writeRelay(PYRO_CUTTER_PIN, pyroCutterOn);
     writeRelay(IGNITER_PIN, igniterOn);
 
-    // hack: power servo valve when pyro cutter is on
-    bool shouldAttachServoValve = pyroValveOn || pyroCutterOn;
-    writeServoValveAttached(shouldAttachServoValve);
+    writeServoValveAttached(servoValveAttached);
 
-    if (shouldAttachServoValve) {
+    if (servoValveAttached) {
         servoValve.write(pyroValveOn ? SERVO_VALVE_OPEN_POS
                                      : SERVO_VALVE_CLOSED_POS);
     }
@@ -166,10 +174,6 @@ void init() {
     pinMode(VENT_PIN, OUTPUT);
     pinMode(PYRO_CUTTER_PIN, OUTPUT);
     pinMode(IGNITER_PIN, OUTPUT);
-
-    // turn extra pin off (since it gets enabled during boot)
-    pinMode(EXTRA_PIN, OUTPUT);
-    writeRelay(EXTRA_PIN, false);
 
     // this is necessary to ensure the servo signal starts with 0V
     servoValve.attach(SERVO_VALVE_PIN);
