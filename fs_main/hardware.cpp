@@ -104,7 +104,7 @@ const int PYRO_CUTTER_PIN = RELAY6_PIN;
 // we just need to turn this pin off (since it gets enabled during boot)
 const int EXTRA_PIN = RELAY5_PIN;
 
-const int SERVO_VALVE_PIN = 39;
+const int SERVO_VALVE_PIN = 18;
 
 const int SERVO_VALVE_CLOSED_POS = 58;
 const int SERVO_VALVE_OPEN_POS = 162;
