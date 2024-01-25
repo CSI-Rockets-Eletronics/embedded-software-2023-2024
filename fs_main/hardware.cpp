@@ -112,8 +112,8 @@ const int SERVO_VALVE_PIN = SERVO1_PIN;
 
 // end mappings
 
-const int SERVO_VALVE_CLOSED_POS = 58;
-const int SERVO_VALVE_OPEN_POS = 162;
+const int SERVO_VALVE_CLOSED_POS = 10;
+const int SERVO_VALVE_OPEN_POS = 165;
 
 // the valve is controlled by a servo rather than a relay
 Servo servoValve;
