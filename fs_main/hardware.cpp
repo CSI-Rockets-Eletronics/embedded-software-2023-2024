@@ -153,7 +153,7 @@ void flush() {
 
     // hack: power servo valve when pyro cutter is on
     bool shouldAttachServoValve = pyroValveOn || pyroCutterOn;
-    writeServoValveAttached(pyroValveOn || pyroCutterOn);
+    writeServoValveAttached(shouldAttachServoValve);
 
     if (shouldAttachServoValve) {
         servoValve.write(pyroValveOn ? SERVO_VALVE_OPEN_POS
