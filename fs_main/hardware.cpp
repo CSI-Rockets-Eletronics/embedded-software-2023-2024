@@ -52,18 +52,16 @@ void processCompletedSentence(const char *sentence) {
 
     // possibility 2:
 
-    // sentence format: "[ox_tank_pressure_mpsi_long] [cc_pressure_mpsi_long]"
+    // sentence format: [bt1_pressure_mpsi_long] [bt2_pressure_mpsi_long]
     // ex: "123456 123456"
 
-    // oxTank::mpsi = 0;
-    // combustionChamber::mpsi = 0;
-
-    long oxTankVal, ccVal;
-    int result = sscanf(sentence, "%ld %ld", &oxTankVal, &ccVal);
+    long bt1, bt2;
+    int result = sscanf(sentence, "%ld %ld", &bt1, &bt2);
 
     if (result == 2) {
-        oxTank::mpsi = oxTankVal;
-        combustionChamber::mpsi = ccVal;
+        // assume bt1->oxTank, bt2->combustionChamber
+        oxTank::mpsi = bt1;
+        combustionChamber::mpsi = bt2;
         return;
     }
 
