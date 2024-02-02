@@ -18,8 +18,8 @@ const int EEPROM_SIZE = 256;
 // random int stored at address 0 that marks that subsequent values have been,
 // avoid using 0x00000000 or 0xFFFFFFFF as they may be default values
 const uint32_t EEPROM_WRITTEN_MARKER = 0x12345678;
-const int OX_TANK_ZERO_EEPROM_ADDR = 4;  // store float
-const int CC_ZERO_EEPROM_ADDR = 8;       // store float
+const int BIG_TRANSD_1_ZERO_EEPROM_ADDR = 4;  // store float
+const int BIG_TRANSD_2_ZERO_EEPROM_ADDR = 8;  // store float
 
 // shared ADC constants
 
@@ -39,21 +39,23 @@ const adsGain_t ADC2_GAIN = GAIN_TWOTHIRDS;
 
 // device constants
 
-const ADCMode OX_TANK_ADC_MODE = ADCMode::SingleEnded_2;
-const ADCMode CC_ADC_MODE = ADCMode::SingleEnded_2;
+const ADCMode BIG_TRANSD_1_ADC_MODE = ADCMode::SingleEnded_2;
+const ADCMode BIG_TRANSD_2_ADC_MODE = ADCMode::SingleEnded_2;
 
-const float OX_TANK_MPSI_PER_VOLT = 1000000;
-const float CC_MPSI_PER_VOLT = 1000000;
+const float BIG_TRANSD_1_MPSI_PER_VOLT = 1000000;
+const float BIG_TRANSD_2_MPSI_PER_VOLT = 1000000;
 
 // globals
 
 Adafruit_ADS1115 adc1;
 Adafruit_ADS1115 adc2;
 
-MovingMedianADC<Adafruit_ADS1115> oxTankADC("ox tank", ADC_MEDIAN_WINDOW_SIZE,
-                                            adc1, OX_TANK_ADC_MODE);
-MovingMedianADC<Adafruit_ADS1115> ccADC("cc", ADC_MEDIAN_WINDOW_SIZE, adc2,
-                                        CC_ADC_MODE);
+MovingMedianADC<Adafruit_ADS1115> bigTransd1ADC("big transducer 1",
+                                                ADC_MEDIAN_WINDOW_SIZE, adc1,
+                                                BIG_TRANSD_1_ADC_MODE);
+MovingMedianADC<Adafruit_ADS1115> bigTransd2ADC("big transducer 2",
+                                                ADC_MEDIAN_WINDOW_SIZE, adc2,
+                                                BIG_TRANSD_2_ADC_MODE);
 
 void recalibrate();
 void clearCalibration();
@@ -69,14 +71,14 @@ void init() { Serial2.begin(PI_BAUD, SERIAL_8N1, RX_PIN, TX_PIN); }
 
 void tick() {
     // raspberry pi expects each line to be a JSON of a record's data field
-    // ex: {"ox":123456,"cc":123456}
+    // ex: {"bt1":123456,"bt2":123456}
 
     // DB should store raw readings, not median
-    long ox = oxTankADC.getLatestVolts() * OX_TANK_MPSI_PER_VOLT;
-    long cc = ccADC.getLatestVolts() * CC_MPSI_PER_VOLT;
+    long bt1 = bigTransd1ADC.getLatestVolts() * BIG_TRANSD_1_MPSI_PER_VOLT;
+    long bt2 = bigTransd2ADC.getLatestVolts() * BIG_TRANSD_2_MPSI_PER_VOLT;
 
     char sentence[64];
-    snprintf(sentence, sizeof(sentence), "{\"ox\":%ld,\"cc\":%ld}", ox, cc);
+    snprintf(sentence, sizeof(sentence), "{\"bt1\":%ld,\"bt2\":%ld}", bt1, bt2);
 
     Serial2.println(sentence);
 }
@@ -113,15 +115,15 @@ void processCompletedSentence(const char *sentence) {
 SentenceSerial serial(Serial1, processCompletedSentence);
 
 void sendSentence() {
-    // sentence format: <ox_tank_pressure_mpsi_long cc_pressure_mpsi_long>
+    // sentence format: <bt1_pressure_mpsi_long bt2_pressure_mpsi_long>
     // ex: <123456 123456>
 
     // send median readings to main board, as this gets displayed in the live UI
-    long ox = oxTankADC.getMedianVolts() * OX_TANK_MPSI_PER_VOLT;
-    long cc = ccADC.getMedianVolts() * CC_MPSI_PER_VOLT;
+    long bt1 = bigTransd1ADC.getMedianVolts() * BIG_TRANSD_1_MPSI_PER_VOLT;
+    long bt2 = bigTransd2ADC.getMedianVolts() * BIG_TRANSD_2_MPSI_PER_VOLT;
 
     char sentence[64];
-    snprintf(sentence, sizeof(sentence), "%ld %ld", ox, cc);
+    snprintf(sentence, sizeof(sentence), "%ld %ld", bt1, bt2);
 
     serial.sendSentence(sentence);
 
@@ -148,18 +150,18 @@ void tick() {
 void readCalibration() {
     uint32_t markerVal = EEPROM.readUInt(0);
     if (markerVal == EEPROM_WRITTEN_MARKER) {
-        oxTankADC.setZero(EEPROM.readFloat(OX_TANK_ZERO_EEPROM_ADDR));
-        ccADC.setZero(EEPROM.readFloat(CC_ZERO_EEPROM_ADDR));
+        bigTransd1ADC.setZero(EEPROM.readFloat(BIG_TRANSD_1_ZERO_EEPROM_ADDR));
+        bigTransd2ADC.setZero(EEPROM.readFloat(BIG_TRANSD_2_ZERO_EEPROM_ADDR));
     }
 }
 
 void recalibrate() {
-    float oxTankZero = oxTankADC.recalibrate(ADC_CALIBRATE_SAMPLE_COUNT);
-    float ccZero = ccADC.recalibrate(ADC_CALIBRATE_SAMPLE_COUNT);
+    float bt1Zero = bigTransd1ADC.recalibrate(ADC_CALIBRATE_SAMPLE_COUNT);
+    float bt2Zero = bigTransd2ADC.recalibrate(ADC_CALIBRATE_SAMPLE_COUNT);
 
     EEPROM.writeUInt(0, EEPROM_WRITTEN_MARKER);
-    EEPROM.writeFloat(OX_TANK_ZERO_EEPROM_ADDR, oxTankZero);
-    EEPROM.writeFloat(CC_ZERO_EEPROM_ADDR, ccZero);
+    EEPROM.writeFloat(BIG_TRANSD_1_ZERO_EEPROM_ADDR, bt1Zero);
+    EEPROM.writeFloat(BIG_TRANSD_2_ZERO_EEPROM_ADDR, bt2Zero);
     EEPROM.commit();
 
     mainSerial::serial.sendSentence(mainSerial::CALIBRATION_COMPLETE_SENTENCE);
@@ -168,8 +170,8 @@ void recalibrate() {
 }
 
 void clearCalibration() {
-    oxTankADC.resetZero();
-    ccADC.resetZero();
+    bigTransd1ADC.resetZero();
+    bigTransd2ADC.resetZero();
 
     EEPROM.writeUInt(0, 0x00000000);
     EEPROM.commit();
@@ -200,8 +202,8 @@ void setup() {
             ;
     }
 
-    oxTankADC.enableContinuous();
-    ccADC.enableContinuous();
+    bigTransd1ADC.enableContinuous();
+    bigTransd2ADC.enableContinuous();
 
     EEPROM.begin(EEPROM_SIZE);
     readCalibration();
@@ -214,8 +216,8 @@ void loop() {
     frequencyLogger.tick();
 
     // read the ADCs and send sentences to the raspberry pi every tick
-    oxTankADC.tick();
-    ccADC.tick();
+    bigTransd1ADC.tick();
+    bigTransd2ADC.tick();
 
     piSerial::tick();
     mainSerial::tick();
