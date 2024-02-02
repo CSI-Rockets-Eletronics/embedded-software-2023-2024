@@ -4,3 +4,4 @@ c_cpp_properties.json
 build
 env
 .env
+__pycache__
