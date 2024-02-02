@@ -39,12 +39,11 @@ const adsGain_t ADC2_GAIN = GAIN_TWOTHIRDS;
 
 // device constants
 
-const ADCMode OX_TANK_ADC_MODE = ADCMode::Differential_0_1;
-// TODO port for Differential_0_1 has hardware issue?
-const ADCMode CC_ADC_MODE = ADCMode::Differential_2_3;
+const ADCMode OX_TANK_ADC_MODE = ADCMode::SingleEnded_2;
+const ADCMode CC_ADC_MODE = ADCMode::SingleEnded_2;
 
-const float OX_TANK_MPSI_PER_VOLT = 1000;
-const float CC_MPSI_PER_VOLT = 1000;
+const float OX_TANK_MPSI_PER_VOLT = 1000000;
+const float CC_MPSI_PER_VOLT = 1000000;
 
 // globals
 
