@@ -66,12 +66,14 @@ def run(
     # throw away possibly partial packet
     ser.read_until(delimiter)
 
+    post_thread: threading.Thread | None = None
+
     while True:
         # device -> records
         records_dict: dict[str, list[Any]] = {}
         records_count = 0
 
-        while ser.in_waiting > 0:
+        while ser.in_waiting > 0 or (post_thread and post_thread.is_alive()):
             input_packet = ser.read_until(delimiter)
             # remove delimiter
             input_packet = input_packet[: -len(delimiter)]
@@ -115,5 +117,5 @@ def run(
             records_count += 1
 
         for device, records in records_dict.items():
-            # Perform the network request on a separate thread
-            threading.Thread(target=post_records, args=(device, records)).start()
+            post_thread = threading.Thread(target=post_records, args=(device, records))
+            post_thread.start()
