@@ -67,6 +67,9 @@ namespace piSerial {
 const int RX_PIN = 14;
 const int TX_PIN = 13;
 
+// worst case, the delimiter occurs in the data, in which case we drop a packet
+uint8_t PACKET_DELIMITER[] = {0b10101010, 0b01010101};
+
 void init() { Serial2.begin(PI_BAUD, SERIAL_8N1, RX_PIN, TX_PIN); }
 
 void tick() {
@@ -74,13 +77,19 @@ void tick() {
     // ex: {"bt1":123456,"bt2":123456}
 
     // DB should store raw readings, not median
-    long bt1 = bigTransd1ADC.getLatestVolts() * BIG_TRANSD_1_MPSI_PER_VOLT;
-    long bt2 = bigTransd2ADC.getLatestVolts() * BIG_TRANSD_2_MPSI_PER_VOLT;
+    int32_t bt1_host =
+        bigTransd1ADC.getLatestVolts() * BIG_TRANSD_1_MPSI_PER_VOLT;
+    int32_t bt2_host =
+        bigTransd2ADC.getLatestVolts() * BIG_TRANSD_2_MPSI_PER_VOLT;
 
-    char sentence[64];
-    snprintf(sentence, sizeof(sentence), "{\"bt1\":%ld,\"bt2\":%ld}", bt1, bt2);
+    // deal with endianness
+    uint32_t bt1 = htonl(bt1_host);
+    uint32_t bt2 = htonl(bt2_host);
 
-    Serial2.println(sentence);
+    Serial2.write((uint8_t *)&bt1, sizeof(bt1));  // 4 bytes
+    Serial2.write((uint8_t *)&bt2, sizeof(bt2));  // 4 bytes
+
+    Serial2.write(PACKET_DELIMITER, sizeof(PACKET_DELIMITER));
 }
 
 }  // namespace piSerial
