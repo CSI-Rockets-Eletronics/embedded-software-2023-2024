@@ -73,9 +73,6 @@ uint8_t PACKET_DELIMITER[] = {0b10101010, 0b01010101};
 void init() { Serial2.begin(PI_BAUD, SERIAL_8N1, RX_PIN, TX_PIN); }
 
 void tick() {
-    // raspberry pi expects each line to be a JSON of a record's data field
-    // ex: {"bt1":123456,"bt2":123456}
-
     // DB should store raw readings, not median
     int32_t bt1_host =
         bigTransd1ADC.getLatestVolts() * BIG_TRANSD_1_MPSI_PER_VOLT;
