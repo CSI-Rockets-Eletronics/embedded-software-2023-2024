@@ -4,6 +4,7 @@ import requests
 import sys
 import serial
 from typing import Callable, Any
+import threading
 
 MAX_RECORDS_PER_BATCH = 50
 
@@ -114,4 +115,5 @@ def run(
             records_count += 1
 
         for device, records in records_dict.items():
-            post_records(device, records)
+            # Perform the network request on a separate thread
+            threading.Thread(target=post_records, args=(device, records)).start()
