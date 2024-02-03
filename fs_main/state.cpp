@@ -523,6 +523,8 @@ void tick() {
             setPyroCutter(customRelayStatus.pyroCutter);
             setIgniter(customRelayStatus.igniter);
             setServoValve(customRelayStatus.servoValve);
+            // temporary until we switch away from a servo valve
+            setServoValveAttached(customRelayStatus.servoValve);
             break;
     }
 }
