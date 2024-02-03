@@ -70,9 +70,29 @@ const int TX_PIN = 13;
 // worst case, the delimiter occurs in the data, in which case we drop a packet
 uint8_t PACKET_DELIMITER[] = {0b10101010, 0b01010101};
 
-void init() { Serial2.begin(PI_BAUD, SERIAL_8N1, RX_PIN, TX_PIN); }
+const char *RECALIBRATE_SENTENCE = "cal";
+const char *CLEAR_CALIBRATION_SENTENCE = "clear cal";
+
+void processCompletedSentence(const char *sentence) {
+    std::string sentenceStr = sentence;
+
+    if (sentenceStr == RECALIBRATE_SENTENCE) {
+        recalibrate();
+    } else if (sentenceStr == CLEAR_CALIBRATION_SENTENCE) {
+        clearCalibration();
+    } else {
+        Serial.print("Invalid sentence from pi serial: ");
+        Serial.println(sentence);
+    }
+}
+
+SentenceSerial serial(Serial2, processCompletedSentence);
+
+void init() { serial.init(RX_PIN, TX_PIN, PI_BAUD); }
 
 void tick() {
+    serial.tick();
+
     // DB should store raw readings, not median
     int32_t st1_host =
         smallTransd1ADC.getLatestVolts() * SMALL_TRANSD_1_MPSI_PER_VOLT;
@@ -83,10 +103,10 @@ void tick() {
     uint32_t st1 = htonl(st1_host);
     uint32_t st2 = htonl(st2_host);
 
-    Serial2.write((uint8_t *)&st1, sizeof(st1));  // 4 bytes
-    Serial2.write((uint8_t *)&st2, sizeof(st2));  // 4 bytes
+    serial.write((uint8_t *)&st1, sizeof(st1));  // 4 bytes
+    serial.write((uint8_t *)&st2, sizeof(st2));  // 4 bytes
 
-    Serial2.write(PACKET_DELIMITER, sizeof(PACKET_DELIMITER));
+    serial.write(PACKET_DELIMITER, sizeof(PACKET_DELIMITER));
 }
 
 }  // namespace piSerial
