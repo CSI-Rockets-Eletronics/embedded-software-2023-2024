@@ -39,7 +39,7 @@ const long MAX_MPSI = 770000;
 const long ABORT_MPSI = 900000;
 
 // buffer to prevent oscillation
-const long BUFFER_MPSI = 2000;
+const long BUFFER_MPSI = 5000;
 
 long getMPSI();
 
