@@ -26,6 +26,11 @@ class SentenceSerial {
         serial.print(SENTENCE_END);
     }
 
+    // Escape hatch for writing directly to the serial
+    void write(const uint8_t *buffer, size_t size) {
+        serial.write(buffer, size);
+    }
+
     void init(int rxPin, int txPin, int baud = 115200) {
         serial.begin(baud, SERIAL_8N1, rxPin, txPin);
         curSentence.reserve(MAX_SENTENCE_LEN + 1);  // +1 for null terminator
