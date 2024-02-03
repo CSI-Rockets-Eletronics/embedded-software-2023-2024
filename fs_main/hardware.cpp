@@ -103,8 +103,8 @@ const int SERVO3_PIN = 9;
 
 const int FILL_PIN = RELAY1_PIN;
 const int VENT_PIN = RELAY2_PIN;
-const int IGNITER_PIN = RELAY3_PIN;
-const int PYRO_CUTTER_PIN = RELAY6_PIN;
+const int PYRO_CUTTER_PIN = RELAY4_PIN;
+const int IGNITER_PIN = RELAY5_PIN;
 
 const int SERVO_VALVE_PIN = SERVO1_PIN;
 
@@ -118,24 +118,25 @@ Servo servoValve;
 
 bool fillOn = false;
 bool ventOn = false;
-bool pyroValveOn = false;
 bool pyroCutterOn = false;
 bool igniterOn = false;
 
+bool servoValveOn = false;
 bool servoValveAttached = false;
 
 bool getFill() { return fillOn; }
 bool getVent() { return ventOn; }
-bool getPyroValve() { return pyroValveOn; }
 bool getPyroCutter() { return pyroCutterOn; }
 bool getIgniter() { return igniterOn; }
 
+bool getServoValve() { return servoValveOn; }
+
 void setFill(bool on) { fillOn = on; }
 void setVent(bool on) { ventOn = on; }
-void setPyroValve(bool on) { pyroValveOn = on; }
 void setPyroCutter(bool on) { pyroCutterOn = on; }
 void setIgniter(bool on) { igniterOn = on; }
 
+void setServoValve(bool on) { servoValveOn = on; }
 void setServoValveAttached(bool attached) { servoValveAttached = attached; }
 
 void writeRelay(int pin, bool on) { digitalWrite(pin, on ? HIGH : LOW); }
@@ -162,8 +163,8 @@ void flush() {
     writeServoValveAttached(servoValveAttached);
 
     if (servoValveAttached) {
-        servoValve.write(pyroValveOn ? SERVO_VALVE_OPEN_POS
-                                     : SERVO_VALVE_CLOSED_POS);
+        servoValve.write(servoValveOn ? SERVO_VALVE_OPEN_POS
+                                      : SERVO_VALVE_CLOSED_POS);
     }
 }
 

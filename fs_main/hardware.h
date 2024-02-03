@@ -16,16 +16,17 @@ namespace relay {
 
 bool getFill();
 bool getVent();
-bool getPyroValve();
 bool getPyroCutter();
 bool getIgniter();
 
+bool getServoValve();
+
 void setFill(bool on);
 void setVent(bool on);
-void setPyroValve(bool on);
 void setPyroCutter(bool on);
 void setIgniter(bool on);
 
+void setServoValve(bool on);
 void setServoValveAttached(bool attached);
 
 }  // namespace relay

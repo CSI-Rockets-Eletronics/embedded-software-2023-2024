@@ -9,7 +9,7 @@ struct RelayStatus {
     bool fill;
     bool vent;
     bool pyroCutter;
-    bool pyroValve;
+    bool servoValve;
     bool igniter;
 };
 

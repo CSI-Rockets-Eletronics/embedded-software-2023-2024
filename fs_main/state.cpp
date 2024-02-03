@@ -395,7 +395,7 @@ void tick() {
     setFill(false);
     setVent(false);
     setPyroCutter(false);
-    setPyroValve(false);
+    setServoValve(false);
     setIgniter(false);
     setServoValveAttached(false);
 
@@ -497,7 +497,7 @@ void tick() {
         case State::FIRE_PYRO_VALVE:
             setPyroCutter(true);
             setIgniter(true);
-            setPyroValve(true);
+            setServoValve(true);
             setServoValveAttached(true);
             break;
         // fire-manual-igniter
@@ -507,7 +507,7 @@ void tick() {
             break;
         // fire-manual-valve
         case State::FIRE_MANUAL_VALVE:
-            setPyroValve(true);
+            setServoValve(true);
             setServoValveAttached(true);
             break;
         // abort
@@ -519,8 +519,8 @@ void tick() {
             setFill(customRelayStatus.fill);
             setVent(customRelayStatus.vent);
             setPyroCutter(customRelayStatus.pyroCutter);
-            setPyroValve(customRelayStatus.pyroValve);
             setIgniter(customRelayStatus.igniter);
+            setServoValve(customRelayStatus.servoValve);
             break;
     }
 }
