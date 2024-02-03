@@ -18,8 +18,8 @@ const int EEPROM_SIZE = 256;
 // random int stored at address 0 that marks that subsequent values have been,
 // avoid using 0x00000000 or 0xFFFFFFFF as they may be default values
 const uint32_t EEPROM_WRITTEN_MARKER = 0x12345678;
-const int BIG_TRANSD_1_ZERO_EEPROM_ADDR = 4;  // store float
-const int BIG_TRANSD_2_ZERO_EEPROM_ADDR = 8;  // store float
+const int SMALL_TRANSD_1_ZERO_EEPROM_ADDR = 4;  // store float
+const int SMALL_TRANSD_2_ZERO_EEPROM_ADDR = 8;  // store float
 
 // shared ADC constants
 
@@ -39,23 +39,23 @@ const adsGain_t ADC2_GAIN = GAIN_TWOTHIRDS;
 
 // device constants
 
-const ADCMode BIG_TRANSD_1_ADC_MODE = ADCMode::SingleEnded_0;
-const ADCMode BIG_TRANSD_2_ADC_MODE = ADCMode::SingleEnded_0;
+const ADCMode SMALL_TRANSD_1_ADC_MODE = ADCMode::SingleEnded_0;
+const ADCMode SMALL_TRANSD_2_ADC_MODE = ADCMode::SingleEnded_0;
 
-const float BIG_TRANSD_1_MPSI_PER_VOLT = 1000000;
-const float BIG_TRANSD_2_MPSI_PER_VOLT = 1000000;
+const float SMALL_TRANSD_1_MPSI_PER_VOLT = 1000000;
+const float SMALL_TRANSD_2_MPSI_PER_VOLT = 1000000;
 
 // globals
 
 Adafruit_ADS1115 adc1;
 Adafruit_ADS1115 adc2;
 
-MovingMedianADC<Adafruit_ADS1115> bigTransd1ADC("big transducer 1",
-                                                ADC_MEDIAN_WINDOW_SIZE, adc1,
-                                                BIG_TRANSD_1_ADC_MODE);
-MovingMedianADC<Adafruit_ADS1115> bigTransd2ADC("big transducer 2",
-                                                ADC_MEDIAN_WINDOW_SIZE, adc2,
-                                                BIG_TRANSD_2_ADC_MODE);
+MovingMedianADC<Adafruit_ADS1115> smallTransd1ADC("small transducer 1",
+                                                  ADC_MEDIAN_WINDOW_SIZE, adc1,
+                                                  SMALL_TRANSD_1_ADC_MODE);
+MovingMedianADC<Adafruit_ADS1115> smallTransd2ADC("small transducer 2",
+                                                  ADC_MEDIAN_WINDOW_SIZE, adc2,
+                                                  SMALL_TRANSD_2_ADC_MODE);
 
 void recalibrate();
 void clearCalibration();
@@ -74,17 +74,17 @@ void init() { Serial2.begin(PI_BAUD, SERIAL_8N1, RX_PIN, TX_PIN); }
 
 void tick() {
     // DB should store raw readings, not median
-    int32_t bt1_host =
-        bigTransd1ADC.getLatestVolts() * BIG_TRANSD_1_MPSI_PER_VOLT;
-    int32_t bt2_host =
-        bigTransd2ADC.getLatestVolts() * BIG_TRANSD_2_MPSI_PER_VOLT;
+    int32_t st1_host =
+        smallTransd1ADC.getLatestVolts() * SMALL_TRANSD_1_MPSI_PER_VOLT;
+    int32_t st2_host =
+        smallTransd2ADC.getLatestVolts() * SMALL_TRANSD_2_MPSI_PER_VOLT;
 
     // deal with endianness
-    uint32_t bt1 = htonl(bt1_host);
-    uint32_t bt2 = htonl(bt2_host);
+    uint32_t st1 = htonl(st1_host);
+    uint32_t st2 = htonl(st2_host);
 
-    Serial2.write((uint8_t *)&bt1, sizeof(bt1));  // 4 bytes
-    Serial2.write((uint8_t *)&bt2, sizeof(bt2));  // 4 bytes
+    Serial2.write((uint8_t *)&st1, sizeof(st1));  // 4 bytes
+    Serial2.write((uint8_t *)&st2, sizeof(st2));  // 4 bytes
 
     Serial2.write(PACKET_DELIMITER, sizeof(PACKET_DELIMITER));
 }
@@ -94,26 +94,28 @@ void tick() {
 void readCalibration() {
     uint32_t markerVal = EEPROM.readUInt(0);
     if (markerVal == EEPROM_WRITTEN_MARKER) {
-        bigTransd1ADC.setZero(EEPROM.readFloat(BIG_TRANSD_1_ZERO_EEPROM_ADDR));
-        bigTransd2ADC.setZero(EEPROM.readFloat(BIG_TRANSD_2_ZERO_EEPROM_ADDR));
+        smallTransd1ADC.setZero(
+            EEPROM.readFloat(SMALL_TRANSD_1_ZERO_EEPROM_ADDR));
+        smallTransd2ADC.setZero(
+            EEPROM.readFloat(SMALL_TRANSD_2_ZERO_EEPROM_ADDR));
     }
 }
 
 void recalibrate() {
-    float bt1Zero = bigTransd1ADC.recalibrate(ADC_CALIBRATE_SAMPLE_COUNT);
-    float bt2Zero = bigTransd2ADC.recalibrate(ADC_CALIBRATE_SAMPLE_COUNT);
+    float st1Zero = smallTransd1ADC.recalibrate(ADC_CALIBRATE_SAMPLE_COUNT);
+    float st2Zero = smallTransd2ADC.recalibrate(ADC_CALIBRATE_SAMPLE_COUNT);
 
     EEPROM.writeUInt(0, EEPROM_WRITTEN_MARKER);
-    EEPROM.writeFloat(BIG_TRANSD_1_ZERO_EEPROM_ADDR, bt1Zero);
-    EEPROM.writeFloat(BIG_TRANSD_2_ZERO_EEPROM_ADDR, bt2Zero);
+    EEPROM.writeFloat(SMALL_TRANSD_1_ZERO_EEPROM_ADDR, st1Zero);
+    EEPROM.writeFloat(SMALL_TRANSD_2_ZERO_EEPROM_ADDR, st2Zero);
     EEPROM.commit();
 
     Serial.println("Recalibrated and saved to EEPROM");
 }
 
 void clearCalibration() {
-    bigTransd1ADC.resetZero();
-    bigTransd2ADC.resetZero();
+    smallTransd1ADC.resetZero();
+    smallTransd2ADC.resetZero();
 
     EEPROM.writeUInt(0, 0x00000000);
     EEPROM.commit();
@@ -144,8 +146,8 @@ void setup() {
             ;
     }
 
-    bigTransd1ADC.enableContinuous();
-    bigTransd2ADC.enableContinuous();
+    smallTransd1ADC.enableContinuous();
+    smallTransd2ADC.enableContinuous();
 
     EEPROM.begin(EEPROM_SIZE);
     readCalibration();
@@ -157,8 +159,8 @@ void loop() {
     frequencyLogger.tick();
 
     // read the ADCs and send sentences to the raspberry pi every tick
-    bigTransd1ADC.tick();
-    bigTransd2ADC.tick();
+    smallTransd1ADC.tick();
+    smallTransd2ADC.tick();
 
     piSerial::tick();
 }
