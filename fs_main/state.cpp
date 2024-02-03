@@ -394,6 +394,7 @@ void tick() {
     // hardware::tick()
     setFill(false);
     setVent(false);
+    setAbort(false);
     setPyroCutter(false);
     setServoValve(false);
     setIgniter(false);
@@ -512,12 +513,13 @@ void tick() {
             break;
         // abort
         case State::ABORT:
-            setVent(true);
+            setAbort(true);
             break;
         // custom
         case State::CUSTOM:
             setFill(customRelayStatus.fill);
             setVent(customRelayStatus.vent);
+            setAbort(customRelayStatus.abort);
             setPyroCutter(customRelayStatus.pyroCutter);
             setIgniter(customRelayStatus.igniter);
             setServoValve(customRelayStatus.servoValve);

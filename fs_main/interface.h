@@ -8,9 +8,10 @@ namespace interface {
 struct RelayStatus {
     bool fill;
     bool vent;
+    bool abort;
     bool pyroCutter;
-    bool servoValve;
     bool igniter;
+    bool servoValve;
 };
 
 #define STANDBY_COMMAND "standby"

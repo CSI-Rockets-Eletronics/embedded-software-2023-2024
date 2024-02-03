@@ -16,6 +16,7 @@ namespace relay {
 
 bool getFill();
 bool getVent();
+bool getAbort();
 bool getPyroCutter();
 bool getIgniter();
 
@@ -23,6 +24,7 @@ bool getServoValve();
 
 void setFill(bool on);
 void setVent(bool on);
+void setAbort(bool on);
 void setPyroCutter(bool on);
 void setIgniter(bool on);
 

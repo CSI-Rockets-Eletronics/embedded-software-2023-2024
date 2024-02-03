@@ -51,17 +51,18 @@ byte getStateByte() {
 byte getRelayStatusByte() {
     using namespace hardware::relay;
 
-    return (getFill() * 1) | (getVent() * 2) | (getPyroCutter() * 4) |
-           (getServoValve() * 8) | (getIgniter() * 16);
+    return (getFill() * 1) | (getVent() * 2) | (getAbort() * 4) |
+           (getPyroCutter() * 8) | (getIgniter() * 16) | (getServoValve() * 32);
 }
 
 RelayStatus parseRelayStatusByte(byte val) {
     RelayStatus status{
         .fill = val & 1,
         .vent = val & 2,
-        .pyroCutter = val & 4,
-        .servoValve = val & 8,
+        .abort = val & 4,
+        .pyroCutter = val & 8,
         .igniter = val & 16,
+        .servoValve = val & 32,
     };
     return status;
 }

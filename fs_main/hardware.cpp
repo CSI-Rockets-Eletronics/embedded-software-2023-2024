@@ -103,6 +103,7 @@ const int SERVO3_PIN = 9;
 
 const int FILL_PIN = RELAY1_PIN;
 const int VENT_PIN = RELAY2_PIN;
+const int ABORT_PIN = RELAY3_PIN;
 const int PYRO_CUTTER_PIN = RELAY4_PIN;
 const int IGNITER_PIN = RELAY5_PIN;
 
@@ -118,6 +119,7 @@ Servo servoValve;
 
 bool fillOn = false;
 bool ventOn = false;
+bool abortOn = false;
 bool pyroCutterOn = false;
 bool igniterOn = false;
 
@@ -126,6 +128,7 @@ bool servoValveAttached = false;
 
 bool getFill() { return fillOn; }
 bool getVent() { return ventOn; }
+bool getAbort() { return abortOn; }
 bool getPyroCutter() { return pyroCutterOn; }
 bool getIgniter() { return igniterOn; }
 
@@ -133,6 +136,7 @@ bool getServoValve() { return servoValveOn; }
 
 void setFill(bool on) { fillOn = on; }
 void setVent(bool on) { ventOn = on; }
+void setAbort(bool on) { abortOn = on; }
 void setPyroCutter(bool on) { pyroCutterOn = on; }
 void setIgniter(bool on) { igniterOn = on; }
 
@@ -157,6 +161,7 @@ void writeServoValveAttached(bool shouldAttach) {
 void flush() {
     writeRelay(FILL_PIN, fillOn);
     writeRelay(VENT_PIN, ventOn);
+    writeRelay(ABORT_PIN, abortOn);
     writeRelay(PYRO_CUTTER_PIN, pyroCutterOn);
     writeRelay(IGNITER_PIN, igniterOn);
 
@@ -171,6 +176,7 @@ void flush() {
 void init() {
     pinMode(FILL_PIN, OUTPUT);
     pinMode(VENT_PIN, OUTPUT);
+    pinMode(ABORT_PIN, OUTPUT);
     pinMode(PYRO_CUTTER_PIN, OUTPUT);
     pinMode(IGNITER_PIN, OUTPUT);
 
