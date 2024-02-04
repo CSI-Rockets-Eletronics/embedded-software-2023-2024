@@ -64,8 +64,8 @@ void clearCalibration();
 namespace piSerial {
 
 // remember to connect TX to RX and RX to TX
-const int RX_PIN = 14;
-const int TX_PIN = 13;
+const int RX_PIN = 18;
+const int TX_PIN = 17;
 
 // worst case, the delimiter occurs in the data, in which case we drop a packet
 uint8_t PACKET_DELIMITER[] = {0b10101010, 0b01010101};
