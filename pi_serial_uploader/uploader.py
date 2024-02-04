@@ -130,14 +130,14 @@ def run(
     parse_device: device name to send to server, or function that takes a serial packet and returns a device name (and throws an exception if it fails)
     delimiter: delimiter between serial packets
     parse_packet: function to parse a serial packet into json (and throws an exception if it fails)
-    format_message: function that converts a message object into bytes to send to the serial port; set to None to disable polling messages
+    format_message: function that converts a message object into bytes to send to the serial port; set to None to disable polling messages; also requires parse_device to be a str
     """
 
     # throw away possibly partial packet
     ser.read_until(delimiter)
 
-    if format_message:
-        Thread(target=run_poll_messages, args=(device, format_message)).start()
+    if format_message and isinstance(parse_device, str):
+        Thread(target=run_poll_messages, args=(parse_device, format_message)).start()
 
     post_thread: Thread | None = None
 
