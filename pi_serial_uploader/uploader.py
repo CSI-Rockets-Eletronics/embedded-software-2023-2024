@@ -66,6 +66,8 @@ def post_records(device: str, records: list[Any]):
 
 
 def get_message(device: str) -> Any | None:
+    global last_ts
+
     params = {
         "environmentKey": ENVIRONMENT_KEY,
         "device": device,
