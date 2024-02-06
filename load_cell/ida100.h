@@ -89,6 +89,8 @@ class IDA100 {
         safe_FT("FT_OpenEx", FT_OpenEx((PVOID)serialNumber,
                                        FT_OPEN_BY_SERIAL_NUMBER, &ftHandle));
 
+        safe_FT("FT_ResetDevice", FT_ResetDevice(ftHandle));
+
         // set device parameters (snooped from FUTEK_USB_DLL)
         safe_FT("FT_SetTimeouts", FT_SetTimeouts(ftHandle, 500, 500));
         safe_FT("FT_SetUSBParameters", FT_SetUSBParameters(ftHandle, 8, 8));
