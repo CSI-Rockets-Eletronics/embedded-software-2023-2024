@@ -39,8 +39,8 @@ const adsGain_t ADC2_GAIN = GAIN_TWOTHIRDS;
 
 // device constants
 
-const ADCMode SMALL_TRANSD_1_ADC_MODE = ADCMode::SingleEnded_0;
-const ADCMode SMALL_TRANSD_2_ADC_MODE = ADCMode::SingleEnded_0;
+const ADCMode SMALL_TRANSD_1_ADC_MODE = ADCMode::SingleEnded_1;
+const ADCMode SMALL_TRANSD_2_ADC_MODE = ADCMode::SingleEnded_1;
 
 const float SMALL_TRANSD_1_MPSI_PER_VOLT = 1000000;
 const float SMALL_TRANSD_2_MPSI_PER_VOLT = 1000000;
