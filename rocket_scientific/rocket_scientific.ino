@@ -5,7 +5,7 @@
 #include "moving_median_adc.h"
 #include "sentence_serial.h"
 
-const bool PRINT_DEBUG = true;
+const bool PRINT_DEBUG = false;
 
 // serial constants
 
