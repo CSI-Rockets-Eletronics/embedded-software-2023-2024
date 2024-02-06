@@ -5,7 +5,7 @@
 #include "moving_median_adc.h"
 #include "sentence_serial.h"
 
-const bool PRINT_DEBUG = false;
+const bool PRINT_DEBUG = true;
 
 // serial constants
 
@@ -107,6 +107,13 @@ void tick() {
     serial.write((uint8_t *)&st2, sizeof(st2));  // 4 bytes
 
     serial.write(PACKET_DELIMITER, sizeof(PACKET_DELIMITER));
+
+    if (PRINT_DEBUG) {
+        Serial.print("st1: ");
+        Serial.print(st1_host);
+        Serial.print("\tst2: ");
+        Serial.println(st2_host);
+    }
 }
 
 }  // namespace piSerial
