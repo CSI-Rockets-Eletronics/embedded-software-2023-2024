@@ -10,8 +10,8 @@ def parse_packet(packet: bytes) -> str:
         # breakdown of "!ii":
         #   "!": network byte order
         #   "i": int
-        bt1, bt2 = struct.unpack("!ii", packet)
-        data = {"bt1": bt1, "bt2": bt2}
+        st1, st2 = struct.unpack("!ii", packet)
+        data = {"st1": st1, "st2": st2}
         return json.dumps(data)
 
     raise ValueError(f"Expected packet length 8, got {len(packet)}")

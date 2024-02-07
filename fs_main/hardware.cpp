@@ -14,21 +14,15 @@ const int HARDWARE_INTERVAL = 5;
 
 int64_t calibrationTime = 0;
 
-namespace oxTank {
+namespace transducer {
 
-long mpsi = 0;
+long smallTransd1MPSI = 0;
+long smallTransd2MPSI = 0;
 
-long getMPSI() { return mpsi; }
+long getSmallTransd1MPSI() { return smallTransd1MPSI; }
+long getSmallTransd2MPSI() { return smallTransd2MPSI; }
 
-}  // namespace oxTank
-
-namespace combustionChamber {
-
-long mpsi = 0;
-
-long getMPSI() { return mpsi; }
-
-}  // namespace combustionChamber
+}  // namespace transducer
 
 namespace sciSerial {
 
@@ -52,16 +46,15 @@ void processCompletedSentence(const char *sentence) {
 
     // possibility 2:
 
-    // sentence format: [bt1_pressure_mpsi_long] [bt2_pressure_mpsi_long]
+    // sentence format: [st1_pressure_mpsi_long] [st2_pressure_mpsi_long]
     // ex: "123456 123456"
 
-    long bt1, bt2;
-    int result = sscanf(sentence, "%ld %ld", &bt1, &bt2);
+    long st1, st2;
+    int result = sscanf(sentence, "%ld %ld", &st1, &st2);
 
     if (result == 2) {
-        // assume bt1->oxTank, bt2->combustionChamber
-        oxTank::mpsi = bt1;
-        combustionChamber::mpsi = bt2;
+        transducer::smallTransd1MPSI = st1;
+        transducer::smallTransd2MPSI = st2;
         return;
     }
 

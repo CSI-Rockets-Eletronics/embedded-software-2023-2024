@@ -213,20 +213,20 @@ void runStateTransition() {
     using namespace hardware;
 
     unsigned long timeInState = millis() - enteredStateMillis;
-    long oxTankPressure = hardware::oxTank::getMPSI();
+    long pressure = hardware::transducer::getSmallTransd1MPSI();
 
     // conditions for ox tank, including buffer to prevent oscillation
 
     bool pAboveAbort =
-        oxTankPressure > oxTank::ABORT_MPSI + oxTank::BUFFER_MPSI;
+        pressure > transducer::ABORT_MPSI + transducer::BUFFER_MPSI;
     bool pBelowAbort =
-        oxTankPressure < oxTank::ABORT_MPSI - oxTank::BUFFER_MPSI;
+        pressure < transducer::ABORT_MPSI - transducer::BUFFER_MPSI;
 
-    bool pAboveMax = oxTankPressure > oxTank::MAX_MPSI + oxTank::BUFFER_MPSI;
-    bool pBelowMax = oxTankPressure < oxTank::MAX_MPSI - oxTank::BUFFER_MPSI;
+    bool pAboveMax = pressure > transducer::MAX_MPSI + transducer::BUFFER_MPSI;
+    bool pBelowMax = pressure < transducer::MAX_MPSI - transducer::BUFFER_MPSI;
 
-    bool pAboveMin = oxTankPressure > oxTank::MIN_MPSI + oxTank::BUFFER_MPSI;
-    bool pBelowMin = oxTankPressure < oxTank::MIN_MPSI - oxTank::BUFFER_MPSI;
+    bool pAboveMin = pressure > transducer::MIN_MPSI + transducer::BUFFER_MPSI;
+    bool pBelowMin = pressure < transducer::MIN_MPSI - transducer::BUFFER_MPSI;
 
     switch (curState) {
         // keep

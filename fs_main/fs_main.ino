@@ -15,8 +15,8 @@ void setStateReqBody() {
 
     recordData["stateByte"] = interface::getStateByte();
     recordData["relayStatusByte"] = interface::getRelayStatusByte();
-    recordData["oxTankMPSI"] = hardware::oxTank::getMPSI();
-    recordData["ccMPSI"] = hardware::combustionChamber::getMPSI();
+    recordData["st1MPSI"] = hardware::transducer::getSmallTransd1MPSI();
+    recordData["st2MPSI"] = hardware::transducer::getSmallTransd2MPSI();
     recordData["timeSinceBoot"] = timestamp,
     recordData["timeSinceCalibration"] =
         timestamp - hardware::getCalibrationTime();

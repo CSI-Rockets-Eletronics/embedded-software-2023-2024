@@ -33,9 +33,9 @@ void setServoValveAttached(bool attached);
 
 }  // namespace relay
 
-namespace oxTank {
+namespace transducer {
 
-// milli psi
+// for filling sequence; milli psi
 const long MIN_MPSI = 730000;
 const long MAX_MPSI = 770000;
 const long ABORT_MPSI = 900000;
@@ -43,15 +43,10 @@ const long ABORT_MPSI = 900000;
 // buffer to prevent oscillation
 const long BUFFER_MPSI = 5000;
 
-long getMPSI();
+long getSmallTransd1MPSI();
+long getSmallTransd2MPSI();
 
-}  // namespace oxTank
-
-namespace combustionChamber {
-
-long getMPSI();
-
-}  // namespace combustionChamber
+}  // namespace transducer
 
 int64_t getCalibrationTime();
 
