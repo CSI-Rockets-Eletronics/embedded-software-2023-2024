@@ -107,8 +107,6 @@ def get_message(device: str) -> Any | None:
             print("Messages response is missing data field", file=sys.stderr)
             return None
 
-        print(f"Received message: {body['data']}", file=sys.stderr)
-
         last_ts = body["ts"]
 
         return body["data"]
