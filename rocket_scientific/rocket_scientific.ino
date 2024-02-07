@@ -34,8 +34,8 @@ const uint8_t ADC2_ADDR = 0x49;
 const uint16_t ADC1_RATE = RATE_ADS1115_860SPS;
 const uint16_t ADC2_RATE = RATE_ADS1115_860SPS;
 
-const adsGain_t ADC1_GAIN = GAIN_TWOTHIRDS;
-const adsGain_t ADC2_GAIN = GAIN_TWOTHIRDS;
+const adsGain_t ADC1_GAIN = GAIN_ONE;
+const adsGain_t ADC2_GAIN = GAIN_ONE;
 
 // device constants
 

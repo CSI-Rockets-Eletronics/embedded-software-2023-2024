@@ -34,16 +34,16 @@ const uint8_t ADC2_ADDR = 0x49;
 const uint16_t ADC1_RATE = RATE_ADS1115_860SPS;
 const uint16_t ADC2_RATE = RATE_ADS1115_860SPS;
 
-const adsGain_t ADC1_GAIN = GAIN_TWOTHIRDS;
-const adsGain_t ADC2_GAIN = GAIN_TWOTHIRDS;
+const adsGain_t ADC1_GAIN = GAIN_ONE;
+const adsGain_t ADC2_GAIN = GAIN_ONE;
 
 // device constants
 
 const ADCMode SMALL_TRANSD_1_ADC_MODE = ADCMode::SingleEnded_2;
 const ADCMode SMALL_TRANSD_2_ADC_MODE = ADCMode::SingleEnded_2;
 
-const float SMALL_TRANSD_1_MPSI_PER_VOLT = 1000000;
-const float SMALL_TRANSD_2_MPSI_PER_VOLT = 1000000;
+const float SMALL_TRANSD_1_MPSI_PER_VOLT = 1000000 / 0.202;
+const float SMALL_TRANSD_2_MPSI_PER_VOLT = 1000000 / 0.202;
 
 // globals
 
