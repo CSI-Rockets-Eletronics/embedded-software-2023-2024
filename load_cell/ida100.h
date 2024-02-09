@@ -22,7 +22,7 @@ class IDA100 {
     };
 
     void safe_FT(const char* label, FT_STATUS ftStatus) {
-        if (ftStatus != FT_OK) {
+        if (!FT_SUCCESS(ftStatus)) {
             std::string msg = "safe_FT error for " + std::string(label) + ": " +
                               std::to_string(ftStatus);
             die(msg);
