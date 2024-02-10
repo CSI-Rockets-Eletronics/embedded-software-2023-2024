@@ -6,7 +6,13 @@
 
 #include "ida100.h"
 
+// interval for logging reading to stderr
+uint64_t LOG_INTERVAL_MS = 1000;
+
 IDA100 loadCell;
+
+// in microseconds
+uint64_t lastLogTime = 0;
 
 void closeLoadCell(int signal) {
     std::cerr << "Closing load cell" << std::endl;
@@ -59,5 +65,10 @@ int main(int argc, char* argv[]) {
         double lbs = loadCell.read() / ticksPerPound;
 
         std::cout << "rec: " << timestamp << " " << lbs << std::endl;
+
+        if (timestamp - lastLogTime > LOG_INTERVAL_MS * 1000) {
+            std::cerr << "rec: " << timestamp << " " << lbs << std::endl;
+            lastLogTime = timestamp;
+        }
     }
 }
