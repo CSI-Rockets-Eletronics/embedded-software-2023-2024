@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 # kill all child processes on exit
 # (https://stackoverflow.com/questions/360201/how-do-i-kill-background-processes-jobs-when-my-shell-script-exits)
 trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
