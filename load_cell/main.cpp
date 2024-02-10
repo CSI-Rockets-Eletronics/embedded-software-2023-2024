@@ -20,6 +20,16 @@ void closeLoadCell(int signal) {
     exit(0);
 }
 
+void registerSignalHandlers() {
+    struct sigaction sg;
+    sg.sa_handler = closeLoadCell;
+    sigfillset(&sg.sa_mask);  // block all signals while in the handler
+    sg.sa_flags = 0;
+
+    sigaction(SIGINT, &sg, nullptr);
+    sigaction(SIGTERM, &sg, nullptr);
+}
+
 uint64_t micros() {
     return std::chrono::duration_cast<std::chrono::microseconds>(
                std::chrono::high_resolution_clock::now().time_since_epoch())
@@ -53,8 +63,7 @@ int main(int argc, char* argv[]) {
 
     loadCell.open(serialNumber);
 
-    signal(SIGINT, closeLoadCell);
-    signal(SIGTERM, closeLoadCell);
+    registerSignalHandlers();
 
     loadCell.calibrate();
 
