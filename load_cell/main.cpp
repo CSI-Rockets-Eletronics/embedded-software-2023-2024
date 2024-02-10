@@ -9,7 +9,7 @@
 IDA100 loadCell;
 
 void closeLoadCell(int signal) {
-    std::cout << "Closing load cell" << std::endl;
+    std::cerr << "Closing load cell" << std::endl;
     loadCell.close();
     exit(0);
 }
@@ -37,7 +37,7 @@ void checkForCalibration() {
 
 int main(int argc, char* argv[]) {
     if (argc != 3) {
-        std::cout << "Usage: " << argv[0]
+        std::cerr << "Usage: " << argv[0]
                   << " <serial number> <ticks per pound>" << std::endl;
         exit(1);
     }

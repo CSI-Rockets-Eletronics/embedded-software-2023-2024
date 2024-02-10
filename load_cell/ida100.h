@@ -17,7 +17,7 @@ class IDA100 {
     int calibZero;
 
     void die(std::string msg) {
-        std::cout << msg << std::endl;
+        std::cerr << msg << std::endl;
         exit(1);
     };
 
@@ -84,7 +84,7 @@ class IDA100 {
         isOpen = true;
 
         // open device by serial number and store into this.ftHandle
-        std::cout << "Opening device with serial number: " << serialNumber
+        std::cerr << "Opening device with serial number: " << serialNumber
                   << std::endl;
         safe_FT("FT_OpenEx", FT_OpenEx((PVOID)serialNumber,
                                        FT_OPEN_BY_SERIAL_NUMBER, &ftHandle));
