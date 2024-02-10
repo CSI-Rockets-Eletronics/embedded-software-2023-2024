@@ -13,7 +13,6 @@ static const int CALIBRATE_SAMPLES = 50;
 class IDA100 {
    private:
     FT_HANDLE ftHandle;
-    bool isOpen = false;
     int calibZero;
 
     void die(std::string msg) {
@@ -78,11 +77,6 @@ class IDA100 {
 
    public:
     void open(const char* serialNumber) {
-        if (isOpen) {
-            die("IDA100 open() called when already open");
-        }
-        isOpen = true;
-
         // open device by serial number and store into this.ftHandle
         std::cerr << "Opening device with serial number: " << serialNumber
                   << std::endl;
@@ -97,28 +91,11 @@ class IDA100 {
         safe_FT("FT_SetLatencyTimer", FT_SetLatencyTimer(ftHandle, 2));
     }
 
-    void close() {
-        if (!isOpen) {
-            die("IDA100 close() called when not open");
-        }
-        isOpen = false;
+    void close() { safe_FT("FT_Close", FT_Close(ftHandle)); }
 
-        safe_FT("FT_Close", FT_Close(ftHandle));
-    }
-
-    int read() {
-        if (!isOpen) {
-            die("IDA100 read() called before open()");
-        }
-
-        return readRawData() - calibZero;
-    }
+    int read() { return readRawData() - calibZero; }
 
     void calibrate() {
-        if (!isOpen) {
-            die("IDA100 calibrate() called before open()");
-        }
-
         std::vector<int> samples;
         for (int i = 0; i < CALIBRATE_SAMPLES; i++) {
             samples.push_back(readRawData());
