@@ -6,8 +6,6 @@ set -eo pipefail
 # (https://stackoverflow.com/questions/360201/how-do-i-kill-background-processes-jobs-when-my-shell-script-exits)
 trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 
-./unbind.sh
-
 # remove and make pipes
 rm -f  read1 read2 write1 write2
 mkfifo read1 read2 write1 write2
