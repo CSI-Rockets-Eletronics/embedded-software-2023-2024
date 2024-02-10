@@ -8,10 +8,10 @@
 
 IDA100 loadCell;
 
-void sigintHandler(int sig) {
-    std::cout << "Caught SIGINT, closing device" << std::endl;
+void closeLoadCell(int signal) {
+    std::cout << "Closing load cell" << std::endl;
     loadCell.close();
-    exit(sig);
+    exit(0);
 }
 
 uint64_t micros() {
@@ -47,7 +47,8 @@ int main(int argc, char* argv[]) {
 
     loadCell.open(serialNumber);
 
-    signal(SIGINT, sigintHandler);
+    signal(SIGINT, closeLoadCell);
+    signal(SIGTERM, closeLoadCell);
 
     loadCell.calibrate();
 
