@@ -62,13 +62,13 @@ class IDA100 {
         safe_FT("FT_Write",
                 FT_Write(ftHandle, p2BytesToWrite, 4, &bytesWritten));
         if (bytesWritten != 4) {
-            die("phase 1 FT_Write: bytesWritten != 4");
+            die("phase 2 FT_Write: bytesWritten != 4");
         }
 
         // read the next 8 bytes
         safe_FT("FT_Read", FT_Read(ftHandle, readBuffer, 8, &bytesRead));
         if (bytesRead != 8) {
-            die("phase 1 FT_Read: bytesRead != 8");
+            die("phase 2 FT_Read: bytesRead != 8");
         }
 
         // the data we want is in bytes 4 to 6
