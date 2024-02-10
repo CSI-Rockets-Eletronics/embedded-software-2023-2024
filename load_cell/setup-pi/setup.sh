@@ -16,8 +16,8 @@ sudo systemctl enable load-cell.service
 sudo systemctl restart load-cell.service
 
 # Disable the ftdi_sio and usbserial kernel modules (using fake install)
-sudo rm /etc/modprobe.d/blacklist-ftdi_sio.conf
-sudo rm /etc/modprobe.d/blacklist-usbserial.conf
+sudo rm -f /etc/modprobe.d/blacklist-ftdi_sio.conf
+sudo rm -f /etc/modprobe.d/blacklist-usbserial.conf
 sudo echo "install ftdi_sio /bin/true" | sudo tee /etc/modprobe.d/blacklist-ftdi_sio.conf
 sudo echo "install usbserial /bin/true" | sudo tee /etc/modprobe.d/blacklist-usbserial.conf
 echo "Please reboot the system to apply the changes"
