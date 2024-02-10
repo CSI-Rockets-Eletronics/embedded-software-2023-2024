@@ -31,12 +31,10 @@ class IDA100 {
     };
 
     void read(PVOID buf, DWORD count) {
-        DWORD bytesRead;
-        safe_FT("FT_Read", FT_Read(ftHandle, buf, count, &bytesRead));
-
-        if (bytesRead != count) {
-            std::string msg = "FT_Read: bytesRead != " + std::to_string(count);
-            die(msg);
+        while (count > 0) {
+            DWORD bytesRead;
+            safe_FT("FT_Read", FT_Read(ftHandle, buf, count, &bytesRead));
+            count -= bytesRead;
         }
     }
 
