@@ -17,7 +17,7 @@ uint64_t lastLogTime = 0;
 void closeLoadCell(int signal) {
     std::cerr << "Closing load cell (signal " << signal << ")" << std::endl;
     loadCell.close();
-    exit(0);
+    exit(1);
 }
 
 void registerSignalHandlers() {
