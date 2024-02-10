@@ -88,6 +88,6 @@ while True:
     elapsed_time = time.time() - start_time
     if elapsed_time >= 1:
         frequency = record_count / elapsed_time
-        print(f"Frequency: {frequency} records/second")
+        print(f"Frequency: {frequency} records/second", file=sys.stderr)
         record_count = 0
         start_time = time.time()
