@@ -14,16 +14,15 @@ IDA100 loadCell;
 // in microseconds
 uint64_t lastLogTime = 0;
 
-void closeLoadCell(int signal) {
-    std::cerr << "Closing load cell (signal " << signal << ")" << std::endl;
-    loadCell.close();
-    exit(1);
-}
+// -1 if no signal received
+int exit_signo = -1;
+
+void exitHandler(int signo) { exit_signo = signo; }
 
 void registerSignalHandlers() {
     struct sigaction sg;
-    sg.sa_handler = closeLoadCell;
-    sigfillset(&sg.sa_mask);  // block all signals while in the handler
+    sg.sa_handler = exitHandler;
+    sigemptyset(&sg.sa_mask);
     sg.sa_flags = 0;
 
     sigaction(SIGINT, &sg, nullptr);
@@ -67,7 +66,7 @@ int main(int argc, char* argv[]) {
 
     loadCell.calibrate();
 
-    while (true) {
+    while (exit_signo == -1) {
         checkForCalibration();
 
         uint64_t timestamp = micros();
@@ -80,4 +79,8 @@ int main(int argc, char* argv[]) {
             lastLogTime = timestamp;
         }
     }
+
+    std::cerr << "Closing load cell (signo " << exit_signo << ")" << std::endl;
+    loadCell.close();
+    exit(1);
 }
