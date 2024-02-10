@@ -35,6 +35,8 @@ class IDA100 {
         safe_FT("FT_Read", FT_Read(ftHandle, buf, count, &bytesRead));
 
         if (bytesRead != count) {
+            close();
+
             std::string msg = "FT_Read: bytesRead != " + std::to_string(count);
             die(msg);
         }
@@ -45,6 +47,8 @@ class IDA100 {
         safe_FT("FT_Write", FT_Write(ftHandle, buf, count, &bytesWritten));
 
         if (bytesWritten != count) {
+            close();
+
             std::string msg =
                 "FT_Write: bytesWritten != " + std::to_string(count);
             die(msg);
