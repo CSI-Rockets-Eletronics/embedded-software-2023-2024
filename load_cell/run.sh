@@ -1,13 +1,8 @@
 #!/bin/bash
 
-# function to kill all background processes
-kill_all() {
-    pkill -P $$
-    exit 0
-}
-
-# Trap the SIGINT signal (Ctrl+C) and call the kill_all function
-trap kill_all SIGINT
+# kill all child processes on exit
+# (https://stackoverflow.com/questions/360201/how-do-i-kill-background-processes-jobs-when-my-shell-script-exits)
+trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 
 ./unbind.sh
 
@@ -29,9 +24,3 @@ python write_records.py http://localhost:3000 0 LoadCell2 < write2 &
 
 # wait for any of the background processes to finish
 wait -n
-
-# kill the other background processes
-kill_all
-
-# wait for the background processes to finish
-wait
