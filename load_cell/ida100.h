@@ -97,7 +97,8 @@ class IDA100 {
         safe_FT("FT_SetUSBParameters", FT_SetUSBParameters(ftHandle, 8, 8));
         safe_FT("FT_SetLatencyTimer", FT_SetLatencyTimer(ftHandle, 2));
 
-        usleep(1000);
+        // 1s delay here is very important for reads to work!!!
+        sleep(1);
     }
 
     void close() { safe_FT("FT_Close", FT_Close(ftHandle)); }
