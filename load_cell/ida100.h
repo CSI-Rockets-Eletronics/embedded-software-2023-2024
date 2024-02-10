@@ -1,6 +1,8 @@
 #ifndef IDA100_H
 #define IDA100_H
 
+#include <unistd.h>
+
 #include <algorithm>
 #include <iostream>
 #include <string>
@@ -89,6 +91,8 @@ class IDA100 {
         safe_FT("FT_SetTimeouts", FT_SetTimeouts(ftHandle, 500, 500));
         safe_FT("FT_SetUSBParameters", FT_SetUSBParameters(ftHandle, 8, 8));
         safe_FT("FT_SetLatencyTimer", FT_SetLatencyTimer(ftHandle, 2));
+
+        usleep(1000);
     }
 
     void close() { safe_FT("FT_Close", FT_Close(ftHandle)); }
