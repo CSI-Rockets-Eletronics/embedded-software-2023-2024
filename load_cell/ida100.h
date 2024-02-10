@@ -30,9 +30,28 @@ class IDA100 {
         }
     };
 
-    int readRawData() {
-        DWORD bytesWritten;
+    void read(PVOID buf, DWORD count) {
         DWORD bytesRead;
+        safe_FT("FT_Read", FT_Read(ftHandle, buf, count, &bytesRead));
+
+        if (bytesRead != count) {
+            std::string msg = "FT_Read: bytesRead != " + std::to_string(count);
+            die(msg);
+        }
+    }
+
+    void write(LPVOID buf, DWORD count) {
+        DWORD bytesWritten;
+        safe_FT("FT_Write", FT_Write(ftHandle, buf, count, &bytesWritten));
+
+        if (bytesWritten != count) {
+            std::string msg =
+                "FT_Write: bytesWritten != " + std::to_string(count);
+            die(msg);
+        }
+    }
+
+    int readRawData() {
         unsigned char readBuffer[8];
 
         // phase 1: no meaningful data is retrieved, but FUTEK_USB_DLL does
@@ -41,17 +60,10 @@ class IDA100 {
         // write these particular 4 bytes
         unsigned char p1BytesToWrite[] = {0b00000001, 0b00000100, 0b01000100,
                                           0b10101010};
-        safe_FT("FT_Write",
-                FT_Write(ftHandle, p1BytesToWrite, 4, &bytesWritten));
-        if (bytesWritten != 4) {
-            die("phase 1 FT_Write: bytesWritten != 4");
-        }
+        write(p1BytesToWrite, 4);
 
         // read and ignore the next 8 bytes (they seem to be the same each time)
-        safe_FT("FT_Read", FT_Read(ftHandle, readBuffer, 8, &bytesRead));
-        if (bytesRead != 8) {
-            die("phase 1 FT_Read: bytesRead != 8");
-        }
+        read(readBuffer, 8);
 
         // phase 2: do another unknown write + read, but this time, the data is
         // found in the read
@@ -59,17 +71,10 @@ class IDA100 {
         // write these particular 4 bytes
         unsigned char p2BytesToWrite[] = {0b00000010, 0b00000100, 0b01000010,
                                           0b10101010};
-        safe_FT("FT_Write",
-                FT_Write(ftHandle, p2BytesToWrite, 4, &bytesWritten));
-        if (bytesWritten != 4) {
-            die("phase 2 FT_Write: bytesWritten != 4");
-        }
+        write(p2BytesToWrite, 4);
 
         // read the next 8 bytes
-        safe_FT("FT_Read", FT_Read(ftHandle, readBuffer, 8, &bytesRead));
-        if (bytesRead != 8) {
-            die("phase 2 FT_Read: bytesRead != 8");
-        }
+        read(readBuffer, 8);
 
         // the data we want is in bytes 4 to 6
         // (the other bytes seem to never change)
