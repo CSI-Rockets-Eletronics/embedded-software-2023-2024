@@ -42,8 +42,8 @@ const adsGain_t ADC2_GAIN = GAIN_ONE;
 const ADCMode BIG_TRANSD_1_ADC_MODE = ADCMode::SingleEnded_1;
 const ADCMode BIG_TRANSD_2_ADC_MODE = ADCMode::SingleEnded_1;
 
-const float BIG_TRANSD_1_MPSI_PER_VOLT = 1000000;
-const float BIG_TRANSD_2_MPSI_PER_VOLT = 1000000;
+const float BIG_TRANSD_1_MPSI_PER_VOLT = 1000000 / -1.202;
+const float BIG_TRANSD_2_MPSI_PER_VOLT = 1000000 / -1.162;
 
 // globals
 
