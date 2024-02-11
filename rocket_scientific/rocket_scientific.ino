@@ -23,8 +23,8 @@ const int BIG_TRANSD_2_ZERO_EEPROM_ADDR = 8;  // store float
 
 // shared ADC constants
 
-const int ADC_CALIBRATE_SAMPLE_COUNT = 100;
-const int ADC_MEDIAN_WINDOW_SIZE = 5;
+const int ADC_CALIBRATE_SAMPLE_COUNT = 500;
+const int ADC_MEDIAN_WINDOW_SIZE = 50;
 
 // specific ADC constants
 
