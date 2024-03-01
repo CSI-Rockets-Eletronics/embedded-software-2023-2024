@@ -10,7 +10,7 @@
 
 #include "ftd2xx.h"
 
-static const int CALIBRATE_SAMPLES = 50;
+static const int CALIBRATE_SAMPLES = 1000;
 
 class IDA100 {
    private:
