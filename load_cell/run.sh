@@ -19,7 +19,7 @@ python write_records.py http://localhost:3000 0 LoadCell1 < write1 &
 python write_records.py http://localhost:3000 0 LoadCell2 < write2 &
 
 # start main in background
-./main 1076702 3373 < read1 > write1 &
+./main 1076702 3568 < read1 > write1 &
 ./main 652964 3616 < read2 > write2 &
 
 # wait for any of the background processes to finish
