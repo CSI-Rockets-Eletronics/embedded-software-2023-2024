@@ -11,6 +11,9 @@ const int TX_PIN = 48;
 
 const int DHT_PIN = 2;
 
+const int SDA_PIN = 21;
+const int SCL_PIN = 20;
+
 // worst case, the delimiter occurs in the data, in which case we drop a packet
 uint8_t PACKET_DELIMITER[] = {0b10101010, 0b01010101};
 
@@ -111,7 +114,7 @@ void setup() {
 
     // ========== MPU setup ==========
 
-    if (mpu.init(21, 20)) {
+    if (mpu.init(SDA_PIN, SCL_PIN)) {
         Serial.println("initialization failed");
     } else {
         Serial.println("initialization successful!");
