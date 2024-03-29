@@ -4,7 +4,7 @@ import select
 import time
 
 DEBUG_PRINT = False
-MAX_RECORDS_PER_BATCH = 10
+MAX_RECORDS_PER_BATCH = 500
 
 if len(sys.argv) < 4:
     print(

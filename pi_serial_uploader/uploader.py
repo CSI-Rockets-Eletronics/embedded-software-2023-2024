@@ -6,7 +6,7 @@ import serial
 from typing import Callable, Any
 from threading import Thread
 
-MAX_RECORDS_PER_BATCH = 50
+MAX_RECORDS_PER_BATCH = 500
 
 URL = "http://localhost:3000"
 ENVIRONMENT_KEY = "0"
