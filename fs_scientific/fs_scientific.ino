@@ -1,5 +1,6 @@
 #include <EEPROM.h>
 #include <TickTwo.h>
+#include <endian.h>
 
 #include "frequency_logger.h"
 #include "moving_median_adc.h"
@@ -10,7 +11,7 @@ const bool PRINT_DEBUG = false;
 // serial constants
 
 const int PC_BAUD = 115200;
-const int PI_BAUD = 115200;
+const int PI_BAUD = 230400;
 
 // EEPROM constants
 
@@ -73,6 +74,8 @@ uint8_t PACKET_DELIMITER[] = {0b10101010, 0b01010101};
 void init() { Serial2.begin(PI_BAUD, SERIAL_8N1, RX_PIN, TX_PIN); }
 
 void tick() {
+    int64_t ts_host = esp_timer_get_time();
+
     // DB should store raw readings, not median
     int32_t st1_host =
         smallTransd1ADC.getLatestVolts() * SMALL_TRANSD_1_MPSI_PER_VOLT;
@@ -80,9 +83,11 @@ void tick() {
         smallTransd2ADC.getLatestVolts() * SMALL_TRANSD_2_MPSI_PER_VOLT;
 
     // deal with endianness
+    uint64_t ts = htobe64(ts_host);
     uint32_t st1 = htonl(st1_host);
     uint32_t st2 = htonl(st2_host);
 
+    Serial2.write((uint8_t *)&ts, sizeof(ts));    // 8 bytes
     Serial2.write((uint8_t *)&st1, sizeof(st1));  // 4 bytes
     Serial2.write((uint8_t *)&st2, sizeof(st2));  // 4 bytes
 

@@ -11,7 +11,7 @@ MAX_RECORDS_PER_BATCH = 500
 URL = "http://localhost:3000"
 ENVIRONMENT_KEY = "0"
 
-ser = serial.Serial("/dev/ttyS0", 115200)
+ser = serial.Serial("/dev/ttyS0", 230400)
 
 
 def fetch_ts():
@@ -148,7 +148,12 @@ def run(
         records_dict: dict[str, list[Any]] = {}
         records_count = 0
 
-        while ser.in_waiting > 0 or (post_thread and post_thread.is_alive()):
+        while (
+            len(records_dict) == 0  # loop until >= 1 record is read
+            or ser.in_waiting > 0  # loop until no more data is available
+            # loop until the last batch is posted
+            or (post_thread and post_thread.is_alive())
+        ):
             input_packet = ser.read_until(delimiter)
             # remove delimiter
             input_packet = input_packet[: -len(delimiter)]
