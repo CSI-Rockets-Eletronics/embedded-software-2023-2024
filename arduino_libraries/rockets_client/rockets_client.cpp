@@ -46,6 +46,10 @@ ServerConfigPresets serverConfigPresets = {
         },
 };
 
+// general parameters
+
+const int64_t MAX_TS_DELAY_MS = 200;  // max allowed delay w.r.t. server time
+
 // task parameters
 
 const int CORE_ID = 0;
@@ -256,7 +260,7 @@ int parseResBody(const Buffer res, Buffer dest) {
 }
 
 // Returns true if successful.
-bool syncTs(WiFiClient& client) {
+bool trySyncTs(WiFiClient& client) {
     bool success = false;
 
     String path = "/ts";
@@ -293,6 +297,33 @@ bool syncTs(WiFiClient& client) {
 
     client.stop();
     return success;
+}
+
+void syncTs(WiFiClient& client) {
+    while (true) {
+        int64_t start = esp_timer_get_time();
+        bool success = trySyncTs(client);
+        int64_t end = esp_timer_get_time();
+
+        delay(5);
+
+        int64_t elapsed_ms = (end - start) / 1000;
+
+        Serial.print("trySyncTs took (ms): ");
+        Serial.println(elapsed_ms);
+
+        if (elapsed_ms > MAX_TS_DELAY_MS) {
+            Serial.println("trySyncTs took too long, retrying...");
+            continue;
+        }
+
+        if (!success) {
+            Serial.println("trySyncTs failed, retrying...");
+            continue;
+        }
+
+        break;
+    }
 }
 
 void sendQueuedRecord(WiFiClient& client) {
@@ -399,9 +430,7 @@ void pollLatestRecords(WiFiClient& client) {
 void runTask(void* pvParameters) {
     WiFiClient client;
 
-    while (!syncTs(client)) {
-        delay(5);
-    }
+    syncTs(client);
 
     while (true) {
         printHeartbeat();
