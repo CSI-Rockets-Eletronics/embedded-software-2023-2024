@@ -27,6 +27,9 @@ extern ServerConfigPresets serverConfigPresets;
 typedef StaticJsonDocument<1024> StaticJsonDoc;
 typedef char Buffer[2048];  // give it some extra space
 
+// Sets a flag that will cause the timestamp to be updated on the next loop.
+void syncTimestamp();
+
 // Returns true if the record was successfully queued. Creates a record with
 // appropriate `environmentKey`, `device`, and `ts` fields, and sets the `data`
 // field to `recordData`.

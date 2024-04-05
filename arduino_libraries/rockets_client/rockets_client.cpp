@@ -68,6 +68,9 @@ String DEVICE;
 bool POLL_MESSAGES;
 String POLL_RECORD_DEVICES;
 
+// for triggering ts sync
+bool syncTsRequested = false;
+
 // buffers for queued record and latest message
 
 // length 0 if no record is queued
@@ -435,6 +438,11 @@ void runTask(void* pvParameters) {
     while (true) {
         printHeartbeat();
 
+        if (syncTsRequested) {
+            syncTs(client);
+            syncTsRequested = false;
+        }
+
         sendQueuedRecord(client);
         delay(5);
 
@@ -479,6 +487,8 @@ void initWifi() {
 }
 
 // implementation of the interface
+
+void syncTimestamp() { syncTsRequested = true; }
 
 bool queueRecord(const StaticJsonDoc& recordData) {
     StaticJsonDoc record;
