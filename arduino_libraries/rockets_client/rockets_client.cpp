@@ -310,6 +310,11 @@ void syncTs(WiFiClient& client) {
 
         delay(5);
 
+        if (!success) {
+            Serial.println("trySyncTs failed, retrying...");
+            continue;
+        }
+
         int64_t elapsed_ms = (end - start) / 1000;
 
         Serial.print("trySyncTs took (ms): ");
@@ -317,11 +322,6 @@ void syncTs(WiFiClient& client) {
 
         if (elapsed_ms > MAX_TS_DELAY_MS) {
             Serial.println("trySyncTs took too long, retrying...");
-            continue;
-        }
-
-        if (!success) {
-            Serial.println("trySyncTs failed, retrying...");
             continue;
         }
 
