@@ -47,6 +47,7 @@ void getCommandResBody() {
     using namespace state;
 
     if (commandStr == RECALIBRATE_COMMAND) {
+        rockets_client::syncTimestamp();
         hardware::sciSerial::sendRecalibrateCommand();
     } else if (commandStr == CLEAR_CALIBRATION_COMMAND) {
         hardware::sciSerial::sendClearCalibrationCommand();
