@@ -17,6 +17,8 @@ void setStateReqBody() {
     recordData["relayStatusByte"] = interface::getRelayStatusByte();
     recordData["st1MPSI"] = hardware::transducer::getSmallTransd1MPSI();
     recordData["st2MPSI"] = hardware::transducer::getSmallTransd2MPSI();
+    recordData["thermo1C"] = hardware::thermocouple::getThermo1Celcius();
+    recordData["thermo2C"] = hardware::thermocouple::getThermo2Celcius();
     recordData["timeSinceBoot"] = timestamp,
     recordData["timeSinceCalibration"] =
         timestamp - hardware::getCalibrationTime();
