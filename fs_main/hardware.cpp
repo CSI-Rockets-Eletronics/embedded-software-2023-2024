@@ -101,6 +101,7 @@ const int VENT_PIN = RELAY2_PIN;
 const int ABORT_PIN = RELAY3_PIN;
 const int PYRO_CUTTER_PIN = RELAY4_PIN;
 const int IGNITER_PIN = RELAY5_PIN;
+const int P_VALVE_PIN = RELAY6_PIN;
 
 const int SERVO_VALVE_PIN = SERVO1_PIN;
 
@@ -159,6 +160,7 @@ void flush() {
     writeRelay(ABORT_PIN, abortOn);
     writeRelay(PYRO_CUTTER_PIN, pyroCutterOn);
     writeRelay(IGNITER_PIN, igniterOn);
+    writeRelay(P_VALVE_PIN, servoValveOn);
 
     writeServoValveAttached(servoValveAttached);
 
@@ -174,6 +176,7 @@ void init() {
     pinMode(ABORT_PIN, OUTPUT);
     pinMode(PYRO_CUTTER_PIN, OUTPUT);
     pinMode(IGNITER_PIN, OUTPUT);
+    pinMode(P_VALVE_PIN, OUTPUT);
 
     // this is necessary to ensure the servo signal starts with 0V
     servoValve.attach(SERVO_VALVE_PIN);
