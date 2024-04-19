@@ -25,6 +25,7 @@ const int PULSE_PURGE_C_TIME = 5000;
 // in milliseconds
 const int FIRE_PYRO_CUTTER_TIME = 500;
 const int FIRE_IGNITER_TIME = 10000;
+const int FIRE_PYRO_VALVE_TIME = 30000;
 
 // internal state
 enum class State {
@@ -374,6 +375,11 @@ void runStateTransition() {
         case State::FIRE_IGNITER:
             if (timeInState > FIRE_IGNITER_TIME) {
                 enterState(State::FIRE_PYRO_VALVE);
+            }
+            break;
+        case State::FIRE_PYRO_VALVE:
+            if (timeInState > FIRE_PYRO_VALVE_TIME) {
+                enterState(State::STANDBY);
             }
             break;
     }
