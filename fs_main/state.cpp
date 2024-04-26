@@ -214,7 +214,9 @@ void runStateTransition() {
     using namespace hardware;
 
     unsigned long timeInState = millis() - enteredStateMillis;
-    long pressure = hardware::transducer::getSmallTransd1MPSI();
+    // use top transducer for triggering abort, as bottom transducer sometimes
+    // freezes over
+    long pressure = hardware::transducer::getSmallTransd2MPSI();
 
     // conditions for ox tank, including buffer to prevent oscillation
 
