@@ -1,5 +1,6 @@
 #include <EEPROM.h>
 #include <TickTwo.h>
+#include <Wire.h>
 #include <endian.h>
 
 #include "frequency_logger.h"
@@ -22,6 +23,11 @@ const uint32_t EEPROM_WRITTEN_MARKER = 0x12345678;
 const int BIG_TRANSD_1_ZERO_EEPROM_ADDR = 4;  // store float
 const int BIG_TRANSD_2_ZERO_EEPROM_ADDR = 8;  // store float
 
+// I2C bus constants
+
+const int SDA_PIN = 14;
+const int SCL_PIN = 15;
+
 // shared ADC constants
 
 const int ADC_CALIBRATE_SAMPLE_COUNT = 500;
@@ -32,29 +38,32 @@ const int ADC_MEDIAN_WINDOW_SIZE = 50;
 const uint8_t ADC1_ADDR = 0x48;
 const uint8_t ADC2_ADDR = 0x49;
 
-const uint16_t ADC1_RATE = RATE_ADS1115_860SPS;
-const uint16_t ADC2_RATE = RATE_ADS1115_860SPS;
+// TODO set higher?
+const uint16_t ADC1_RATE = RATE_ADS1015_1600SPS;
+const uint16_t ADC2_RATE = RATE_ADS1015_1600SPS;
 
 const adsGain_t ADC1_GAIN = GAIN_ONE;
 const adsGain_t ADC2_GAIN = GAIN_ONE;
 
 // device constants
 
-const ADCMode BIG_TRANSD_1_ADC_MODE = ADCMode::SingleEnded_1;
-const ADCMode BIG_TRANSD_2_ADC_MODE = ADCMode::SingleEnded_1;
+const ADCMode BIG_TRANSD_1_ADC_MODE = ADCMode::SingleEnded_0;
+const ADCMode BIG_TRANSD_2_ADC_MODE = ADCMode::SingleEnded_0;
 
 const float BIG_TRANSD_1_MPSI_PER_VOLT = 1000000 / -1.202;
 const float BIG_TRANSD_2_MPSI_PER_VOLT = 1000000;  // this is calibrated
 
 // globals
 
-Adafruit_ADS1115 adc1;
-Adafruit_ADS1115 adc2;
+TwoWire wire(0);
 
-MovingMedianADC<Adafruit_ADS1115> bigTransd1ADC("big transducer 1",
+Adafruit_ADS1015 adc1;
+Adafruit_ADS1015 adc2;
+
+MovingMedianADC<Adafruit_ADS1015> bigTransd1ADC("big transducer 1",
                                                 ADC_MEDIAN_WINDOW_SIZE, adc1,
                                                 BIG_TRANSD_1_ADC_MODE);
-MovingMedianADC<Adafruit_ADS1115> bigTransd2ADC("big transducer 2",
+MovingMedianADC<Adafruit_ADS1015> bigTransd2ADC("big transducer 2",
                                                 ADC_MEDIAN_WINDOW_SIZE, adc2,
                                                 BIG_TRANSD_2_ADC_MODE);
 
@@ -160,9 +169,11 @@ void setup() {
     while (!Serial && millis() < 500)
         ;  // wait up to 500ms for serial to connect; needed for native USB
 
+    wire.begin(SDA_PIN, SCL_PIN);
+
     adc1.setDataRate(ADC1_RATE);
     adc1.setGain(ADC1_GAIN);
-    if (!adc1.begin(ADC1_ADDR)) {
+    if (!adc1.begin(ADC1_ADDR, &wire)) {
         Serial.println("Failed to start ADC1");
         while (1)
             ;
@@ -170,7 +181,7 @@ void setup() {
 
     adc2.setDataRate(ADC2_RATE);
     adc2.setGain(ADC2_GAIN);
-    if (!adc2.begin(ADC2_ADDR)) {
+    if (!adc2.begin(ADC2_ADDR, &wire)) {
         Serial.println("Failed to start ADC2");
         while (1)
             ;
