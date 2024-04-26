@@ -23,7 +23,7 @@ const int PULSE_PURGE_B_TIME = 2000;
 const int PULSE_PURGE_C_TIME = 5000;
 
 // in milliseconds
-const int FIRE_IGNITER_TIME = 10000;
+const int FIRE_IGNITER_TIME = 7000;
 const int FIRE_IGNITER_VALVE_BUFFER_TIME = 500;
 const int FIRE_PYRO_VALVE_TIME = 30000;
 
