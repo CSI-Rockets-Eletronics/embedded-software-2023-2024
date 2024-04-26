@@ -23,7 +23,6 @@ const int PULSE_PURGE_B_TIME = 2000;
 const int PULSE_PURGE_C_TIME = 5000;
 
 // in milliseconds
-const int FIRE_PYRO_CUTTER_TIME = 500;
 const int FIRE_IGNITER_TIME = 10000;
 const int FIRE_IGNITER_VALVE_BUFFER_TIME = 500;
 const int FIRE_PYRO_VALVE_TIME = 30000;
@@ -67,7 +66,6 @@ enum class State {
     PULSE_PURGE_C_P_ABOVE_ABORT,
     PULSE_PURGE_C_P_BELOW_ABORT,
     // fire
-    FIRE_PYRO_CUTTER,
     FIRE_IGNITER,
     FIRE_IGNITER_VALVE_BUFFER,
     FIRE_PYRO_VALVE,
@@ -130,7 +128,6 @@ OpState getOpState() {
         case State::PULSE_PURGE_C_P_ABOVE_ABORT:
         case State::PULSE_PURGE_C_P_BELOW_ABORT:
             return OpState::pulsePurgeC;
-        case State::FIRE_PYRO_CUTTER:
         case State::FIRE_IGNITER:
         case State::FIRE_IGNITER_VALVE_BUFFER:
         case State::FIRE_PYRO_VALVE:
@@ -188,7 +185,7 @@ void setOpState(OpState opState) {
             enterState(State::PULSE_PURGE_C_P_BELOW_ABORT);
             break;
         case OpState::fire:
-            enterState(State::FIRE_PYRO_CUTTER);
+            enterState(State::FIRE_IGNITER);
             break;
         case OpState::fireManualIgniter:
             enterState(State::FIRE_MANUAL_IGNITER);
@@ -370,11 +367,6 @@ void runStateTransition() {
             }
             break;
         // fire
-        case State::FIRE_PYRO_CUTTER:
-            if (timeInState > FIRE_PYRO_CUTTER_TIME) {
-                enterState(State::FIRE_IGNITER);
-            }
-            break;
         case State::FIRE_IGNITER:
             if (timeInState > FIRE_IGNITER_TIME) {
                 enterState(State::FIRE_IGNITER_VALVE_BUFFER);
@@ -501,10 +493,6 @@ void tick() {
             setVent(true);
             break;
         // fire
-        case State::FIRE_PYRO_CUTTER:
-            setPyroCutter(true);
-            setServoValveAttached(true);
-            break;
         case State::FIRE_IGNITER:
             setIgniter(true);
             setServoValveAttached(true);
