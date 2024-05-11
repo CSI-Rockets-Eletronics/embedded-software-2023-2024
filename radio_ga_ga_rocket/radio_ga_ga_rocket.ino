@@ -42,8 +42,8 @@ TickTwo printGpsTsTicker(printGpsTs, PRINT_GPS_TS_INTERVAL);
 
 void setup() {
     Serial.begin(115200);
-    while (!Serial && millis() < 500)
-        ;  // wait up to 500ms for serial to connect; needed for native USB
+    while (!Serial && millis() < 500);  // wait up to 500ms for serial to
+                                        // connect; needed for native USB
 
     spi.setPins(MISO, MOSI, SCK);
 
@@ -62,7 +62,8 @@ void setup() {
     // 				};
     // rf95.setEncryptionKey(key);
 
-    rockets_client::init(rockets_client::serverConfigPresets.ROCKET_PI, "0", "",
+    rockets_client::init(rockets_client::wifiConfigPresets.ROCKET,
+                         rockets_client::serverConfigPresets.ROCKET_PI, "0", "",
                          false, "GPS");
 
     printGpsTsTicker.start();

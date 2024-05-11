@@ -14,6 +14,18 @@ struct ServerConfig {
     String pathPrefix;
 };
 
+struct WifiConfig {
+    String ssid;
+    String password;
+};
+
+struct WifiConfigPresets {
+    WifiConfig GROUND;
+    WifiConfig ROCKET;
+};
+
+extern WifiConfigPresets wifiConfigPresets;
+
 struct ServerConfigPresets {
     ServerConfig FS_PI;
     ServerConfig ROCKET_PI;
@@ -46,8 +58,9 @@ StaticJsonDoc getLatestMessage();
 // to a non-empty string during init.
 StaticJsonDoc getLatestRecords();
 
-void init(ServerConfig serverConfig, String environmentKey, String device,
-          bool pollMessages = false, String pollRecordDevices = "");
+void init(WifiConfig wifiConfig, ServerConfig serverConfig,
+          String environmentKey, String device, bool pollMessages = false,
+          String pollRecordDevices = "");
 
 }  // namespace rockets_client
 

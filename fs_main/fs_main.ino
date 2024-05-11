@@ -112,7 +112,8 @@ void setup() {
     // init order matters
     hardware::init();
     state::init();
-    rockets_client::init(rockets_client::serverConfigPresets.FS_PI, "0",
+    rockets_client::init(rockets_client::wifiConfigPresets.GROUND,
+                         rockets_client::serverConfigPresets.FS_PI, "0",
                          "FiringStation", true);
 
     syncWithNetworkTicker.start();

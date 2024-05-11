@@ -23,8 +23,8 @@ RH_RF95 rf95(SS, INT, spi);
 
 void setup() {
     Serial.begin(115200);
-    while (!Serial && millis() < 500)
-        ;  // wait up to 500ms for serial to connect; needed for native USB
+    while (!Serial && millis() < 500);  // wait up to 500ms for serial to
+                                        // connect; needed for native USB
 
     spi.setPins(MISO, MOSI, SCK);
 
@@ -44,9 +44,9 @@ void setup() {
     // rf95.setEncryptionKey(key);
 
     if (UPLOAD_TO_SERVER) {
-        rockets_client::init(
-            rockets_client::serverConfigPresets.ALEX_HOME_DESKTOP, "0",
-            "RadioGround");
+        rockets_client::init(rockets_client::wifiConfigPresets.GROUND,
+                             rockets_client::serverConfigPresets.MECHE, "0",
+                             "RadioGround");
     }
 }
 

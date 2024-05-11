@@ -6,10 +6,20 @@
 
 namespace rockets_client {
 
-// wifi options (should be used by every client)
+// wifi presets
 
-const char* WIFI_SSID = "Darknet";
-const char* WIFI_PASSWORD = "Blueberries";
+WifiConfigPresets wifiConfigPresets = {
+    .GROUND =
+        {
+            .ssid = "Darknet",
+            .password = "Blueberries",
+        },
+    .ROCKET =
+        {
+            .ssid = "Darknet Rocket",
+            .password = "Blueberries",
+        },
+};
 
 // server presets
 
@@ -57,6 +67,9 @@ const int PRIORITY = 0;
 const int STACK_DEPTH = 64 * 1000;  // 64 kB
 
 // constants specific to this client
+
+String WIFI_SSID;
+String WIFI_PASSWORD;
 
 String HOST;
 int PORT;
@@ -538,8 +551,12 @@ StaticJsonDoc getLatestRecords() {
 
 // `pollRecordDevices` should be a comma-separated list of devices, e.g.
 // "deviceA,deviceB". Empty string for `pollRecordDevices` means don't poll.
-void init(ServerConfig serverConfig, String environmentKey, String device,
-          bool pollMessages, String pollRecordDevices) {
+void init(WifiConfig wifiConfig, ServerConfig serverConfig,
+          String environmentKey, String device, bool pollMessages,
+          String pollRecordDevices) {
+    WIFI_SSID = wifiConfig.ssid;
+    WIFI_PASSWORD = wifiConfig.password;
+
     HOST = serverConfig.host;
     PORT = serverConfig.port;
     PATH_PREFIX = serverConfig.pathPrefix;

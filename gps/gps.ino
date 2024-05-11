@@ -42,8 +42,8 @@ void setup() {
     // connect at 115200 so we can read the GPS fast enough and echo without
     // dropping chars also spit it out
     Serial.begin(115200);
-    while (!Serial && millis() < 500)
-        ;  // wait up to 500ms for serial to connect; needed for native USB
+    while (!Serial && millis() < 500);  // wait up to 500ms for serial to
+                                        // connect; needed for native USB
 
     Serial.println("Adafruit GPS library basic parsing test!");
 
@@ -70,7 +70,8 @@ void setup() {
     // Ask for firmware version
     GPSSerial.println(PMTK_Q_RELEASE);
 
-    rockets_client::init(rockets_client::serverConfigPresets.ROCKET_PI, "0",
+    rockets_client::init(rockets_client::wifiConfigPresets.ROCKET,
+                         rockets_client::serverConfigPresets.ROCKET_PI, "0",
                          "GPS");
 }
 
