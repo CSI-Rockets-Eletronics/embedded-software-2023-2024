@@ -400,6 +400,7 @@ void tick() {
     setIgniter(false);
     setServoValveAttached(false);
 
+    // Moore state machine 🤓
     switch (curState) {
         // standby
         case State::STANDBY:
