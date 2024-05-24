@@ -7,16 +7,16 @@ delimiter = b"\xAA\x55"  # {0b10101010, 0b01010101}
 
 
 def parse_packet(packet: bytes) -> str:
-    if len(packet) == 16:
-        # breakdown of "!ii":
+    if len(packet) == 20:
+        # breakdown of "!qiii":
         #   "!": network byte order
         #   "q": long long
         #   "i": int
-        ts, bt1, bt2 = struct.unpack("!qii", packet)
-        data = {"ts": ts, "bt1": bt1, "bt2": bt2}
+        ts, t1, t2, t3 = struct.unpack("!qiii", packet)
+        data = {"ts": ts, "t1": t1, "t2": t2,"t3": t3}
         return json.dumps(data)
 
-    raise ValueError(f"Expected packet length 16, got {len(packet)}")
+    raise ValueError(f"Expected packet length 20, got {len(packet)}")
 
 
 def format_message(message: Any) -> bytes:
