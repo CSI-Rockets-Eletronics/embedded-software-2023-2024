@@ -23,10 +23,10 @@ for port in /dev/ttyUSB{0..3}; do
         "68:b6:b3:3e:87:a0")
             echo "GPS"
             ;;
-        "68:b6:b3:3f:33:f8")
+        "68:b6:b3:3d:75:f8")
             echo "Scientific"
             ;;
-        "68:b6:b3:3f:34:3c")
+        "34:85:18:a1:fa:10")
             echo "Flight computer"
             ;;
         *)
