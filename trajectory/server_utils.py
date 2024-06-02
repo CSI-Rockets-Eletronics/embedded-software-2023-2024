@@ -154,12 +154,10 @@ def has_calibration_message() -> bool:
     if result.status_code != 200:
         print(f"Error fetching messages: status {result.status_code}")
         return False
+    if result.text == "NONE":
+        return False
 
     # success!
-    message = result.json()
-    if not isinstance(message, dict):
-        return False  # got 'NONE' literal
-
-    message = cast(Message, message)
+    message: Message = result.json()
     last_trajectory_message_ts = message["ts"]
     return message["data"] == calibrate_trajectory_message
