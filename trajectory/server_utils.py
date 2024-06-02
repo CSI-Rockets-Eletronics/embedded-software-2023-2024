@@ -1,4 +1,4 @@
-from typing import TypedDict, Optional, Any, cast
+from typing import TypedDict, Optional
 import requests
 
 url = "http://localhost:3000"
@@ -36,11 +36,6 @@ class TrajectoryRecordData(TypedDict):
     ax: float
     ay: float
     az: float
-
-
-class Message(TypedDict):
-    ts: int
-    data: Any
 
 
 def fetch_ts() -> int:
@@ -94,7 +89,7 @@ def fetch_new_mpu_records(take: Optional[int] = None) -> list[MpuRecordData]:
         return []
 
     # success!
-    records: list[MpuRecord] = result.json()
+    records: list[MpuRecord] = result.json()["records"]
     if len(records) == 0:
         return []
 
@@ -158,6 +153,6 @@ def has_calibration_message() -> bool:
         return False
 
     # success!
-    message: Message = result.json()
+    message = result.json()
     last_trajectory_message_ts = message["ts"]
     return message["data"] == calibrate_trajectory_message
