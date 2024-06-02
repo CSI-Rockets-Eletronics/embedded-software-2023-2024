@@ -1,0 +1,15 @@
+[Unit]
+Description=Performs live flight trajectory calculations and uploads them to the server
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=victator
+WorkingDirectory=/home/victator/embedded-software-2023-2024/integrator/
+ExecStart=/home/victator/embedded-software-2023-2024/integrator/env/bin/python3 /home/victator/embedded-software-2023-2024/integrator/main.py
+
+[Install]
+WantedBy=multi-user.target
