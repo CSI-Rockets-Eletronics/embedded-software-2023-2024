@@ -8,8 +8,8 @@ Type=simple
 Restart=always
 RestartSec=5
 User=victator
-WorkingDirectory=/home/victator/embedded-software-2023-2024/integrator/
-ExecStart=/home/victator/embedded-software-2023-2024/integrator/env/bin/python3 /home/victator/embedded-software-2023-2024/integrator/main.py
+WorkingDirectory=/home/victator/embedded-software-2023-2024/trajectory/
+ExecStart=/home/victator/embedded-software-2023-2024/trajectory/env/bin/python3 /home/victator/embedded-software-2023-2024/trajectory/main.py
 
 [Install]
 WantedBy=multi-user.target
