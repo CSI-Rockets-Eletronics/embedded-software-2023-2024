@@ -112,6 +112,7 @@ def rotation_from_stationary_acc(acc: Acceleration) -> Quaternion:
     # using spherical coordinates, with theta as the azimuthal angle and phi
     # as the polar angle (e.g. angle from the world's z axis).
     anorm = math.sqrt(acc.ax**2 + acc.ay**2 + acc.az**2)
+    assert anorm > 0, "Got zero acceleration vector!"
     phi = math.acos(acc.az / anorm)
     # the rocket tilting in one direction results in the gravity vector
     # tilting in the opposite direction (+180 degrees)
