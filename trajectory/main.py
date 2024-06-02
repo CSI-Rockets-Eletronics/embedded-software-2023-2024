@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Optional, cast
 import math
 import numpy as np
 import numpy.typing as npt
@@ -173,7 +173,7 @@ Main loop below:
 """
 
 # assume rocket is pointing straight up at the start (until calibrated)
-initial_rot = quaternion.one()  # type: ignore
+initial_rot = quaternion.one  # type: ignore
 
 state = State(
     pos=np.array([0, 0, 0]),
@@ -200,7 +200,7 @@ def step(reading: MpuReading) -> None:
     state.ts = reading.ts
 
     # compute acceleration in world frame
-    rot_matrix = quaternion.as_rotation_matrix(state.rot)  # type: ignore
+    rot_matrix = cast(npt.NDArray[np.float64], quaternion.as_rotation_matrix(state.rot))  # type: ignore
     acc = rot_matrix @ np.array([reading.ax, reading.ay, reading.az])
     acc[2] -= g_magnitude  # subtract gravity
 
