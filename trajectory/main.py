@@ -173,12 +173,13 @@ Main loop below:
 """
 
 # assume rocket is pointing straight up at the start (until calibrated)
+initial_3vec = np.array([0.0, 0.0, 0.0])
 initial_rot = quaternion.one  # type: ignore
 
 state = State(
-    pos=np.array([0, 0, 0]),
-    vel=np.array([0, 0, 0]),
-    acc=np.array([0, 0, 0]),
+    pos=initial_3vec,
+    vel=initial_3vec,
+    acc=initial_3vec,
     rot=initial_rot,
 )
 
@@ -212,12 +213,14 @@ def step(reading: MpuReading) -> None:
 
     # update rotation
     gvec = np.array([reading.gx, reading.gy, reading.gz])
-    theta = np.linalg.norm(gvec) * dt
-    rot_axis = gvec / np.linalg.norm(gvec)
-    quat = quaternion.from_float_array(  # type: ignore
-        [math.cos(theta / 2), *(math.sin(theta / 2) * rot_axis)]
-    )
-    state.rot = (state.rot * quat).normalized()  # type: ignore
+    gvec_norm = np.linalg.norm(gvec)
+    if gvec_norm > 0:  # avoid division by zero
+        theta = gvec_norm * dt
+        rot_axis = gvec / gvec_norm
+        quat = quaternion.from_float_array(  # type: ignore
+            [math.cos(theta / 2), *(math.sin(theta / 2) * rot_axis)]
+        )
+        state.rot = (state.rot * quat).normalized()  # type: ignore
 
 
 while True:
@@ -225,9 +228,9 @@ while True:
         print("Calibrating...")
         stat_acc = calibrate_stationary_acc()
         state = State(
-            pos=np.array([0, 0, 0]),
-            vel=np.array([0, 0, 0]),
-            acc=np.array([0, 0, 0]),
+            pos=initial_3vec,
+            vel=initial_3vec,
+            acc=initial_3vec,
             rot=rotation_from_stationary_acc(stat_acc),
         )
         g_magnitude = math.sqrt(stat_acc.ax**2 + stat_acc.ay**2 + stat_acc.az**2)
