@@ -132,7 +132,7 @@ def has_calibration_message() -> bool:
 
     params = {
         "environmentKey": environment_key,
-        "device": mpu_device,
+        "device": trajectory_device,
         "afterTs": last_trajectory_message_ts,
     }
     try:
