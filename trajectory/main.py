@@ -222,6 +222,7 @@ def step(reading: MpuReading) -> None:
 
 while True:
     if has_calibration_message():
+        print("Calibrating...")
         stat_acc = calibrate_stationary_acc()
         state = State(
             pos=np.array([0, 0, 0]),
@@ -230,6 +231,7 @@ while True:
             rot=rotation_from_stationary_acc(stat_acc),
         )
         g_magnitude = math.sqrt(stat_acc.ax**2 + stat_acc.ay**2 + stat_acc.az**2)
+        print("Calibrated!")
 
     records = fetch_new_mpu_records()
 
