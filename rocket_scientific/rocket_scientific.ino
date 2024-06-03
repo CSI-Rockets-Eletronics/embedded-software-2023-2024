@@ -7,7 +7,7 @@
 #include "sentence_serial.h"
 #include "serial_forwarder.h"
 
-const bool PRINT_DEBUG = true;
+const bool PRINT_DEBUG = false;
 
 // serial constants
 
@@ -208,21 +208,21 @@ void setup() {
     adc1.setGain(ADC1_GAIN);
     if (!adc1.begin(ADC1_ADDR, &Wire)) {
         Serial.println("Failed to start ADC1");
-        // while (1);
+        while (1);
     }
 
     adc2.setDataRate(ADC2_RATE);
     adc2.setGain(ADC2_GAIN);
     if (!adc2.begin(ADC2_ADDR, &Wire)) {
         Serial.println("Failed to start ADC2");
-        // while (1);
+        while (1);
     }
 
     adc3.setDataRate(ADC3_RATE);
     adc3.setGain(ADC3_GAIN);
     if (!adc3.begin(ADC3_ADDR, &Wire1)) {
         Serial.println("Failed to start ADC3");
-        // while (1);
+        while (1);
     }
 
     Transd1ADC.enableContinuous();
