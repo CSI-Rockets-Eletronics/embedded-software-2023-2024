@@ -132,7 +132,8 @@ void tick() {
     serial.write((uint8_t *)&t3, sizeof(t3));  // 4 bytes
 
     // add extra byte to make packet length different from flight computer
-    serial.write(0x00, 1);  // 1 byte
+    uint8_t dummyByte = 0x00;
+    serial.write(&dummyByte, 1);  // 1 byte
 
     serial.write(PACKET_DELIMITER, sizeof(PACKET_DELIMITER));
 
