@@ -7,7 +7,7 @@
 #include "sentence_serial.h"
 #include "serial_forwarder.h"
 
-const bool PRINT_DEBUG = false;
+const bool PRINT_DEBUG = true;
 
 // serial constants
 
@@ -131,6 +131,9 @@ void tick() {
     serial.write((uint8_t *)&t2, sizeof(t2));  // 4 bytes
     serial.write((uint8_t *)&t3, sizeof(t3));  // 4 bytes
 
+    // add extra byte to make packet length different from flight computer
+    serial.write(0x00, 1);  // 1 byte
+
     serial.write(PACKET_DELIMITER, sizeof(PACKET_DELIMITER));
 
     if (PRINT_DEBUG) {
@@ -205,21 +208,21 @@ void setup() {
     adc1.setGain(ADC1_GAIN);
     if (!adc1.begin(ADC1_ADDR, &Wire)) {
         Serial.println("Failed to start ADC1");
-        while (1);
+        // while (1);
     }
 
     adc2.setDataRate(ADC2_RATE);
     adc2.setGain(ADC2_GAIN);
     if (!adc2.begin(ADC2_ADDR, &Wire)) {
         Serial.println("Failed to start ADC2");
-        while (1);
+        // while (1);
     }
 
     adc3.setDataRate(ADC3_RATE);
     adc3.setGain(ADC3_GAIN);
     if (!adc3.begin(ADC3_ADDR, &Wire1)) {
         Serial.println("Failed to start ADC3");
-        while (1);
+        // while (1);
     }
 
     Transd1ADC.enableContinuous();

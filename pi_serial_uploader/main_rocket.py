@@ -26,6 +26,7 @@ def parse_packet(packet: bytes) -> str:
         ts, t1, t2, t3, _c = struct.unpack("!qiii", packet)
         data = {"ts": ts, "t1": t1, "t2": t2, "t3": t3}
         return json.dumps(data)
+
     if len(packet) == 20:
         # breakdown of "!qhhhhhh":
         #   "!": network byte order
