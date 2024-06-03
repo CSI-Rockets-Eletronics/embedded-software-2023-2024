@@ -5,6 +5,7 @@
 #include "frequency_logger.h"
 #include "moving_median_adc.h"
 #include "sentence_serial.h"
+#include "serial_forwarder.h"
 
 const bool PRINT_DEBUG = false;
 
@@ -140,6 +141,18 @@ void tick() {
         Serial.print("\tt3: ");
         Serial.println(t3_host);
     }
+
+    int queuedPacketLen;
+    uint8_t *queuedPacket = serialForwarder::getQueuedPacket(&queuedPacketLen);
+
+    if (queuedPacketLen > 0) {
+        serial.write(queuedPacket, queuedPacketLen);
+
+        if (PRINT_DEBUG) {
+            Serial.print("Forwarded packet to pi: length = ");
+            Serial.println(queuedPacketLen);
+        }
+    }
 }
 
 }  // namespace piSerial
@@ -217,6 +230,8 @@ void setup() {
     readCalibration();
 
     piSerial::init();
+
+    serialForwarder::init();
 }
 
 void loop() {
@@ -228,4 +243,6 @@ void loop() {
     Transd3ADC.tick();
 
     piSerial::tick();
+
+    serialForwarder::tick();
 }
