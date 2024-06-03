@@ -42,16 +42,21 @@ def to_mpu_reading(data: MpuRecordData) -> MpuReading:
     GYRO_TICKS_PER_DEG = 16
     RAD_PER_DEG = math.pi / 180
 
-    # TODO coordinate transformation?
+    ax, ay, az = data["ax"], data["ay"], data["az"]
+    gx, gy, gz = data["gx"], data["gy"], data["gz"]
+
+    # convert into world coordinates
+    ax, ay, az = ax, az, -ay
+    gx, gy, gz = gx, gz, -gy
 
     return MpuReading(
         ts=data["ts"] / 1e6,
-        ax=data["ax"] * G / ACC_TICKS_PER_G,
-        ay=data["ay"] * G / ACC_TICKS_PER_G,
-        az=data["az"] * G / ACC_TICKS_PER_G,
-        gx=data["gx"] * RAD_PER_DEG / GYRO_TICKS_PER_DEG,
-        gy=data["gy"] * RAD_PER_DEG / GYRO_TICKS_PER_DEG,
-        gz=data["gz"] * RAD_PER_DEG / GYRO_TICKS_PER_DEG,
+        ax=ax * G / ACC_TICKS_PER_G,
+        ay=ay * G / ACC_TICKS_PER_G,
+        az=az * G / ACC_TICKS_PER_G,
+        gx=gx * RAD_PER_DEG / GYRO_TICKS_PER_DEG,
+        gy=gy * RAD_PER_DEG / GYRO_TICKS_PER_DEG,
+        gz=gz * RAD_PER_DEG / GYRO_TICKS_PER_DEG,
     )
 
 
