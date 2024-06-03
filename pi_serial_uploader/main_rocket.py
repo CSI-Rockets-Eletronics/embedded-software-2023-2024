@@ -23,7 +23,7 @@ def parse_packet(packet: bytes) -> str:
         #   "i": int
         #   "c": char
         # the last byte is just to make the packet 21 bytes long
-        ts, t1, t2, t3, _c = struct.unpack("!qiii", packet)
+        ts, t1, t2, t3, _c = struct.unpack("!qiiic", packet)
         data = {"ts": ts, "t1": t1, "t2": t2, "t3": t3}
         return json.dumps(data)
 
