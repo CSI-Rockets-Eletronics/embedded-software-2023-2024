@@ -109,7 +109,7 @@ void setup() {
     while (!Serial && millis() < 500)
         ;  // wait up to 500ms for serial to connect; needed for native USB
 
-    // for Raspberry Pi
+    // to rocket scientific board
     Serial2.begin(115200, SERIAL_8N1, RX_PIN, TX_PIN);
 
     // ========== MPU setup ==========
