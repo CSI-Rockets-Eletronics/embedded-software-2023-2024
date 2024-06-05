@@ -52,7 +52,8 @@ byte getRelayStatusByte() {
     using namespace hardware::relay;
 
     return (getFill() * 1) | (getVent() * 2) | (getAbort() * 4) |
-           (getPyroCutter() * 8) | (getIgniter() * 16) | (getPValve() * 32);
+           (getPyroCutter() * 8) | (getIgniter() * 16) | (getPValve() * 32) |
+           (getFillServoClosed() * 64);
 }
 
 RelayStatus parseRelayStatusByte(byte val) {
