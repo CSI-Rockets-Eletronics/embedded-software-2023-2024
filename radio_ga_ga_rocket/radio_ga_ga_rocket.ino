@@ -22,16 +22,7 @@ RHSoftwareSPI spi;
 // Singleton instance of the radio driver
 RH_RF95 rf95(SS, INT, spi);
 
-// everything besides fix will be zero until the first time the GPS gets a fix
-RadioPacket packet = {
-    .gps_ts_tail = 0,
-    .gps_fix = false,
-    .gps_fixquality = 0,
-    .gps_satellites = 0,
-    .gps_latitude_fixed = 0,
-    .gps_longitude_fixed = 0,
-    .gps_altitude = 0,
-};
+RadioPacket packet;
 
 void printGpsTs() {
     Serial.print("GPS ts_tail: ");
@@ -58,13 +49,24 @@ void setup() {
 
     rockets_client::init(rockets_client::wifiConfigPresets.ROCKET,
                          rockets_client::serverConfigPresets.ROCKET_PI, "0", "",
-                         false, "GPS");
+                         false, "GPS,Trajectory,RocketScientific");
 
     printGpsTsTicker.start();
 }
 
 void loop() {
+    // zero out unset fields
+    memset(&packet, 0, sizeof(packet));
+
+    // ===== get records =====
+
     rockets_client::StaticJsonDoc records = rockets_client::getLatestRecords();
+
+    // if any data is missing, we'll just let the JSON parsing crash
+    // and reboot lol...
+
+    // ===== parse GPS =====
+
     JsonObject gps = records["GPS"]["data"];
 
     packet.gps_ts_tail = gps["ts_tail"];
@@ -77,6 +79,23 @@ void loop() {
         packet.gps_longitude_fixed = gps["longitude_fixed"];
         packet.gps_altitude = gps["altitude"];
     }
+
+    // ===== parse Trajectory =====
+
+    JsonObject trajectory = records["Trajectory"]["data"];
+
+    packet.trajectory_z = trajectory["z"];
+    packet.trajectory_vz = trajectory["vz"];
+    packet.trajectory_az = trajectory["az"];
+
+    // ===== parse RocketScientific =====
+
+    JsonObject rocketScientific = records["RocketScientific"]["data"];
+
+    packet.rocket_scientific_transducer1 = rocketScientific["transducer1"];
+    packet.rocket_scientific_transducer3 = rocketScientific["transducer3"];
+
+    // ==== send packet =====
 
     rf95.send((uint8_t*)&packet, sizeof(packet));
     rf95.waitPacketSent();

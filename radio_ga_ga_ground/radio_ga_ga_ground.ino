@@ -65,9 +65,10 @@ void loop() {
 
     RadioPacket* packet = (RadioPacket*)buf;
 
-    // send data to server
+    // construct data object
 
     rockets_client::StaticJsonDoc recordData;
+
     JsonObject gps = recordData.createNestedObject("gps");
 
     gps["ts_tail"] = packet->gps_ts_tail;
@@ -79,6 +80,20 @@ void loop() {
         gps["longitude_fixed"] = packet->gps_longitude_fixed;
         gps["altitude"] = packet->gps_altitude;
     }
+
+    JsonObject trajectory = recordData.createNestedObject("trajectory");
+
+    trajectory["z"] = packet->trajectory_z;
+    trajectory["vz"] = packet->trajectory_vz;
+    trajectory["az"] = packet->trajectory_az;
+
+    JsonObject rocket_scientific =
+        recordData.createNestedObject("rocketScientific");
+
+    rocket_scientific["transducer1"] = packet->rocket_scientific_transducer1;
+    rocket_scientific["transducer3"] = packet->rocket_scientific_transducer3;
+
+    // send data to server
 
     if (UPLOAD_TO_SERVER) {
         rockets_client::queueRecord(recordData);
