@@ -16,6 +16,7 @@ def parse_device(packet: bytes) -> str:
 
 
 def parse_packet(packet: bytes) -> str:
+    # RocketScientific
     if len(packet) == 17:
         # breakdown of "!qiic":
         #   "!": network byte order
@@ -27,6 +28,7 @@ def parse_packet(packet: bytes) -> str:
         data = {"ts": ts, "t1": t1, "t3": t3}
         return json.dumps(data)
 
+    # MPU
     if len(packet) == 20:
         # breakdown of "!qhhhhhh":
         #   "!": network byte order
@@ -36,6 +38,7 @@ def parse_packet(packet: bytes) -> str:
         data = {"ts": ts, "ax": ax, "ay": ay, "az": az, "gx": gx, "gy": gy, "gz": gz}
         return json.dumps(data)
 
+    # DHT
     if len(packet) == 16:
         # breakdown of "!qff":
         #   "!": network byte order
