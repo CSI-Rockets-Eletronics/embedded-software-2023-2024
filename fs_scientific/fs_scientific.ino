@@ -16,8 +16,8 @@ const int PI_BAUD = 230400;
 // EEPROM constants
 
 const int EEPROM_SIZE = 256;
-// random int stored at address 0 that marks that subsequent values have been,
-// avoid using 0x00000000 or 0xFFFFFFFF as they may be default values
+// random int stored at address 0 that marks that subsequent values have been
+// written, avoid using 0x00000000 or 0xFFFFFFFF as they may be default values
 const uint32_t EEPROM_WRITTEN_MARKER = 0x12345678;
 const int SMALL_TRANSD_1_ZERO_EEPROM_ADDR = 4;  // store float
 const int SMALL_TRANSD_2_ZERO_EEPROM_ADDR = 8;  // store float
@@ -196,23 +196,21 @@ FrequencyLogger frequencyLogger("loop", 1000);
 
 void setup() {
     Serial.begin(PC_BAUD);
-    while (!Serial && millis() < 500)
-        ;  // wait up to 500ms for serial to connect; needed for native USB
+    while (!Serial && millis() < 500);  // wait up to 500ms for serial to
+                                        // connect; needed for native USB
 
     adc1.setDataRate(ADC1_RATE);
     adc1.setGain(ADC1_GAIN);
     if (!adc1.begin(ADC1_ADDR)) {
         Serial.println("Failed to start ADC1");
-        while (1)
-            ;
+        while (1);
     }
 
     adc2.setDataRate(ADC2_RATE);
     adc2.setGain(ADC2_GAIN);
     if (!adc2.begin(ADC2_ADDR)) {
         Serial.println("Failed to start ADC2");
-        while (1)
-            ;
+        while (1);
     }
 
     smallTransd1ADC.enableContinuous();

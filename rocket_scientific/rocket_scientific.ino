@@ -17,8 +17,8 @@ const int PI_BAUD = 230400;
 // EEPROM constants
 
 const int EEPROM_SIZE = 256;
-// random int stored at address 0 that marks that subsequent values have been,
-// avoid using 0x00000000 or 0xFFFFFFFF as they may be default values
+// random int stored at address 0 that marks that subsequent values have been
+// written, avoid using 0x00000000 or 0xFFFFFFFF as they may be default values
 const uint32_t EEPROM_WRITTEN_MARKER = 0x12345678;
 const int TRANSD_1_ZERO_EEPROM_ADDR = 4;   // store float
 const int TRANSD_2_ZERO_EEPROM_ADDR = 8;   // store float
