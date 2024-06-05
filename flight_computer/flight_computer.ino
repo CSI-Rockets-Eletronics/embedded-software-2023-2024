@@ -4,6 +4,7 @@
 #include <endian.h>
 
 #include "frequency_logger.h"
+#include "p_valve.h"
 
 // remember to connect TX to RX and RX to TX
 const int RX_PIN = 47;
@@ -106,8 +107,8 @@ void setup() {
     // ========== Serial setup ==========
 
     Serial.begin(115200);
-    while (!Serial && millis() < 500)
-        ;  // wait up to 500ms for serial to connect; needed for native USB
+    while (!Serial && millis() < 500);  // wait up to 500ms for serial to
+                                        // connect; needed for native USB
 
     // to rocket scientific board
     Serial2.begin(115200, SERIAL_8N1, RX_PIN, TX_PIN);
@@ -147,9 +148,13 @@ void setup() {
 
     xTaskCreatePinnedToCore(runDhtTask, "DHT", STACK_DEPTH, NULL, PRIORITY,
                             NULL, CORE_ID);
+
+    pValve::setup();
 }
 
 void loop() {
     mpuLoop();
     // dhtLoop is handled by in the other thread
+
+    pValve::loop();
 }
