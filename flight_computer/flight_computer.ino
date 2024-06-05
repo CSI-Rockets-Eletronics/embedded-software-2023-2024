@@ -5,6 +5,7 @@
 
 #include "frequency_logger.h"
 #include "p_valve.h"
+#include "recovery.h"
 
 // remember to connect TX to RX and RX to TX
 const int RX_PIN = 47;
@@ -59,6 +60,9 @@ void mpuLoop() {
     } else {
         Serial.println("Failed to take mutex in mpuLoop!");
     }
+
+    float acc_total = 0;  // TODO compute this
+    recovery::loop(acc_total);
 }
 
 void dhtLoop() {
@@ -150,6 +154,7 @@ void setup() {
                             NULL, CORE_ID);
 
     pValve::setup();
+    recovery::setup();
 }
 
 void loop() {
@@ -157,4 +162,5 @@ void loop() {
     // dhtLoop is handled by in the other thread
 
     pValve::loop();
+    // recovery::loop is called in mpuLoop
 }
