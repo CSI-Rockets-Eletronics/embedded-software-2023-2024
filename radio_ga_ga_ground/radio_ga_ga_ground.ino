@@ -111,8 +111,8 @@ void loop() {
     JsonObject rocket_scientific =
         recordData.createNestedObject("rocketScientific");
 
-    rocket_scientific["transducer1"] = packet->rocket_scientific_transducer1;
-    rocket_scientific["transducer3"] = packet->rocket_scientific_transducer3;
+    rocket_scientific["t1"] = packet->rocket_scientific_transducer1;
+    rocket_scientific["t3"] = packet->rocket_scientific_transducer3;
 
     // send data to server
 
