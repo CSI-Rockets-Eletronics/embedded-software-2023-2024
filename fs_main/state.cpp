@@ -25,7 +25,7 @@ const int PULSE_PURGE_C_TIME = 5000;
 // in milliseconds
 const int FIRE_IGNITER_TIME = 7000;
 const int FIRE_IGNITER_VALVE_BUFFER_TIME = 500;
-const int FIRE_PYRO_VALVE_TIME = 30000;
+const int FIRE_P_VALVE_TIME = 30000;
 
 // internal state
 enum class State {
@@ -68,7 +68,7 @@ enum class State {
     // fire
     FIRE_IGNITER,
     FIRE_IGNITER_VALVE_BUFFER,
-    FIRE_PYRO_VALVE,
+    FIRE_P_VALVE,
     // fire-manual-igniter
     FIRE_MANUAL_IGNITER,
     // fire-manual-valve
@@ -130,7 +130,7 @@ OpState getOpState() {
             return OpState::pulsePurgeC;
         case State::FIRE_IGNITER:
         case State::FIRE_IGNITER_VALVE_BUFFER:
-        case State::FIRE_PYRO_VALVE:
+        case State::FIRE_P_VALVE:
             return OpState::fire;
         case State::FIRE_MANUAL_IGNITER:
             return OpState::fireManualIgniter;
@@ -374,11 +374,11 @@ void runStateTransition() {
             break;
         case State::FIRE_IGNITER_VALVE_BUFFER:
             if (timeInState > FIRE_IGNITER_VALVE_BUFFER_TIME) {
-                enterState(State::FIRE_PYRO_VALVE);
+                enterState(State::FIRE_P_VALVE);
             }
             break;
-        case State::FIRE_PYRO_VALVE:
-            if (timeInState > FIRE_PYRO_VALVE_TIME) {
+        case State::FIRE_P_VALVE:
+            if (timeInState > FIRE_P_VALVE_TIME) {
                 enterState(State::STANDBY);
             }
             break;
@@ -500,7 +500,7 @@ void tick() {
         case State::FIRE_IGNITER_VALVE_BUFFER:
             setServoValveAttached(true);
             break;
-        case State::FIRE_PYRO_VALVE:
+        case State::FIRE_P_VALVE:
             setServoValve(true);
             setServoValveAttached(true);
             break;
