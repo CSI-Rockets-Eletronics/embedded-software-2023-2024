@@ -103,56 +103,30 @@ const int PYRO_CUTTER_PIN = RELAY4_PIN;
 const int IGNITER_PIN = RELAY5_PIN;
 const int P_VALVE_PIN = RELAY6_PIN;
 
-const int SERVO_VALVE_PIN = SERVO1_PIN;
-
 // end mappings
-
-const int SERVO_VALVE_CLOSED_POS = 10;
-const int SERVO_VALVE_OPEN_POS = 165;
-
-// the valve is controlled by a servo rather than a relay
-Servo servoValve;
 
 bool fillOn = false;
 bool ventOn = false;
 bool abortOn = false;
 bool pyroCutterOn = false;
 bool igniterOn = false;
-
-bool servoValveOn = false;
-bool servoValveAttached = false;
+bool pValveOn = false;
 
 bool getFill() { return fillOn; }
 bool getVent() { return ventOn; }
 bool getAbort() { return abortOn; }
 bool getPyroCutter() { return pyroCutterOn; }
 bool getIgniter() { return igniterOn; }
-
-bool getServoValve() { return servoValveOn; }
+bool getPValve() { return pValveOn; }
 
 void setFill(bool on) { fillOn = on; }
 void setVent(bool on) { ventOn = on; }
 void setAbort(bool on) { abortOn = on; }
 void setPyroCutter(bool on) { pyroCutterOn = on; }
 void setIgniter(bool on) { igniterOn = on; }
-
-void setServoValve(bool on) { servoValveOn = on; }
-void setServoValveAttached(bool attached) { servoValveAttached = attached; }
+void setPValve(bool on) { pValveOn = on; }
 
 void writeRelay(int pin, bool on) { digitalWrite(pin, on ? HIGH : LOW); }
-
-void writeServoValveAttached(bool shouldAttach) {
-    static bool _currentlyAttached = false;
-
-    if (_currentlyAttached == shouldAttach) return;
-    _currentlyAttached = shouldAttach;
-
-    if (shouldAttach) {
-        servoValve.attach(SERVO_VALVE_PIN);
-    } else {
-        servoValve.detach();
-    }
-}
 
 void flush() {
     writeRelay(FILL_PIN, fillOn);
@@ -160,14 +134,7 @@ void flush() {
     writeRelay(ABORT_PIN, abortOn);
     writeRelay(PYRO_CUTTER_PIN, pyroCutterOn);
     writeRelay(IGNITER_PIN, igniterOn);
-    writeRelay(P_VALVE_PIN, servoValveOn);
-
-    writeServoValveAttached(servoValveAttached);
-
-    if (servoValveAttached) {
-        servoValve.write(servoValveOn ? SERVO_VALVE_OPEN_POS
-                                      : SERVO_VALVE_CLOSED_POS);
-    }
+    writeRelay(P_VALVE_PIN, pValveOn);
 }
 
 void init() {
@@ -177,11 +144,6 @@ void init() {
     pinMode(PYRO_CUTTER_PIN, OUTPUT);
     pinMode(IGNITER_PIN, OUTPUT);
     pinMode(P_VALVE_PIN, OUTPUT);
-
-    // this is necessary to ensure the servo signal starts with 0V
-    servoValve.attach(SERVO_VALVE_PIN);
-    servoValve.detach();
-
     flush();
 }
 

@@ -19,17 +19,14 @@ bool getVent();
 bool getAbort();
 bool getPyroCutter();
 bool getIgniter();
-
-bool getServoValve();
+bool getPValve();
 
 void setFill(bool on);
 void setVent(bool on);
 void setAbort(bool on);
 void setPyroCutter(bool on);
 void setIgniter(bool on);
-
-void setServoValve(bool on);
-void setServoValveAttached(bool attached);
+void setPValve(bool on);
 
 }  // namespace relay
 
