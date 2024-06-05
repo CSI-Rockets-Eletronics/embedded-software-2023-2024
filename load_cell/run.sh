@@ -7,20 +7,17 @@ set -eo pipefail
 trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 
 # remove and make pipes
-rm -f  read1 read2 write1 write2
-mkfifo read1 read2 write1 write2
+rm -f  read write
+mkfifo read write
 
 # start read_messages.py in background
-python read_messages.py http://localhost:3000 0 LoadCell1 > read1 &
-python read_messages.py http://localhost:3000 0 LoadCell2 > read2 &
+python read_messages.py http://localhost:3000 0 LoadCell > read &
 
 # start write_messages.py in background
-python write_records.py http://localhost:3000 0 LoadCell1 < write1 &
-python write_records.py http://localhost:3000 0 LoadCell2 < write2 &
+python write_records.py http://localhost:3000 0 LoadCell < write &
 
 # start main in background
-./main 1076702 3568 < read1 > write1 &
-./main 652964 3616 < read2 > write2 &
+./main 999999 3568 < read > write & # TODO change 999999 to the correct serial number
 
 # wait for any of the background processes to finish
 wait -n
