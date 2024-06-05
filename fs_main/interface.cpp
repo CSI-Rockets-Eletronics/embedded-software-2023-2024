@@ -62,7 +62,7 @@ RelayStatus parseRelayStatusByte(byte val) {
         .abort = val & 4,
         .pyroCutter = val & 8,
         .igniter = val & 16,
-        .servoValve = val & 32,
+        .pValve = val & 32,
     };
     return status;
 }

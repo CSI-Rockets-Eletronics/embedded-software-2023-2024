@@ -519,7 +519,7 @@ void tick() {
             setAbort(customRelayStatus.abort);
             setPyroCutter(customRelayStatus.pyroCutter);
             setIgniter(customRelayStatus.igniter);
-            setPValve(customRelayStatus.servoValve);
+            setPValve(customRelayStatus.pValve);
             break;
     }
 }
