@@ -24,11 +24,11 @@ void loop(float acc_total) {
 
     if (nowNs > DEPLOY_AFTER_DELAY_MS) {
         digitalWrite(DROGUE_CHUTE_PIN, HIGH);
-        digitalWrite(MAIN_CHUTE_PIN, HIGH);
     } else {
         digitalWrite(DROGUE_CHUTE_PIN, LOW);
-        digitalWrite(MAIN_CHUTE_PIN, LOW);
     }
+
+    digitalWrite(MAIN_CHUTE_PIN, LOW);
 }
 
 }  // namespace recovery
