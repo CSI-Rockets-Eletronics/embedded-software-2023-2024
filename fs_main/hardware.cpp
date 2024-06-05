@@ -103,7 +103,15 @@ const int PYRO_CUTTER_PIN = RELAY4_PIN;
 const int IGNITER_PIN = RELAY5_PIN;
 const int P_VALVE_PIN = RELAY6_PIN;
 
+const int FILL_SERVO_PIN = SERVO1_PIN;
+
 // end mappings
+
+// TODO may need to flip
+const int SERVO_VALVE_CLOSED_POS = 0;
+const int SERVO_VALVE_OPEN_POS = 90;
+
+Servo fillServo;
 
 bool fillOn = false;
 bool ventOn = false;
@@ -112,6 +120,8 @@ bool pyroCutterOn = false;
 bool igniterOn = false;
 bool pValveOn = false;
 
+bool fillServoClosed = false;  // starts open
+
 bool getFill() { return fillOn; }
 bool getVent() { return ventOn; }
 bool getAbort() { return abortOn; }
@@ -119,12 +129,16 @@ bool getPyroCutter() { return pyroCutterOn; }
 bool getIgniter() { return igniterOn; }
 bool getPValve() { return pValveOn; }
 
+bool getFillServoClosed() { return fillServoClosed; }
+
 void setFill(bool on) { fillOn = on; }
 void setVent(bool on) { ventOn = on; }
 void setAbort(bool on) { abortOn = on; }
 void setPyroCutter(bool on) { pyroCutterOn = on; }
 void setIgniter(bool on) { igniterOn = on; }
 void setPValve(bool on) { pValveOn = on; }
+
+void setFillServoClosed(bool closed) { fillServoClosed = closed; }
 
 void writeRelay(int pin, bool on) { digitalWrite(pin, on ? HIGH : LOW); }
 
@@ -135,6 +149,9 @@ void flush() {
     writeRelay(PYRO_CUTTER_PIN, pyroCutterOn);
     writeRelay(IGNITER_PIN, igniterOn);
     writeRelay(P_VALVE_PIN, pValveOn);
+
+    fillServo.write(fillServoClosed ? SERVO_VALVE_CLOSED_POS
+                                    : SERVO_VALVE_OPEN_POS);
 }
 
 void init() {
@@ -144,6 +161,9 @@ void init() {
     pinMode(PYRO_CUTTER_PIN, OUTPUT);
     pinMode(IGNITER_PIN, OUTPUT);
     pinMode(P_VALVE_PIN, OUTPUT);
+
+    fillServo.attach(FILL_SERVO_PIN);
+
     flush();
 }
 

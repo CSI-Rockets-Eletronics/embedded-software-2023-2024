@@ -404,6 +404,7 @@ void tick() {
     setPyroCutter(false);
     setIgniter(false);
     setPValve(false);
+    setFillServoClosed(false);
 
     // Moore state machine 🤓
     switch (curState) {
@@ -494,19 +495,24 @@ void tick() {
         // fire
         case State::FIRE_IGNITER:
             setIgniter(true);
+            setFillServoClosed(true);
             break;
         case State::FIRE_IGNITER_VALVE_BUFFER:
-            break;  // do nothing, just wait
+            setFillServoClosed(true);
+            break;
         case State::FIRE_P_VALVE:
             setPValve(true);
+            setFillServoClosed(true);
             break;
         // fire-manual-igniter
         case State::FIRE_MANUAL_IGNITER:
             setIgniter(true);
+            setFillServoClosed(true);
             break;
         // fire-manual-valve
         case State::FIRE_MANUAL_VALVE:
             setPValve(true);
+            setFillServoClosed(true);
             break;
         // abort
         case State::ABORT:
@@ -520,6 +526,7 @@ void tick() {
             setPyroCutter(customRelayStatus.pyroCutter);
             setIgniter(customRelayStatus.igniter);
             setPValve(customRelayStatus.pValve);
+            setFillServoClosed(customRelayStatus.fillServoClosed);
             break;
     }
 }

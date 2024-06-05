@@ -12,6 +12,7 @@ struct RelayStatus {
     bool pyroCutter;
     bool igniter;
     bool pValve;
+    bool fillServoClosed;
 };
 
 #define STANDBY_COMMAND "standby"

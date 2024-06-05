@@ -21,12 +21,16 @@ bool getPyroCutter();
 bool getIgniter();
 bool getPValve();
 
+bool getFillServoClosed();
+
 void setFill(bool on);
 void setVent(bool on);
 void setAbort(bool on);
 void setPyroCutter(bool on);
 void setIgniter(bool on);
 void setPValve(bool on);
+
+void setFillServoClosed(bool closed);
 
 }  // namespace relay
 
