@@ -18,11 +18,11 @@ int64_t calibrationTime = 0;
 
 namespace transducer {
 
-long smallTransd1MPSI = 0;
-long smallTransd2MPSI = 0;
+long transd1MPSI = 0;
+long transd2MPSI = 0;
 
-long getSmallTransd1MPSI() { return smallTransd1MPSI; }
-long getSmallTransd2MPSI() { return smallTransd2MPSI; }
+long getTransd1MPSI() { return transd1MPSI; }
+long getTransd2MPSI() { return transd2MPSI; }
 
 }  // namespace transducer
 
@@ -48,15 +48,15 @@ void processCompletedSentence(const char *sentence) {
 
     // possibility 2:
 
-    // sentence format: [st1_pressure_mpsi_long] [st2_pressure_mpsi_long]
+    // sentence format: [t1_pressure_mpsi_long] [t2_pressure_mpsi_long]
     // ex: "123456 123456"
 
-    long st1, st2;
-    int result = sscanf(sentence, "%ld %ld", &st1, &st2);
+    long t1, t2;
+    int result = sscanf(sentence, "%ld %ld", &t1, &t2);
 
     if (result == 2) {
-        transducer::smallTransd1MPSI = st1;
-        transducer::smallTransd2MPSI = st2;
+        transducer::transd1MPSI = t1;
+        transducer::transd2MPSI = t2;
         return;
     }
 
@@ -278,9 +278,9 @@ void init() {
     relay::init();
     thermocouple::init();
 
-    Serial.begin(PC_BAUD);  // init serial to computer
-    while (!Serial && millis() < 500)
-        ;  // wait up to 500ms for serial to connect; needed for native USB
+    Serial.begin(PC_BAUD);              // init serial to computer
+    while (!Serial && millis() < 500);  // wait up to 500ms for serial to
+                                        // connect; needed for native USB
 
     sciSerial::init();
 
