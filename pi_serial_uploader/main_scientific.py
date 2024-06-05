@@ -11,8 +11,8 @@ def parse_packet(packet: bytes) -> str:
         #   "!": network byte order
         #   "q": long long
         #   "i": int
-        ts, st1, st2 = struct.unpack("!qii", packet)
-        data = {"ts": ts, "st1": st1, "st2": st2}
+        ts, t1, t2 = struct.unpack("!qii", packet)
+        data = {"ts": ts, "t1": t1, "t2": t2}
         return json.dumps(data)
 
     raise ValueError(f"Expected packet length 16, got {len(packet)}")

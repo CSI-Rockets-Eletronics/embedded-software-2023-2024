@@ -19,8 +19,8 @@ const int EEPROM_SIZE = 256;
 // random int stored at address 0 that marks that subsequent values have been
 // written, avoid using 0x00000000 or 0xFFFFFFFF as they may be default values
 const uint32_t EEPROM_WRITTEN_MARKER = 0x12345678;
-const int SMALL_TRANSD_1_ZERO_EEPROM_ADDR = 4;  // store float
-const int SMALL_TRANSD_2_ZERO_EEPROM_ADDR = 8;  // store float
+const int TRANSD_1_ZERO_EEPROM_ADDR = 4;  // store float
+const int TRANSD_2_ZERO_EEPROM_ADDR = 8;  // store float
 
 // shared ADC constants
 
@@ -40,23 +40,23 @@ const adsGain_t ADC2_GAIN = GAIN_TWOTHIRDS;
 
 // device constants
 
-const ADCMode SMALL_TRANSD_1_ADC_MODE = ADCMode::SingleEnded_2;
-const ADCMode SMALL_TRANSD_2_ADC_MODE = ADCMode::SingleEnded_2;
+const ADCMode TRANSD_1_ADC_MODE = ADCMode::SingleEnded_2;
+const ADCMode TRANSD_2_ADC_MODE = ADCMode::SingleEnded_2;
 
-const float SMALL_TRANSD_1_MPSI_PER_VOLT = 1000 / 0.00341944869;
-const float SMALL_TRANSD_2_MPSI_PER_VOLT = 1000 / 0.00341944869;
+const float TRANSD_1_MPSI_PER_VOLT = 1000 / 0.00341944869;
+const float TRANSD_2_MPSI_PER_VOLT = 1000 / 0.00341944869;
 
 // globals
 
 Adafruit_ADS1115 adc1;
 Adafruit_ADS1115 adc2;
 
-MovingMedianADC<Adafruit_ADS1115> smallTransd1ADC("small transducer 1",
-                                                  ADC_MEDIAN_WINDOW_SIZE, adc1,
-                                                  SMALL_TRANSD_1_ADC_MODE);
-MovingMedianADC<Adafruit_ADS1115> smallTransd2ADC("small transducer 2",
-                                                  ADC_MEDIAN_WINDOW_SIZE, adc2,
-                                                  SMALL_TRANSD_2_ADC_MODE);
+MovingMedianADC<Adafruit_ADS1115> Transd1ADC("Transducer 1",
+                                             ADC_MEDIAN_WINDOW_SIZE, adc1,
+                                             TRANSD_1_ADC_MODE);
+MovingMedianADC<Adafruit_ADS1115> Transd2ADC("Transducer 2",
+                                             ADC_MEDIAN_WINDOW_SIZE, adc2,
+                                             TRANSD_2_ADC_MODE);
 
 void recalibrate();
 void clearCalibration();
@@ -77,19 +77,17 @@ void tick() {
     int64_t ts_host = esp_timer_get_time();
 
     // DB should store raw readings, not median
-    int32_t st1_host =
-        smallTransd1ADC.getLatestVolts() * SMALL_TRANSD_1_MPSI_PER_VOLT;
-    int32_t st2_host =
-        smallTransd2ADC.getLatestVolts() * SMALL_TRANSD_2_MPSI_PER_VOLT;
+    int32_t t1_host = Transd1ADC.getLatestVolts() * TRANSD_1_MPSI_PER_VOLT;
+    int32_t t2_host = Transd2ADC.getLatestVolts() * TRANSD_2_MPSI_PER_VOLT;
 
     // deal with endianness
     uint64_t ts = htobe64(ts_host);
-    uint32_t st1 = htonl(st1_host);
-    uint32_t st2 = htonl(st2_host);
+    uint32_t t1 = htonl(t1_host);
+    uint32_t t2 = htonl(t2_host);
 
-    Serial2.write((uint8_t *)&ts, sizeof(ts));    // 8 bytes
-    Serial2.write((uint8_t *)&st1, sizeof(st1));  // 4 bytes
-    Serial2.write((uint8_t *)&st2, sizeof(st2));  // 4 bytes
+    Serial2.write((uint8_t *)&ts, sizeof(ts));  // 8 bytes
+    Serial2.write((uint8_t *)&t1, sizeof(t1));  // 4 bytes
+    Serial2.write((uint8_t *)&t2, sizeof(t2));  // 4 bytes
 
     Serial2.write(PACKET_DELIMITER, sizeof(PACKET_DELIMITER));
 }
@@ -126,15 +124,15 @@ void processCompletedSentence(const char *sentence) {
 SentenceSerial serial(Serial1, processCompletedSentence);
 
 void sendSentence() {
-    // sentence format: <st1_pressure_mpsi_long st2_pressure_mpsi_long>
+    // sentence format: <t1_pressure_mpsi_long t2_pressure_mpsi_long>
     // ex: <123456 123456>
 
     // send median readings to main board, as this gets displayed in the live UI
-    long st1 = smallTransd1ADC.getMedianVolts() * SMALL_TRANSD_1_MPSI_PER_VOLT;
-    long st2 = smallTransd2ADC.getMedianVolts() * SMALL_TRANSD_2_MPSI_PER_VOLT;
+    long t1 = Transd1ADC.getMedianVolts() * TRANSD_1_MPSI_PER_VOLT;
+    long t2 = Transd2ADC.getMedianVolts() * TRANSD_2_MPSI_PER_VOLT;
 
     char sentence[64];
-    snprintf(sentence, sizeof(sentence), "%ld %ld", st1, st2);
+    snprintf(sentence, sizeof(sentence), "%ld %ld", t1, t2);
 
     serial.sendSentence(sentence);
 
@@ -161,20 +159,18 @@ void tick() {
 void readCalibration() {
     uint32_t markerVal = EEPROM.readUInt(0);
     if (markerVal == EEPROM_WRITTEN_MARKER) {
-        smallTransd1ADC.setZero(
-            EEPROM.readFloat(SMALL_TRANSD_1_ZERO_EEPROM_ADDR));
-        smallTransd2ADC.setZero(
-            EEPROM.readFloat(SMALL_TRANSD_2_ZERO_EEPROM_ADDR));
+        Transd1ADC.setZero(EEPROM.readFloat(TRANSD_1_ZERO_EEPROM_ADDR));
+        Transd2ADC.setZero(EEPROM.readFloat(TRANSD_2_ZERO_EEPROM_ADDR));
     }
 }
 
 void recalibrate() {
-    float st1Zero = smallTransd1ADC.recalibrate(ADC_CALIBRATE_SAMPLE_COUNT);
-    float st2Zero = smallTransd2ADC.recalibrate(ADC_CALIBRATE_SAMPLE_COUNT);
+    float t1Zero = Transd1ADC.recalibrate(ADC_CALIBRATE_SAMPLE_COUNT);
+    float t2Zero = Transd2ADC.recalibrate(ADC_CALIBRATE_SAMPLE_COUNT);
 
     EEPROM.writeUInt(0, EEPROM_WRITTEN_MARKER);
-    EEPROM.writeFloat(SMALL_TRANSD_1_ZERO_EEPROM_ADDR, st1Zero);
-    EEPROM.writeFloat(SMALL_TRANSD_2_ZERO_EEPROM_ADDR, st2Zero);
+    EEPROM.writeFloat(TRANSD_1_ZERO_EEPROM_ADDR, t1Zero);
+    EEPROM.writeFloat(TRANSD_2_ZERO_EEPROM_ADDR, t2Zero);
     EEPROM.commit();
 
     mainSerial::serial.sendSentence(mainSerial::CALIBRATION_COMPLETE_SENTENCE);
@@ -183,8 +179,8 @@ void recalibrate() {
 }
 
 void clearCalibration() {
-    smallTransd1ADC.resetZero();
-    smallTransd2ADC.resetZero();
+    Transd1ADC.resetZero();
+    Transd2ADC.resetZero();
 
     EEPROM.writeUInt(0, 0x00000000);
     EEPROM.commit();
@@ -213,8 +209,8 @@ void setup() {
         while (1);
     }
 
-    smallTransd1ADC.enableContinuous();
-    smallTransd2ADC.enableContinuous();
+    Transd1ADC.enableContinuous();
+    Transd2ADC.enableContinuous();
 
     EEPROM.begin(EEPROM_SIZE);
     readCalibration();
@@ -227,8 +223,8 @@ void loop() {
     frequencyLogger.tick();
 
     // read the ADCs and send sentences to the raspberry pi every tick
-    smallTransd1ADC.tick();
-    smallTransd2ADC.tick();
+    Transd1ADC.tick();
+    Transd2ADC.tick();
 
     piSerial::tick();
     mainSerial::tick();
