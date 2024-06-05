@@ -44,7 +44,7 @@ const ADCMode TRANSD_1_ADC_MODE = ADCMode::SingleEnded_2;
 const ADCMode TRANSD_2_ADC_MODE = ADCMode::SingleEnded_2;
 
 const float TRANSD_1_MPSI_PER_VOLT = 1000 / 0.00341944869;
-const float TRANSD_2_MPSI_PER_VOLT = 1000 / 0.00341944869;
+const float TRANSD_2_LBS_PER_VOLT = 500;  // TODO calibrate
 
 // globals
 
@@ -78,7 +78,7 @@ void tick() {
 
     // DB should store raw readings, not median
     int32_t t1_host = Transd1ADC.getLatestVolts() * TRANSD_1_MPSI_PER_VOLT;
-    int32_t t2_host = Transd2ADC.getLatestVolts() * TRANSD_2_MPSI_PER_VOLT;
+    int32_t t2_host = Transd2ADC.getLatestVolts() * TRANSD_2_LBS_PER_VOLT;
 
     // deal with endianness
     uint64_t ts = htobe64(ts_host);
@@ -124,12 +124,12 @@ void processCompletedSentence(const char *sentence) {
 SentenceSerial serial(Serial1, processCompletedSentence);
 
 void sendSentence() {
-    // sentence format: <t1_pressure_mpsi_long t2_pressure_mpsi_long>
+    // sentence format: <t1 t2>
     // ex: <123456 123456>
 
     // send median readings to main board, as this gets displayed in the live UI
     long t1 = Transd1ADC.getMedianVolts() * TRANSD_1_MPSI_PER_VOLT;
-    long t2 = Transd2ADC.getMedianVolts() * TRANSD_2_MPSI_PER_VOLT;
+    long t2 = Transd2ADC.getMedianVolts() * TRANSD_2_LBS_PER_VOLT;
 
     char sentence[64];
     snprintf(sentence, sizeof(sentence), "%ld %ld", t1, t2);

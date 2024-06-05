@@ -51,8 +51,8 @@ const long ABORT_MPSI = 900000;
 // buffer to prevent oscillation
 const long BUFFER_MPSI = 5000;
 
-long getTransd1MPSI();
-long getTransd2MPSI();
+long getTransd1();
+long getTransd2();
 
 }  // namespace transducer
 

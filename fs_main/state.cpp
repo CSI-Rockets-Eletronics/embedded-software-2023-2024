@@ -214,7 +214,7 @@ void runStateTransition() {
     using namespace hardware;
 
     unsigned long timeInState = millis() - enteredStateMillis;
-    long pressure = hardware::transducer::getTransd1MPSI();
+    long pressure = hardware::transducer::getTransd1();
 
     // conditions for ox tank, including buffer to prevent oscillation
 
