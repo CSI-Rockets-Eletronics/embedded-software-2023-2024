@@ -6,6 +6,24 @@
 
 #include "radio_packet.h"
 
+// ! uncomment below to switch between 433Mhz and 915Mhz modules
+#define USE_433MHZ_MODULE
+// #define USE_915MHZ_MODULE
+
+#ifdef USE_433MHZ_MODULE
+
+#define SCLK 12
+#define MISO 13
+#define MOSI 11
+#define SS 10
+#define INT 2
+
+#define FREQUENCY 433.0
+
+#endif  // USE_433MHZ_MODULE
+
+#ifdef USE_915MHZ_MODULE
+
 #define SCK 16
 #define MISO 7
 #define MOSI 6
@@ -13,6 +31,9 @@
 #define INT 1
 
 #define FREQUENCY 915.0
+
+#endif  // USE_915MHZ_MODULE
+
 #define TX_POWER 23
 
 #define PRINT_GPS_TS_INTERVAL 1000
