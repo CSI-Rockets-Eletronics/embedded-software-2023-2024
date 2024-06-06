@@ -10,8 +10,8 @@ namespace pValve {
  * was previously on, the relay is turned off after a lag time.
  */
 
-const int INPUT_PIN = 14;
-const int RELAY_PIN = 15;
+const int INPUT_PIN = 6;
+const int RELAY_PIN = 14;
 
 const long LAG_TIME_MS = 30 * 1000;  // 30 seconds
 
