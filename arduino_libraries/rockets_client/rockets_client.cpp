@@ -14,6 +14,11 @@ WifiConfigPresets wifiConfigPresets = {
             .ssid = "Darknet",
             .password = "Blueberries",
         },
+    .GROUND_LONG =
+        {
+            .ssid = "Darknet_Long",
+            .password = "Blueberries",
+        },
     .ROCKET =
         {
             .ssid = "Darknet Rocket",

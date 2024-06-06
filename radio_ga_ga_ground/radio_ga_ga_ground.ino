@@ -59,8 +59,8 @@ void setup() {
     rf95.setTxPower(TX_POWER, false);
 
     if (UPLOAD_TO_SERVER) {
-        rockets_client::init(rockets_client::wifiConfigPresets.GROUND,
-                             rockets_client::serverConfigPresets.MECHE, "0",
+        rockets_client::init(rockets_client::wifiConfigPresets.GROUND_LONG,
+                             rockets_client::serverConfigPresets.FS_PI, "0",
                              "RadioGround");
     }
 }

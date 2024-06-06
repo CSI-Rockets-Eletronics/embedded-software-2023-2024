@@ -21,6 +21,7 @@ struct WifiConfig {
 
 struct WifiConfigPresets {
     WifiConfig GROUND;
+    WifiConfig GROUND_LONG;
     WifiConfig ROCKET;
 };
 
