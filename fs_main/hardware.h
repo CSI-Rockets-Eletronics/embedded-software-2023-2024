@@ -34,13 +34,6 @@ void setFillServoClosed(bool closed);
 
 }  // namespace relay
 
-namespace thermocouple {
-
-double getThermo1Celcius();
-double getThermo2Celcius();
-
-}  // namespace thermocouple
-
 namespace transducer {
 
 // for filling sequence; milli psi

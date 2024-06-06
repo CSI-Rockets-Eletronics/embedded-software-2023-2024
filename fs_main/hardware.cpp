@@ -169,82 +169,6 @@ void init() {
 
 }  // namespace relay
 
-namespace thermocouple {
-
-const int THERMO_READ_INTERVAL = 100;
-
-// chip select pins
-const int CS1_PIN = 1;
-const int CS2_PIN = 2;
-
-SPIClass fspi(FSPI);
-
-Adafruit_MAX31855 thermo1(CS1_PIN, &fspi);
-Adafruit_MAX31855 thermo2(CS2_PIN, &fspi);
-
-double thermo1Celcius = 0;
-double thermo2Celcius = 0;
-
-double getThermo1Celcius() { return thermo1Celcius; }
-double getThermo2Celcius() { return thermo2Celcius; }
-
-void printError(uint8_t error) {
-    if (error & MAX31855_FAULT_OPEN) {
-        Serial.print("OPEN ");
-    }
-    if (error & MAX31855_FAULT_SHORT_GND) {
-        Serial.print("SHORT_GND ");
-    }
-    if (error & MAX31855_FAULT_SHORT_VCC) {
-        Serial.print("SHORT_VCC ");
-    }
-    Serial.println();
-}
-
-void read() {
-    double c1 = thermo1.readCelsius();
-    if (isnan(c1)) {
-        thermo1Celcius = 0;
-
-        Serial.print("thermo1 fault(s) detected: ");
-        printError(thermo1.readError());
-    } else {
-        thermo1Celcius = c1;
-    }
-
-    double c2 = thermo2.readCelsius();
-    if (isnan(c2)) {
-        thermo2Celcius = 0;
-
-        Serial.print("thermo2 fault(s) detected: ");
-        printError(thermo2.readError());
-    } else {
-        thermo2Celcius = c2;
-    }
-}
-
-TickTwo ticker(read, THERMO_READ_INTERVAL);
-
-void init() {
-    // wait for MAX chip to stabilize
-    delay(500);
-
-    if (!thermo1.begin()) {
-        Serial.println("Error initializing thermo1");
-        while (1) delay(10);
-    }
-    if (!thermo2.begin()) {
-        Serial.println("Error initializing thermo2");
-        while (1) delay(10);
-    }
-
-    ticker.start();
-}
-
-void tick() { ticker.update(); }
-
-}  // namespace thermocouple
-
 int64_t getCalibrationTime() { return calibrationTime; }
 
 FrequencyLogger frequencyLogger("hardware", 1000);
@@ -261,7 +185,6 @@ TickTwo hardwareTicker(updateHardware, HARDWARE_INTERVAL);
 void init() {
     // flush initial relay values before all else
     relay::init();
-    thermocouple::init();
 
     Serial.begin(PC_BAUD);              // init serial to computer
     while (!Serial && millis() < 500);  // wait up to 500ms for serial to
@@ -274,7 +197,6 @@ void init() {
 
 // Flushes output values.
 void tick() {
-    thermocouple::tick();
     sciSerial::tick();  // update as fast as possible
     hardwareTicker.update();
 }
