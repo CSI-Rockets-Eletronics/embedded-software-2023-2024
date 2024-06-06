@@ -113,8 +113,10 @@ void loop() {
 
     JsonObject rocketScientific = records["RocketScientific"]["data"];
 
-    packet.rocket_scientific_transducer1 = rocketScientific["t1"];
-    packet.rocket_scientific_transducer3 = rocketScientific["t3"];
+    packet.rocket_scientific_transducer1 =
+        (int32_t)rocketScientific["t1"] / 1000;
+    packet.rocket_scientific_transducer3 =
+        (int32_t)rocketScientific["t3"] / 1000;
 
     // ==== send packet =====
 
