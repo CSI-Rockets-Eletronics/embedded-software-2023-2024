@@ -146,4 +146,24 @@ void loop() {
     }
 
     Serial.println();
+
+    Serial.print("z: ");
+    Serial.print(packet->trajectory_z);
+
+    Serial.print("\tvz: ");
+    Serial.print(packet->trajectory_vz);
+
+    Serial.print("\taz: ");
+    Serial.print(packet->trajectory_az);
+
+    Serial.println();
+
+    Serial.print("transducer1: ");
+    Serial.print(packet->rocket_scientific_transducer1);
+
+    Serial.print("\ttransducer3: ");
+    Serial.print(packet->rocket_scientific_transducer3);
+
+    Serial.println();
+    Serial.println();
 }
