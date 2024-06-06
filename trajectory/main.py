@@ -156,21 +156,29 @@ class State:
     ts: Optional[float] = None
 
 
+def to_float_safe(val: Any) -> float:
+    float_val = float(val)
+    if math.isfinite(float_val):
+        return float_val
+    else:
+        return 0
+
+
 def to_trajectory_record_data(state: State) -> TrajectoryRecordData | None:
     if state.ts is None:
         return None
 
     return TrajectoryRecordData(
         ts=int(state.ts * 1e6),
-        x=float(state.pos[0]),
-        y=float(state.pos[1]),
-        z=float(state.pos[2]),
-        vx=float(state.vel[0]),
-        vy=float(state.vel[1]),
-        vz=float(state.vel[2]),
-        ax=float(state.acc[0]),
-        ay=float(state.acc[1]),
-        az=float(state.acc[2]),
+        x=to_float_safe(state.pos[0]),
+        y=to_float_safe(state.pos[1]),
+        z=to_float_safe(state.pos[2]),
+        vx=to_float_safe(state.vel[0]),
+        vy=to_float_safe(state.vel[1]),
+        vz=to_float_safe(state.vel[2]),
+        ax=to_float_safe(state.acc[0]),
+        ay=to_float_safe(state.acc[1]),
+        az=to_float_safe(state.acc[2]),
     )
 
 
