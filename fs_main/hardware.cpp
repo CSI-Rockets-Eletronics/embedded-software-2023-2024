@@ -94,6 +94,8 @@ const int SERVO1_PIN = 18;
 const int SERVO2_PIN = 8;
 const int SERVO3_PIN = 9;
 
+const int AUX_PIN_1 = 1;
+
 // logical mappings
 
 const int FILL_PIN = RELAY1_PIN;
@@ -101,7 +103,7 @@ const int VENT_PIN = RELAY2_PIN;
 const int ABORT_PIN = RELAY3_PIN;
 const int PYRO_CUTTER_PIN = RELAY4_PIN;
 const int IGNITER_PIN = RELAY5_PIN;
-const int P_VALVE_PIN = RELAY6_PIN;
+const int P_VALVE_PIN = AUX_PIN_1;
 
 const int FILL_SERVO_PIN = SERVO1_PIN;
 
@@ -148,7 +150,10 @@ void flush() {
     writeRelay(ABORT_PIN, abortOn);
     writeRelay(PYRO_CUTTER_PIN, pyroCutterOn);
     writeRelay(IGNITER_PIN, igniterOn);
-    writeRelay(P_VALVE_PIN, pValveOn);
+
+    // write LOW to turn on p-valve, as this pin sends a signal to a flight
+    // computer input pin that is pulled up by default
+    writeRelay(P_VALVE_PIN, !pValveOn);
 
     fillServo.write(fillServoClosed ? SERVO_VALVE_CLOSED_POS
                                     : SERVO_VALVE_OPEN_POS);
