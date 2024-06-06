@@ -41,7 +41,7 @@ const int ADC_MEDIAN_WINDOW_SIZE = 50;
 TwoWire *ADC1_WIRE = &Wire;
 TwoWire *ADC3_WIRE = &Wire1;
 
-const uint8_t ADC1_ADDR = 0x48;
+const uint8_t ADC1_ADDR = 0x49;
 const uint8_t ADC3_ADDR = 0x48;
 
 const uint16_t ADC1_RATE = RATE_ADS1115_860SPS;
@@ -55,8 +55,8 @@ const adsGain_t ADC3_GAIN = GAIN_ONE;
 const ADCMode TRANSD_1_ADC_MODE = ADCMode::SingleEnded_0;
 const ADCMode TRANSD_3_ADC_MODE = ADCMode::SingleEnded_0;
 
-const float TRANSD_1_MPSI_PER_VOLT = 1000 / 0.00341944869;
-const float TRANSD_3_MPSI_PER_VOLT = 1000000;
+const float TRANSD_1_PSI_PER_VOLT = 1 / 0.00341944869;
+const float TRANSD_3_PSI_PER_VOLT = 1000;
 
 // globals
 
@@ -109,8 +109,8 @@ void tick() {
     int64_t ts_host = esp_timer_get_time();
 
     // DB should store raw readings, not median
-    int32_t t1_host = Transd1ADC.getLatestVolts() * TRANSD_1_MPSI_PER_VOLT;
-    int32_t t3_host = Transd3ADC.getLatestVolts() * TRANSD_3_MPSI_PER_VOLT;
+    int32_t t1_host = Transd1ADC.getLatestVolts() * TRANSD_1_PSI_PER_VOLT;
+    int32_t t3_host = Transd3ADC.getLatestVolts() * TRANSD_3_PSI_PER_VOLT;
 
     // deal with endianness
     uint64_t ts = htobe64(ts_host);
