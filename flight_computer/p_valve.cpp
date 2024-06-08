@@ -4,7 +4,7 @@
 
 namespace pValve {
 
-const int INPUT_PIN = 6;
+const int INPUT_PIN = 16;
 const int RELAY_PIN = 14;
 
 // keep relay on for 30 seconds after the last command to turn it off
