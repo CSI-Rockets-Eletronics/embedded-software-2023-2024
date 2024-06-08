@@ -4,21 +4,21 @@
 
 namespace pValve {
 
-/**
- * Input is pulled HIGH by default. Output relay starts off. When input is read
- * as LOW, the relay is turned on. when the input is read as HIGH and the relay
- * was previously on, the relay is turned off after a lag time.
- */
-
 const int INPUT_PIN = 6;
 const int RELAY_PIN = 14;
 
-const long LAG_TIME_MS = 30 * 1000;  // 30 seconds
+// keep relay on for 30 seconds after the last command to turn it off
+const long LAG_TIME_ON_MS = 30 * 1000;  // 30 seconds
+// keep relay off for 0.5 seconds after the last command to turn it on
+const long LAG_TIME_OFF_MS = 500;  // 0.5 seconds
 
-long lastRelayOnTimeMs = -1;  // negative means the relay has never been on
+// pretend the relay was last on a very long time ago
+long lastRelayOnCommandTime = -1000 * 1000;
+// relay starts off
+long lastRelayOffCommandTime = 0;
 
 void setup() {
-    pinMode(INPUT_PIN, INPUT_PULLUP);
+    pinMode(INPUT_PIN, INPUT_PULLDOWN);
     pinMode(RELAY_PIN, OUTPUT);
 }
 
@@ -26,29 +26,21 @@ void loop() {
     long nowMs = millis();
     int input = digitalRead(INPUT_PIN);
 
-    if (input == LOW) {
-        // input is LOW, so turn on the relay
-        digitalWrite(RELAY_PIN, HIGH);
-        lastRelayOnTimeMs = nowMs;
-        return;
-    }
-
-    // else: input is HIGH
-
-    if (lastRelayOnTimeMs < 0) {
-        // relay has never been on
-        digitalWrite(RELAY_PIN, LOW);
-        return;
-    }
-
-    // else: relay was previously on
-
-    if (nowMs - lastRelayOnTimeMs < LAG_TIME_MS) {
-        // relay was recently turned on, so keep it on
-        digitalWrite(RELAY_PIN, HIGH);
+    // HIGH -> command to turn relay on
+    if (input == HIGH) {
+        lastRelayOnCommandTime = nowMs;
+        if (nowMs - lastRelayOffCommandTime > LAG_TIME_OFF_MS) {
+            digitalWrite(RELAY_PIN, HIGH);
+        } else {
+            digitalWrite(RELAY_PIN, LOW);
+        }
     } else {
-        // relay was turned on a long time ago, so turn it off
-        digitalWrite(RELAY_PIN, LOW);
+        lastRelayOffCommandTime = nowMs;
+        if (nowMs - lastRelayOnCommandTime > LAG_TIME_ON_MS) {
+            digitalWrite(RELAY_PIN, LOW);
+        } else {
+            digitalWrite(RELAY_PIN, HIGH);
+        }
     }
 }
 

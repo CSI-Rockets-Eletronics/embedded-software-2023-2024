@@ -153,7 +153,7 @@ void flush() {
 
     // write LOW to turn on p-valve, as this pin sends a signal to a flight
     // computer input pin that is pulled up by default
-    writeRelay(P_VALVE_PIN, !pValveOn);
+    writeRelay(P_VALVE_PIN, pValveOn);
 
     fillServo.write(fillServoClosed ? SERVO_VALVE_CLOSED_POS
                                     : SERVO_VALVE_OPEN_POS);
