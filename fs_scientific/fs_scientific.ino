@@ -22,11 +22,6 @@ const uint32_t EEPROM_WRITTEN_MARKER = 0x12345678;
 const int TRANSD_1_ZERO_EEPROM_ADDR = 4;  // store float
 const int TRANSD_2_ZERO_EEPROM_ADDR = 8;  // store float
 
-// shared ADC constants
-
-const int ADC_CALIBRATE_SAMPLE_COUNT = 500;
-const int ADC_MEDIAN_WINDOW_SIZE = 50;
-
 // specific ADC constants
 
 const uint8_t ADC1_ADDR = 0x48;
@@ -38,13 +33,19 @@ const uint16_t ADC2_RATE = RATE_ADS1115_860SPS;
 const adsGain_t ADC1_GAIN = GAIN_TWOTHIRDS;
 const adsGain_t ADC2_GAIN = GAIN_TWOTHIRDS;
 
+const int ADC1_CALIBRATE_SAMPLE_COUNT = 500;
+const int ADC2_CALIBRATE_SAMPLE_COUNT = 5000;
+
+const int ADC1_MEDIAN_WINDOW_SIZE = 50;
+const int ADC2_MEDIAN_WINDOW_SIZE = 1000;
+
 // device constants
 
 const ADCMode TRANSD_1_ADC_MODE = ADCMode::SingleEnded_2;
 const ADCMode TRANSD_2_ADC_MODE = ADCMode::SingleEnded_2;
 
 const float TRANSD_1_MPSI_PER_VOLT = 1000 / 0.00341944869;
-const float TRANSD_2_LBS_PER_VOLT = 500;  // TODO calibrate
+const float TRANSD_2_MLBS_PER_VOLT = 300 * 1000;  // TODO calibrate
 
 // globals
 
@@ -52,10 +53,10 @@ Adafruit_ADS1115 adc1;
 Adafruit_ADS1115 adc2;
 
 MovingMedianADC<Adafruit_ADS1115> Transd1ADC("Transducer 1",
-                                             ADC_MEDIAN_WINDOW_SIZE, adc1,
+                                             ADC1_MEDIAN_WINDOW_SIZE, adc1,
                                              TRANSD_1_ADC_MODE);
 MovingMedianADC<Adafruit_ADS1115> Transd2ADC("Transducer 2",
-                                             ADC_MEDIAN_WINDOW_SIZE, adc2,
+                                             ADC2_MEDIAN_WINDOW_SIZE, adc2,
                                              TRANSD_2_ADC_MODE);
 
 void recalibrate();
@@ -78,7 +79,7 @@ void tick() {
 
     // DB should store raw readings, not median
     int32_t t1_host = Transd1ADC.getLatestVolts() * TRANSD_1_MPSI_PER_VOLT;
-    int32_t t2_host = Transd2ADC.getLatestVolts() * TRANSD_2_LBS_PER_VOLT;
+    int32_t t2_host = Transd2ADC.getLatestVolts() * TRANSD_2_MLBS_PER_VOLT;
 
     // deal with endianness
     uint64_t ts = htobe64(ts_host);
@@ -129,7 +130,7 @@ void sendSentence() {
 
     // send median readings to main board, as this gets displayed in the live UI
     long t1 = Transd1ADC.getMedianVolts() * TRANSD_1_MPSI_PER_VOLT;
-    long t2 = Transd2ADC.getMedianVolts() * TRANSD_2_LBS_PER_VOLT;
+    long t2 = Transd2ADC.getMedianVolts() * TRANSD_2_MLBS_PER_VOLT;
 
     char sentence[64];
     snprintf(sentence, sizeof(sentence), "%ld %ld", t1, t2);
@@ -165,8 +166,8 @@ void readCalibration() {
 }
 
 void recalibrate() {
-    float t1Zero = Transd1ADC.recalibrate(ADC_CALIBRATE_SAMPLE_COUNT);
-    float t2Zero = Transd2ADC.recalibrate(ADC_CALIBRATE_SAMPLE_COUNT);
+    float t1Zero = Transd1ADC.recalibrate(ADC1_CALIBRATE_SAMPLE_COUNT);
+    float t2Zero = Transd2ADC.recalibrate(ADC2_CALIBRATE_SAMPLE_COUNT);
 
     EEPROM.writeUInt(0, EEPROM_WRITTEN_MARKER);
     EEPROM.writeFloat(TRANSD_1_ZERO_EEPROM_ADDR, t1Zero);
