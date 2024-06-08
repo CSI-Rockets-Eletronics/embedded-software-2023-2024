@@ -17,7 +17,7 @@ python read_messages.py http://localhost:3000 0 LoadCell > read &
 python write_records.py http://localhost:3000 0 LoadCell < write &
 
 # start main in background
-./main 999999 3568 < read > write & # TODO change 999999 to the correct serial number
+./main 1076702 346.55 < read > write &
 
 # wait for any of the background processes to finish
 wait -n
