@@ -216,6 +216,9 @@ void runStateTransition() {
     unsigned long timeInState = millis() - enteredStateMillis;
     long pressure = hardware::transducer::getTransd1();
 
+    // ! disable abort for now;
+    pressure = 0;
+
     // conditions for ox tank, including buffer to prevent oscillation
 
     bool pAboveAbort =
