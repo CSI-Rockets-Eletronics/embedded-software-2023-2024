@@ -50,12 +50,12 @@ def parse_packet(packet: bytes) -> str:
         # breakdown of "<QHHHHHH":
         #   "<": little-endian
         #   "Q": uint64_t (8 bytes)
-        #   "H": uint16_t (2 bytes)
-        #   "H": uint16_t (2 bytes)
-        #   "H": uint16_t (2 bytes)
-        #   "H": uint16_t (2 bytes)
-        #   "H": uint16_t (2 bytes)
-        #   "H": uint16_t (2 bytes)
+        #   "h": int16_t (2 bytes)
+        #   "h": int16_t (2 bytes)
+        #   "h": int16_t (2 bytes)
+        #   "h": int16_t (2 bytes)
+        #   "h": int16_t (2 bytes)
+        #   "h": int16_t (2 bytes)
         ts, ax, ay, az, gx, gy, gz = struct.unpack("<QHHHHHH", packet)
         data = {
             "ts": ts,
