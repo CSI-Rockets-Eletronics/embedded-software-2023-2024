@@ -56,7 +56,7 @@ def parse_packet(packet: bytes) -> str:
         #   "h": int16_t (2 bytes)
         #   "h": int16_t (2 bytes)
         #   "h": int16_t (2 bytes)
-        ts, ax, ay, az, gx, gy, gz = struct.unpack("<QHHHHHH", packet)
+        ts, ax, ay, az, gx, gy, gz = struct.unpack("<Qhhhhhh", packet)
         data = {
             "ts": ts,
             "ax": ax,
